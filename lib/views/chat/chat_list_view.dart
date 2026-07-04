@@ -15,7 +15,6 @@ class ChatListView extends ConsumerStatefulWidget {
 }
 
 class _ChatListViewState extends ConsumerState<ChatListView> {
-  String? _otherUserName;
 
   @override
   Widget build(BuildContext context) {

@@ -89,8 +89,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
       
       // If Firebase is available, check if the profile exists in Firestore.
       // Otherwise, the authNotifier mock flow handles this.
-      final uid = AuthService().currentUid; 
-      
       // We will perform a simple verification check
       final success = await AuthService().verifyOtp(smsCode);
       

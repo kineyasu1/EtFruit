@@ -241,7 +241,7 @@ class FirestoreService {
           .where('sellerId', isEqualTo: sellerId)
           .snapshots()
           .map((snap) {
-        var list = snap.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+        var list = snap.docs.map((doc) => doc.data()).toList();
         list.sort((a, b) => (b['createdAt'] as Timestamp).compareTo(a['createdAt'] as Timestamp));
         return list;
       });
@@ -324,7 +324,7 @@ class FirestoreService {
           .collection('chats')
           .where('participantIds', arrayContains: userId)
           .snapshots()
-          .map((snap) => snap.docs.map((doc) => doc.data() as Map<String, dynamic>).toList());
+          .map((snap) => snap.docs.map((doc) => doc.data()).toList());
     } else {
       Timer.run(() => _notifyChatsChanged());
       return _chatsStreamController.stream.map((list) {
@@ -341,7 +341,7 @@ class FirestoreService {
           .collection('messages')
           .orderBy('createdAt', descending: false)
           .snapshots()
-          .map((snap) => snap.docs.map((doc) => doc.data() as Map<String, dynamic>).toList());
+          .map((snap) => snap.docs.map((doc) => doc.data()).toList());
     } else {
       if (!_messagesStreamControllers.containsKey(chatId)) {
         _messagesStreamControllers[chatId] = StreamController<List<Map<String, dynamic>>>.broadcast();

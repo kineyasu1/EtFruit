@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/language_provider.dart';
 import '../../services/firestore_service.dart';
 import '../../models/user_model.dart';
 import '../chat/chat_detail_view.dart';

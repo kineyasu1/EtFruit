@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
-import '../../services/firestore_service.dart';
 import '../../services/payment_service.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
@@ -271,12 +270,10 @@ class ChapaSandboxSimulatorView extends StatefulWidget {
 }
 
 class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
-  bool _isProcessing = false;
   String _simStatus = 'pending'; // 'pending', 'success', 'cancelled'
 
   void _triggerSuccess() async {
     setState(() {
-      _isProcessing = true;
       _simStatus = 'processing';
     });
 
@@ -286,7 +283,6 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
 
     if (mounted) {
       setState(() {
-        _isProcessing = false;
         _simStatus = 'success';
       });
     }
@@ -294,7 +290,6 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
 
   void _triggerCancel() async {
     setState(() {
-      _isProcessing = true;
       _simStatus = 'processing';
     });
 
@@ -303,7 +298,6 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
 
     if (mounted) {
       setState(() {
-        _isProcessing = false;
         _simStatus = 'cancelled';
       });
     }

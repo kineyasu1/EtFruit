@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/language_provider.dart';
 import '../../services/firestore_service.dart';
 import '../../services/location_data.dart';
-import '../../models/user_model.dart';
 import '../language_selection_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
