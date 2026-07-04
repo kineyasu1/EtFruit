@@ -1,0 +1,126 @@
+{
+  "@@locale": "en",
+  "appName": "FarmLink",
+  "selectLanguage": "Select Language",
+  "language": "Language",
+  "english": "English",
+  "amharic": "Amharic (አማርኛ)",
+  "oromo": "Afaan Oromo",
+  "somali": "Somali (Soomaali)",
+  "tigrinya": "Tigrinya (ትግርኛ)",
+  "next": "Next",
+  "save": "Save",
+  "cancel": "Cancel",
+  
+  "phoneLogin": "Phone Login",
+  "enterPhoneNumber": "Enter your phone number",
+  "phoneNumber": "Phone Number",
+  "sendOtp": "Send OTP",
+  "verifyOtp": "Verify OTP",
+  "enterVerificationCode": "Enter the 6-digit code sent to your phone",
+  "verificationCode": "Verification Code",
+  "verify": "Verify",
+  "loginFailed": "Login failed. Please try again.",
+  "invalidOtp": "Invalid OTP code. Please try again.",
+  
+  "setupProfile": "Setup Profile",
+  "editProfile": "Edit Profile",
+  "name": "Name",
+  "enterName": "Enter your name",
+  "location": "Location",
+  "region": "Region",
+  "zone": "Zone",
+  "woreda": "Woreda",
+  "profilePhoto": "Profile Photo (Optional)",
+  "telegramUsername": "Telegram Username (Optional)",
+  "whatsappNumber": "WhatsApp Number (Optional)",
+  "saveProfile": "Save Profile",
+  "verifiedPhone": "Verified Phone",
+  
+  "createListing": "Create Listing",
+  "editListing": "Edit Listing",
+  "productCategory": "Product Category",
+  "selectCategory": "Select Category",
+  "productName": "Product Name",
+  "customProductName": "Custom Product Name (if not in list)",
+  "quantity": "Quantity",
+  "unit": "Unit",
+  "price": "Price (ETB)",
+  "negotiable": "Negotiable",
+  "description": "Description (Optional)",
+  "addPhotos": "Add Photos (Max 5)",
+  "contactPreferences": "Contact Preferences",
+  "enableTelegram": "Enable Telegram Contact",
+  "enableWhatsapp": "Enable WhatsApp Contact",
+  "enableInAppChat": "Enable In-App Chat",
+  "publishListing": "Publish Listing",
+  "fillRequiredFields": "Please fill all required fields",
+  
+  "searchProducts": "Search products...",
+  "noListingsFound": "No listings found",
+  "filters": "Filters",
+  "minPrice": "Min Price",
+  "maxPrice": "Max Price",
+  "applyFilters": "Apply Filters",
+  "clearFilters": "Clear Filters",
+  "newest": "Newest",
+  "nearest": "Nearest",
+  "all": "All",
+  
+  "memberSince": "Member since",
+  "contactSeller": "Contact Seller",
+  "paySeller": "Pay Seller",
+  "reportListing": "Report Listing",
+  "reportProfile": "Report Profile",
+  "listingDetails": "Listing Details",
+  "sold": "Sold",
+  "active": "Active",
+  
+  "chats": "Chats",
+  "noChatsYet": "No conversations yet",
+  "typeMessage": "Type a message...",
+  "send": "Send",
+  
+  "confirmPayment": "Confirm Payment",
+  "paymentMethod": "Payment Method",
+  "amountToPay": "Amount to Pay",
+  "payWith": "Pay with {method}",
+  "@payWith": {
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentPending": "Payment Pending",
+  "paymentSuccessful": "Payment Successful",
+  "paymentFailed": "Payment Failed",
+  "transactionId": "Transaction ID",
+  "receipt": "Payment Receipt",
+  "paymentNotification": "A payment of {amount} ETB has been initiated",
+  "@paymentNotification": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "myAccount": "My Account",
+  "myListings": "My Listings",
+  "markAsSold": "Mark as Sold",
+  "deleteListing": "Delete Listing",
+  "deleteConfirm": "Are you sure you want to delete this listing?",
+  "signOut": "Sign Out",
+  "termsOfUse": "Terms of Use",
+  "termsText": "By using FarmLink, you agree that we are not a party to any transaction. Payments are made directly between buyer and seller using Chapa (Telebirr, CBE Birr, HelloCash). We make no guarantee of product quality or delivery.",
+  "agreeTerms": "I agree to the Terms of Use",
+  
+  "report": "Report",
+  "reportReason": "Select Reason for Report",
+  "scamFraud": "Scam or Fraud",
+  "abusiveContent": "Abusive or Inappropriate Content",
+  "incorrectPrice": "Incorrect Price or Details",
+  "other": "Other",
+  "reportSuccess": "Report submitted. Thank you for keeping our marketplace safe."
+}
