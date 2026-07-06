@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../services/location_data.dart';
 import '../../services/taxonomy_data.dart';
 import '../../services/firestore_service.dart';
+import '../../services/auth_service.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class CreateListingView extends ConsumerStatefulWidget {
@@ -127,7 +129,12 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
   Future<void> _pickImage(ImageSource source) async {
     if (_localPhotos.length + _photoUrls.length >= 5) return;
     try {
-      final picked = await _picker.pickImage(imageQuality: 70, source: source);
+      final picked = await _picker.pickImage(
+        source: source,
+        imageQuality: 70,
+        maxWidth: 1024,
+        maxHeight: 1024,
+      );
       if (picked != null) {
         setState(() {
           _localPhotos.add(File(picked.path));
@@ -237,8 +244,23 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
       // In sandbox/offline mode, we use the local file path so they can render locally!
       final finalPhotoUrls = List<String>.from(_photoUrls);
 
-      for (int i = 0; i < _localPhotos.length; i++) {
-        finalPhotoUrls.add(_localPhotos[i].path);
+      if (AuthService.isFirebaseAvailable) {
+        final storageRef = FirebaseStorage.instance.ref();
+        for (int i = 0; i < _localPhotos.length; i++) {
+          final file = _localPhotos[i];
+          final extension = file.path.split('.').last;
+          final fileName = 'listings/${user.id}/${DateTime.now().millisecondsSinceEpoch}_$i.$extension';
+          final uploadRef = storageRef.child(fileName);
+
+          final uploadTask = uploadRef.putFile(file);
+          final snapshot = await uploadTask;
+          final downloadUrl = await snapshot.ref.getDownloadURL();
+          finalPhotoUrls.add(downloadUrl);
+        }
+      } else {
+        for (int i = 0; i < _localPhotos.length; i++) {
+          finalPhotoUrls.add(_localPhotos[i].path);
+        }
       }
 
       // If no photo was attached, add a category default placeholder
