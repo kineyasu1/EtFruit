@@ -155,20 +155,40 @@ class AuthService {
     await Future.delayed(const Duration(milliseconds: 500));
     final mockUser = await FirestoreService().getMockUserByPhoneNumber(phoneNumber);
     if (mockUser != null) {
+      // Option A: Real migration-on-login for legacy plaintext passwords
+      if (mockUser.salt.isEmpty && mockUser.passwordHash == password) {
+        final newSalt = PBKDF2.generateSalt();
+        final newHash = PBKDF2.hashPassword(password, newSalt);
+        
+        final migratedUser = mockUser.copyWith(
+          passwordHash: newHash,
+          salt: newSalt,
+          updatedAt: DateTime.now(),
+        );
+        await FirestoreService().saveUserProfile(migratedUser);
+        
+        return _completeSignIn(phoneNumber, migratedUser.id);
+      }
+
+      // Standard hashed verification path
       final hashedInput = PBKDF2.hashPassword(password, mockUser.salt);
       if (hashedInput == mockUser.passwordHash) {
-        _mockLoggedIn = true;
-        _mockUid = mockUser.id;
-        _mockPhoneNumber = phoneNumber;
-
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('mock_logged_in_uid', _mockUid!);
-
-        _authStateController.add(_mockUid);
-        return true;
+        return _completeSignIn(phoneNumber, mockUser.id);
       }
     }
     return false;
+  }
+
+  Future<bool> _completeSignIn(String phoneNumber, String uid) async {
+    _mockLoggedIn = true;
+    _mockUid = uid;
+    _mockPhoneNumber = phoneNumber;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('mock_logged_in_uid', _mockUid!);
+
+    _authStateController.add(_mockUid);
+    return true;
   }
 
   Future<bool> mockRegisterWithPassword(String phoneNumber, String password) async {
