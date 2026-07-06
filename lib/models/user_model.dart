@@ -14,7 +14,8 @@ class UserModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String role; // 'buyer' or 'seller' or ''
-  final String password;
+  final String passwordHash;
+  final String salt;
 
   UserModel({
     required this.id,
@@ -30,7 +31,8 @@ class UserModel {
     required this.createdAt,
     required this.updatedAt,
     this.role = '',
-    this.password = '',
+    this.passwordHash = '',
+    this.salt = '',
   });
 
   static DateTime parseDateTime(dynamic value) {
@@ -56,7 +58,8 @@ class UserModel {
       createdAt: parseDateTime(map['createdAt']),
       updatedAt: parseDateTime(map['updatedAt']),
       role: map['role'] ?? '',
-      password: map['password'] ?? '',
+      passwordHash: map['passwordHash'] ?? map['password'] ?? '', // Fallback for backward compatibility
+      salt: map['salt'] ?? '',
     );
   }
 
@@ -74,7 +77,8 @@ class UserModel {
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
       'role': role,
-      'password': password,
+      'passwordHash': passwordHash,
+      'salt': salt,
     };
   }
 
@@ -91,7 +95,8 @@ class UserModel {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? role,
-    String? password,
+    String? passwordHash,
+    String? salt,
   }) {
     return UserModel(
       id: id,
@@ -107,7 +112,8 @@ class UserModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       role: role ?? this.role,
-      password: password ?? this.password,
+      passwordHash: passwordHash ?? this.passwordHash,
+      salt: salt ?? this.salt,
     );
   }
 }

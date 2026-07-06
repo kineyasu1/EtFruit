@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/auth_service.dart';
 import 'profile_setup_view.dart';
 import 'onboarding_choice_view.dart';
 import '../home/home_view.dart';
@@ -38,7 +39,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
     final phone = _phoneController.text.trim();
     final password = _passwordController.text.trim();
 
-    // Format phone number to national/international representation
     String formattedPhone = phone;
     if (phone.startsWith('0')) {
       formattedPhone = '+251${phone.substring(1)}';
@@ -75,7 +75,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
         if (!mounted) return;
         final user = ref.read(authProvider)!;
 
-        // Route reactively or manually
         if (user.name.isEmpty || user.region.isEmpty) {
           Navigator.pushReplacement(
             context,
@@ -109,6 +108,24 @@ class _LoginViewState extends ConsumerState<LoginView> {
         _errorMessage = e.toString();
       });
     }
+  }
+
+  void _showForgotPasswordBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: const ForgotPasswordBottomSheetContent(),
+        );
+      },
+    );
   }
 
   @override
@@ -161,7 +178,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            // Mode Selector (Login / Sign Up)
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -218,7 +234,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                 ),
                               ),
 
-                            // Phone Number Field
                             TextFormField(
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
@@ -239,7 +254,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             ),
                             const SizedBox(height: 16),
 
-                            // Password Field
                             TextFormField(
                               controller: _passwordController,
                               obscureText: _obscurePassword,
@@ -271,9 +285,26 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 4),
 
-                            // Confirm Password Field (Sign Up Only)
+                            if (!_isSignUp) ...[
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: _showForgotPasswordBottomSheet,
+                                  child: const Text(
+                                    'Forgot Password?',
+                                    style: TextStyle(
+                                      color: Color(0xFF1B5E20),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                            ] else
+                              const SizedBox(height: 12),
+
                             if (_isSignUp) ...[
                               TextFormField(
                                 controller: _confirmPasswordController,
@@ -298,7 +329,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               const SizedBox(height: 24),
                             ],
 
-                            // Action Button
                             ElevatedButton(
                               onPressed: _isLoading ? null : _submit,
                               style: ElevatedButton.styleFrom(
@@ -336,6 +366,307 @@ class _LoginViewState extends ConsumerState<LoginView> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// -----------------------------------------------------------------------------
+// FORGOT PASSWORD BOTTOM SHEET CONTENT
+// -----------------------------------------------------------------------------
+class ForgotPasswordBottomSheetContent extends StatefulWidget {
+  const ForgotPasswordBottomSheetContent({super.key});
+
+  @override
+  State<ForgotPasswordBottomSheetContent> createState() =>
+      _ForgotPasswordBottomSheetContentState();
+}
+
+class _ForgotPasswordBottomSheetContentState
+    extends State<ForgotPasswordBottomSheetContent> {
+  final _phoneController = TextEditingController();
+  final _codeController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  int _step = 1; // 1: phone, 2: code, 3: new password
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _codeController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  void _sendCode() async {
+    final rawPhone = _phoneController.text.trim();
+    if (rawPhone.isEmpty) return;
+
+    String formattedPhone = rawPhone;
+    if (rawPhone.startsWith('0')) {
+      formattedPhone = '+251${rawPhone.substring(1)}';
+    } else if (!rawPhone.startsWith('+')) {
+      formattedPhone = '+251$rawPhone';
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final success = await AuthService().sendMockResetOtp(formattedPhone);
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (success) {
+      setState(() {
+        _step = 2;
+      });
+    } else {
+      setState(() {
+        _errorMessage = 'Phone number is not registered.';
+      });
+    }
+  }
+
+  void _verifyCode() async {
+    final rawPhone = _phoneController.text.trim();
+    final code = _codeController.text.trim();
+    if (code.isEmpty) return;
+
+    String formattedPhone = rawPhone;
+    if (rawPhone.startsWith('0')) {
+      formattedPhone = '+251${rawPhone.substring(1)}';
+    } else if (!rawPhone.startsWith('+')) {
+      formattedPhone = '+251$rawPhone';
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final success = await AuthService().verifyMockResetOtp(formattedPhone, code);
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (success) {
+      setState(() {
+        _step = 3;
+      });
+    } else {
+      setState(() {
+        _errorMessage = 'Invalid validation code.';
+      });
+    }
+  }
+
+  void _resetPassword() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final rawPhone = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
+
+    String formattedPhone = rawPhone;
+    if (rawPhone.startsWith('0')) {
+      formattedPhone = '+251${rawPhone.substring(1)}';
+    } else if (!rawPhone.startsWith('+')) {
+      formattedPhone = '+251$rawPhone';
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final success = await AuthService().resetMockPassword(formattedPhone, password);
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (success) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password reset successfully. Please log in.')),
+      );
+      Navigator.pop(context);
+    } else {
+      setState(() {
+        _errorMessage = 'Failed to reset password. Try again.';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Forgot Password',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.green[900],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            if (_errorMessage != null)
+              Container(
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.red[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.red[200]!),
+                ),
+                child: Text(
+                  _errorMessage!,
+                  style: const TextStyle(color: Colors.red, fontSize: 13),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
+            if (_step == 1) ...[
+              const Text(
+                'Enter your registered phone number to receive a simulated verification code.',
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.phone_rounded, color: Colors.green),
+                  labelText: 'Phone Number',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _sendCode,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1B5E20),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Text('Send Reset Code'),
+              ),
+            ],
+
+            if (_step == 2) ...[
+              const Text(
+                'Enter the validation code sent to your device (use simulated code: 123456).',
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _codeController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.security_rounded, color: Colors.green),
+                  labelText: 'Verification Code',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _verifyCode,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1B5E20),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Text('Verify Code'),
+              ),
+            ],
+
+            if (_step == 3) ...[
+              const Text(
+                'Enter your new password below.',
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.lock_rounded, color: Colors.green),
+                  labelText: 'New Password',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Please enter password';
+                  if (value.length < 6) return 'Password must be at least 6 characters';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _confirmPasswordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.lock_outline_rounded, color: Colors.green),
+                  labelText: 'Confirm New Password',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Please confirm password';
+                  if (value != _passwordController.text) return 'Passwords do not match';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _isLoading ? null : _resetPassword,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1B5E20),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : const Text('Save New Password'),
+              ),
+            ],
+            const SizedBox(height: 12),
+          ],
         ),
       ),
     );

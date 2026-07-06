@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firestore_service.dart';
+import 'crypto_helper.dart';
 import '../models/user_model.dart';
 
 class AuthService {
@@ -21,6 +22,9 @@ class AuthService {
   bool _mockLoggedIn = false;
   String? _mockUid;
   String? _mockPhoneNumber;
+
+  // Sandbox password reset tracking
+  final Map<String, String> _mockResetCodes = {};
 
   // Stream controller to notify auth state changes
   final StreamController<String?> _authStateController =
@@ -145,21 +149,24 @@ class AuthService {
   }
 
   // -------------------------------------------------------------
-  // Mock Password Register & Login (Enhanced Custom flow)
+  // Mock Password Register & Login (Hashed with Salted PBKDF2)
   // -------------------------------------------------------------
   Future<bool> mockSignInWithPassword(String phoneNumber, String password) async {
     await Future.delayed(const Duration(milliseconds: 500));
     final mockUser = await FirestoreService().getMockUserByPhoneNumber(phoneNumber);
-    if (mockUser != null && mockUser.password == password) {
-      _mockLoggedIn = true;
-      _mockUid = mockUser.id;
-      _mockPhoneNumber = phoneNumber;
+    if (mockUser != null) {
+      final hashedInput = PBKDF2.hashPassword(password, mockUser.salt);
+      if (hashedInput == mockUser.passwordHash) {
+        _mockLoggedIn = true;
+        _mockUid = mockUser.id;
+        _mockPhoneNumber = phoneNumber;
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('mock_logged_in_uid', _mockUid!);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('mock_logged_in_uid', _mockUid!);
 
-      _authStateController.add(_mockUid);
-      return true;
+        _authStateController.add(_mockUid);
+        return true;
+      }
     }
     return false;
   }
@@ -176,6 +183,9 @@ class AuthService {
     _mockUid = uid;
     _mockPhoneNumber = phoneNumber;
 
+    final salt = PBKDF2.generateSalt();
+    final passwordHash = PBKDF2.hashPassword(password, salt);
+
     final newUser = UserModel(
       id: uid,
       name: '',
@@ -183,7 +193,8 @@ class AuthService {
       region: '',
       zone: '',
       woreda: '',
-      password: password,
+      passwordHash: passwordHash,
+      salt: salt,
       role: '',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -194,6 +205,45 @@ class AuthService {
     await prefs.setString('mock_logged_in_uid', uid);
 
     _authStateController.add(_mockUid);
+    return true;
+  }
+
+  // -------------------------------------------------------------
+  // Mock Password Reset Flow (Forgot Password)
+  // -------------------------------------------------------------
+  Future<bool> sendMockResetOtp(String phoneNumber) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final user = await FirestoreService().getMockUserByPhoneNumber(phoneNumber);
+    if (user == null) return false;
+
+    _mockResetCodes[phoneNumber] = '123456';
+    debugPrint('MOCK PASSWORD RESET OTP for $phoneNumber: 123456');
+    return true;
+  }
+
+  Future<bool> verifyMockResetOtp(String phoneNumber, String smsCode) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (_mockResetCodes[phoneNumber] == smsCode) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> resetMockPassword(String phoneNumber, String newPassword) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final user = await FirestoreService().getMockUserByPhoneNumber(phoneNumber);
+    if (user == null) return false;
+
+    final newSalt = PBKDF2.generateSalt();
+    final newHash = PBKDF2.hashPassword(newPassword, newSalt);
+
+    final updatedUser = user.copyWith(
+      passwordHash: newHash,
+      salt: newSalt,
+      updatedAt: DateTime.now(),
+    );
+    await FirestoreService().saveUserProfile(updatedUser);
+    _mockResetCodes.remove(phoneNumber);
     return true;
   }
 
