@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
+import '../services/notification_service.dart';
 
 final authProvider = StateNotifierProvider<AuthNotifier, UserModel?>((ref) {
   return AuthNotifier();
@@ -35,6 +36,7 @@ class AuthNotifier extends StateNotifier<UserModel?> {
     final profile = await _firestoreService.getUserProfile(uid);
     if (profile != null) {
       state = profile;
+      NotificationService().updateFcmToken();
     }
   }
 

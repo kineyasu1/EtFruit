@@ -10,6 +10,7 @@ import 'package:agrimarketmob/l10n/app_localizations.dart';
 import 'providers/language_provider.dart';
 import 'providers/auth_provider.dart';
 import 'services/auth_service.dart';
+import 'services/notification_service.dart';
 import 'views/language_selection_view.dart';
 import 'views/auth/login_view.dart';
 import 'views/auth/profile_setup_view.dart';
@@ -25,6 +26,9 @@ void main() async {
     await Firebase.initializeApp();
     AuthService.isFirebaseAvailable = true;
     debugPrint('Firebase successfully initialized.');
+    
+    // Initialize push notifications
+    await NotificationService().initialize();
   } catch (e) {
     AuthService.isFirebaseAvailable = false;
     debugPrint('Firebase initialization failed: $e');
@@ -55,6 +59,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp(
       title: 'Agriገበያ',
+      navigatorKey: NavigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
