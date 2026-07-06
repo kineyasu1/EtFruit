@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/auth_service.dart';
+import '../providers/auth_provider.dart';
 import '../views/chat/chat_detail_view.dart';
 import '../views/home/home_view.dart';
 import 'firestore_service.dart';
@@ -16,7 +18,8 @@ class NotificationService {
   factory NotificationService() => _instance;
   NotificationService._internal();
 
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  // Safe getter to avoid calling FirebaseMessaging.instance when Firebase is not initialized
+  FirebaseMessaging? get _messaging => AuthService.isFirebaseAvailable ? FirebaseMessaging.instance : null;
 
   Future<void> initialize() async {
     if (!AuthService.isFirebaseAvailable) {
@@ -24,9 +27,12 @@ class NotificationService {
       return;
     }
 
+    final msg = _messaging;
+    if (msg == null) return;
+
     try {
       // 1. Request notification permissions
-      final settings = await _messaging.requestPermission(
+      final settings = await msg.requestPermission(
         alert: true,
         announcement: false,
         badge: true,
@@ -43,7 +49,7 @@ class NotificationService {
         await updateFcmToken();
 
         // Token change listener
-        _messaging.onTokenRefresh.listen((token) async {
+        msg.onTokenRefresh.listen((token) async {
           final uid = AuthService().currentUid;
           if (uid != null) {
             await FirebaseFirestore.instance.collection('users').doc(uid).update({
@@ -79,7 +85,7 @@ class NotificationService {
         _handleNotificationTap(message);
       });
 
-      final initialMessage = await _messaging.getInitialMessage();
+      final initialMessage = await msg.getInitialMessage();
       if (initialMessage != null) {
         _handleNotificationTap(initialMessage);
       }
@@ -92,8 +98,11 @@ class NotificationService {
     final uid = AuthService().currentUid;
     if (uid == null || !AuthService.isFirebaseAvailable) return;
 
+    final msg = _messaging;
+    if (msg == null) return;
+
     try {
-      final token = await _messaging.getToken();
+      final token = await msg.getToken();
       if (token != null) {
         await FirebaseFirestore.instance.collection('users').doc(uid).update({
           'fcmToken': token,
@@ -101,22 +110,21 @@ class NotificationService {
         debugPrint('FCM Token registered: $token');
       }
     } catch (e) {
-      debugPrint('FCM Token registration error: $e');
+      debugPrint('Error updating FCM Token: $e');
     }
   }
 
-  void _handleNotificationTap(RemoteMessage message) async {
-    final data = message.data;
-    final type = data['type'];
-    final navigator = NavigationService.navigatorKey.currentState;
-
-    if (navigator == null) return;
+  void _handleNotificationTap(RemoteMessage message) {
+    final type = message.data['type'];
+    final context = NavigationService.navigatorKey.currentContext;
+    if (context == null) return;
 
     if (type == 'chat') {
-      final chatId = data['chatId'];
-      final otherUserName = data['otherUserName'] ?? 'Chat';
+      final chatId = message.data['chatId'];
+      final otherUserName = message.data['otherUserName'] ?? 'Seller';
       if (chatId != null) {
-        navigator.push(
+        Navigator.push(
+          context,
           MaterialPageRoute(
             builder: (context) => ChatDetailView(
               chatId: chatId,
@@ -126,23 +134,20 @@ class NotificationService {
         );
       }
     } else if (type == 'payment' || type == 'order') {
-      final uid = AuthService().currentUid;
-      if (uid == null) return;
-      
-      final profile = await FirestoreService().getUserProfile(uid);
-      if (profile == null) return;
-
-      if (profile.role == 'seller') {
-        navigator.pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const HomeView(initialTab: 0)), // Dashboard
-          (route) => false,
-        );
-      } else {
-        navigator.pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const HomeView(initialTab: 2)), // Orders
-          (route) => false,
+      final user = refProviderContext?.read(authProvider);
+      if (user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeView(
+              initialTab: user.role == 'seller' ? 2 : 1,
+            ),
+          ),
         );
       }
     }
   }
+
+  // Ref container context helper for reading user role in push navigation handlers
+  ProviderContainer? refProviderContext;
 }
