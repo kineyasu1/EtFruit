@@ -613,37 +613,117 @@ class FirestoreService {
   // Shopping Cart & Orders
   // -------------------------------------------------------------
   Future<List<Map<String, dynamic>>> getCartItems() async {
-    await _loadLocalData();
-    return _mockCart;
+    if (AuthService.isFirebaseAvailable) {
+      final uid = AuthService().currentUid;
+      if (uid == null) return [];
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('cart')
+          .get();
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    } else {
+      await _loadLocalData();
+      return _mockCart;
+    }
   }
 
   Future<void> addToCart(Map<String, dynamic> item) async {
-    final index = _mockCart.indexWhere((element) => element['listingId'] == item['listingId']);
-    if (index >= 0) {
-      _mockCart[index]['quantity'] = (_mockCart[index]['quantity'] ?? 1.0) + (item['quantity'] ?? 1.0);
+    if (AuthService.isFirebaseAvailable) {
+      final uid = AuthService().currentUid;
+      if (uid == null) return;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('cart')
+          .doc(item['listingId'])
+          .set(item);
     } else {
-      _mockCart.add(item);
+      final index = _mockCart.indexWhere((element) => element['listingId'] == item['listingId']);
+      if (index >= 0) {
+        _mockCart[index]['quantity'] = (_mockCart[index]['quantity'] ?? 1.0) + (item['quantity'] ?? 1.0);
+      } else {
+        _mockCart.add(item);
+      }
+      await _saveLocalData();
     }
-    await _saveLocalData();
   }
 
   Future<void> removeFromCart(String listingId) async {
-    _mockCart.removeWhere((element) => element['listingId'] == listingId);
-    await _saveLocalData();
+    if (AuthService.isFirebaseAvailable) {
+      final uid = AuthService().currentUid;
+      if (uid == null) return;
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('cart')
+          .doc(listingId)
+          .delete();
+    } else {
+      _mockCart.removeWhere((element) => element['listingId'] == listingId);
+      await _saveLocalData();
+    }
   }
 
   Future<void> clearCart() async {
-    _mockCart.clear();
-    await _saveLocalData();
+    if (AuthService.isFirebaseAvailable) {
+      final uid = AuthService().currentUid;
+      if (uid == null) return;
+      final cartRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('cart');
+      final snapshot = await cartRef.get();
+      final batch = FirebaseFirestore.instance.batch();
+      for (var doc in snapshot.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+    } else {
+      _mockCart.clear();
+      await _saveLocalData();
+    }
   }
 
   Future<List<Map<String, dynamic>>> getOrders() async {
-    await _loadLocalData();
-    return _mockOrders;
+    if (AuthService.isFirebaseAvailable) {
+      final uid = AuthService().currentUid;
+      if (uid == null) return [];
+
+      final query1 = await FirebaseFirestore.instance
+          .collection('orders')
+          .where('buyerId', isEqualTo: uid)
+          .get();
+      final query2 = await FirebaseFirestore.instance
+          .collection('orders')
+          .where('sellerId', isEqualTo: uid)
+          .get();
+
+      final List<Map<String, dynamic>> list = [];
+      for (var doc in query1.docs) {
+        list.add(doc.data());
+      }
+      for (var doc in query2.docs) {
+        if (!list.any((element) => element['id'] == doc.id)) {
+          list.add(doc.data());
+        }
+      }
+      return list;
+    } else {
+      await _loadLocalData();
+      return _mockOrders;
+    }
   }
 
   Future<void> createOrder(Map<String, dynamic> order) async {
-    _mockOrders.add(order);
-    await _saveLocalData();
+    if (AuthService.isFirebaseAvailable) {
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .doc(order['id'])
+          .set(order);
+    } else {
+      _mockOrders.add(order);
+      await _saveLocalData();
+    }
   }
 }

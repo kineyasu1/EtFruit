@@ -319,3 +319,49 @@ exports.onMessageCreated = functions.firestore
     }
     return null;
   });
+
+/**
+ * Cloud Function triggered when an order document is updated.
+ * Dispatches push notifications to the buyer regarding status changes.
+ */
+exports.onOrderStatusUpdated = functions.firestore
+  .document("orders/{orderId}")
+  .onUpdate(async (change, context) => {
+    const beforeData = change.before.data();
+    const afterData = change.after.data();
+
+    // Skip trigger if status did not change
+    if (beforeData.status === afterData.status) {
+      return null;
+    }
+
+    const db = admin.firestore();
+    const orderId = context.params.orderId;
+
+    try {
+      const buyerId = afterData.buyerId;
+      if (!buyerId) return null;
+
+      const buyerDoc = await db.collection("users").doc(buyerId).get();
+      if (buyerDoc.exists) {
+        const buyerData = buyerDoc.data();
+        if (buyerData.fcmToken) {
+          await admin.messaging().send({
+            token: buyerData.fcmToken,
+            notification: {
+              title: "Order Status Update",
+              body: `Your order for "${afterData.listingTitle || 'product'}" has been updated to "${afterData.status}".`,
+            },
+            data: {
+              type: "order",
+              orderId: orderId,
+            }
+          });
+          console.log(`FCM order status push sent to buyer: ${buyerId}`);
+        }
+      }
+    } catch (error) {
+      console.error("FCM Order Status update failed (skipped):", error);
+    }
+    return null;
+  });
