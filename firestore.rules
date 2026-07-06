@@ -39,10 +39,11 @@ service cloud.firestore {
       }
     }
 
-    // Transactions: readable only by involved buyer/seller; client writes blocked (only via Cloud Functions)
+    // Transactions: readable and temporarily writeable by the involved buyer/seller (interim rule until Cloud Functions migration in Phase 4)
     match /transactions/{txId} {
       allow read: if isAuthenticated() && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId);
-      allow write: if false; // Restrict client writes entirely
+      allow create: if isAuthenticated() && (request.auth.uid == request.resource.data.buyerId || request.auth.uid == request.resource.data.sellerId);
+      allow update, delete: if isAuthenticated() && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId);
     }
   }
 }

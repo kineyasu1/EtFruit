@@ -8,9 +8,10 @@ service firebase.storage {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // General fallback rules
+    // General fallback rules - restrict writes by default outside listings
     match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read: if request.auth != null;
+      allow write: if false; // Block all other writes by default
     }
   }
 }
