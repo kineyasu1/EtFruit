@@ -3,11 +3,58 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
 
-class SellerDashboardSubView extends ConsumerWidget {
+class SellerDashboardSubView extends ConsumerStatefulWidget {
   const SellerDashboardSubView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SellerDashboardSubView> createState() => _SellerDashboardSubViewState();
+}
+
+class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView> {
+
+  void _refresh() {
+    setState(() {});
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return Colors.orange[800]!;
+      case 'confirmed':
+        return Colors.blue[800]!;
+      case 'shipped':
+        return Colors.indigo[800]!;
+      case 'delivered':
+        return Colors.green[800]!;
+      case 'cancelled':
+        return Colors.red[800]!;
+      default:
+        return Colors.grey[800]!;
+    }
+  }
+
+  Widget _buildStatusBadge(String status) {
+    final color = _getStatusColor(status);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(authProvider)!;
 
     return Scaffold(
@@ -30,7 +77,6 @@ class SellerDashboardSubView extends ConsumerWidget {
           final activeListings = listings.where((l) => l['status'] == 'active').toList();
           final soldListings = listings.where((l) => l['status'] == 'sold').toList();
 
-          // Calculate total sales revenue
           double totalSales = 0.0;
           for (var item in soldListings) {
             final price = double.tryParse(item['price'].toString()) ?? 0.0;
@@ -38,7 +84,6 @@ class SellerDashboardSubView extends ConsumerWidget {
             totalSales += (price * quantity);
           }
 
-          // Count sold quantity per product category
           final Map<String, double> categorySales = {};
           for (var item in soldListings) {
             final catName = item['categoryNameEn'] ?? 'Other';
@@ -53,7 +98,6 @@ class SellerDashboardSubView extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Greeting Card
                   Card(
                     elevation: 3,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -88,13 +132,10 @@ class SellerDashboardSubView extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // Stats Grid Cards
                   Row(
                     children: [
                       Expanded(
                         child: _buildStatCard(
-                          context: context,
                           title: 'Total Revenue',
                           value: '${totalSales.toStringAsFixed(0)} ETB',
                           icon: Icons.monetization_on_rounded,
@@ -108,7 +149,6 @@ class SellerDashboardSubView extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: _buildStatCard(
-                          context: context,
                           title: 'Active Products',
                           value: '${activeListings.length}',
                           icon: Icons.grass_rounded,
@@ -118,7 +158,6 @@ class SellerDashboardSubView extends ConsumerWidget {
                       const SizedBox(width: 16),
                       Expanded(
                         child: _buildStatCard(
-                          context: context,
                           title: 'Sold Items',
                           value: '${soldListings.length}',
                           icon: Icons.check_circle_rounded,
@@ -128,8 +167,6 @@ class SellerDashboardSubView extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-
-                  // Sales Distribution Analysis Card
                   Card(
                     elevation: 3,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -197,6 +234,144 @@ class SellerDashboardSubView extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  
+                  // INCOMING SALES ORDERS SECTION
+                  FutureBuilder<List<Map<String, dynamic>>>(
+                    future: FirestoreService().getOrders(),
+                    builder: (context, orderSnapshot) {
+                      if (orderSnapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+
+                      final orders = orderSnapshot.data ?? [];
+                      final incomingOrders = orders.where((o) => o['sellerId'] == user.id).toList();
+
+                      if (incomingOrders.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 24),
+                          Text(
+                            'Incoming Sales Orders',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green[900],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ...incomingOrders.map((order) {
+                            final price = double.tryParse(order['price'].toString()) ?? 0.0;
+                            final qty = double.tryParse(order['quantity'].toString()) ?? 1.0;
+                            final status = order['status'] ?? 'pending';
+
+                            return Card(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          order['title'] ?? 'Product',
+                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                        ),
+                                        _buildStatusBadge(status),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Buyer: ${order['buyerName'] ?? 'Buyer'}',
+                                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Subtotal: ${(price * qty).toStringAsFixed(0)} ETB (${qty.toStringAsFixed(0)} units)',
+                                      style: const TextStyle(
+                                        color: Color(0xFF1B5E20),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                    if (status != 'cancelled' && status != 'delivered') ...[
+                                      const SizedBox(height: 12),
+                                      const Divider(height: 1),
+                                      const SizedBox(height: 12),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          if (status == 'pending' || status == 'confirmed')
+                                            TextButton(
+                                              onPressed: () async {
+                                                await FirestoreService().updateOrderStatus(order['id'], 'cancelled');
+                                                _refresh();
+                                              },
+                                              child: const Text('Cancel', style: TextStyle(color: Colors.red)),
+                                            ),
+                                          const SizedBox(width: 8),
+                                          if (status == 'pending')
+                                            ElevatedButton(
+                                              onPressed: () async {
+                                                await FirestoreService().updateOrderStatus(order['id'], 'confirmed');
+                                                _refresh();
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.blue[700],
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                              ),
+                                              child: const Text('Confirm'),
+                                            ),
+                                          if (status == 'confirmed')
+                                            ElevatedButton(
+                                              onPressed: () async {
+                                                await FirestoreService().updateOrderStatus(order['id'], 'shipped');
+                                                _refresh();
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.indigo[700],
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                              ),
+                                              child: const Text('Ship'),
+                                            ),
+                                          if (status == 'shipped')
+                                            ElevatedButton(
+                                              onPressed: () async {
+                                                await FirestoreService().updateOrderStatus(order['id'], 'delivered');
+                                                _refresh();
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.green[700],
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                              ),
+                                              child: const Text('Deliver'),
+                                            ),
+                                        ],
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -207,7 +382,6 @@ class SellerDashboardSubView extends ConsumerWidget {
   }
 
   Widget _buildStatCard({
-    required BuildContext context,
     required String title,
     required String value,
     required IconData icon,

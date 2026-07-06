@@ -29,6 +29,26 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   List<String> _woredas = [];
 
   bool _isUpdating = false;
+  List<Map<String, dynamic>> _myReviews = [];
+  double _myAverageRating = 0.0;
+
+  void _loadMyReviews() async {
+    final user = ref.read(authProvider);
+    if (user != null && user.role == 'seller') {
+      final reviews = await FirestoreService().getSellerReviews(user.id);
+      if (mounted) {
+        setState(() {
+          _myReviews = reviews;
+          if (reviews.isNotEmpty) {
+            double sum = reviews.fold(0.0, (acc, r) => acc + (double.tryParse(r['rating'].toString()) ?? 0.0));
+            _myAverageRating = sum / reviews.length;
+          } else {
+            _myAverageRating = 0.0;
+          }
+        });
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -37,6 +57,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     _telegramController = TextEditingController();
     _whatsappController = TextEditingController();
     _populateFields();
+    _loadMyReviews();
   }
 
   void _populateFields() {
@@ -455,6 +476,28 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                   ],
                                 ),
                               ],
+                              if (user.role == 'seller' && _myReviews.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                GestureDetector(
+                                  onTap: _showMyReviewsBottomSheet,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.star_rounded, color: Colors.amber, size: 20),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '${_myAverageRating.toStringAsFixed(1)} (${_myReviews.length} reviews)',
+                                        style: const TextStyle(
+                                          color: Color(0xFF1B5E20),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                   ),
@@ -694,6 +737,81 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           ),
         ),
       ),
+    );
+  }
+  void _showMyReviewsBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'My Customer Feedback',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green[900],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: _myReviews.isEmpty
+                    ? const Center(child: Text('No customer feedback yet.'))
+                    : ListView.builder(
+                        itemCount: _myReviews.length,
+                        itemBuilder: (context, index) {
+                          final rev = _myReviews[index];
+                          final rating = int.tryParse(rev['rating'].toString()) ?? 5;
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        rev['buyerName'] ?? 'Buyer',
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      Row(
+                                        children: List.generate(5, (starIdx) {
+                                          return Icon(
+                                            starIdx < rating ? Icons.star_rounded : Icons.star_border_rounded,
+                                            color: Colors.amber,
+                                            size: 16,
+                                          );
+                                        }),
+                                      ),
+                                    ],
+                                  ),
+                                  if (rev['comment'] != null && rev['comment'].toString().isNotEmpty) ...[
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      rev['comment'],
+                                      style: TextStyle(color: Colors.grey[800], fontSize: 13),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

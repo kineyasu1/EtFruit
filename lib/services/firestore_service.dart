@@ -27,6 +27,7 @@ class FirestoreService {
   // Shopping Cart & Orders local storage caches
   final List<Map<String, dynamic>> _mockCart = [];
   final List<Map<String, dynamic>> _mockOrders = [];
+  final List<Map<String, dynamic>> _mockReviews = [];
 
   // Stream controllers for mock real-time updates
   final StreamController<List<Map<String, dynamic>>> _listingsStreamController =
@@ -212,6 +213,13 @@ class FirestoreService {
         _mockOrders.addAll(decoded.map((item) => Map<String, dynamic>.from(_convertJsonToFirestoreTypes(item))).toList());
       }
 
+      final reviewsJson = prefs.getString('mock_reviews');
+      if (reviewsJson != null) {
+        final List decoded = jsonDecode(reviewsJson);
+        _mockReviews.clear();
+        _mockReviews.addAll(decoded.map((item) => Map<String, dynamic>.from(_convertJsonToFirestoreTypes(item))).toList());
+      }
+
       _notifyListingsChanged();
       _notifyChatsChanged();
     } catch (e) {
@@ -236,6 +244,7 @@ class FirestoreService {
       await prefs.setString('mock_transactions', jsonEncode(_convertFirestoreTypesToJson(_mockTransactions)));
       await prefs.setString('mock_cart', jsonEncode(_mockCart));
       await prefs.setString('mock_orders', jsonEncode(_convertFirestoreTypesToJson(_mockOrders)));
+      await prefs.setString('mock_reviews', jsonEncode(_convertFirestoreTypesToJson(_mockReviews)));
     } catch (e) {
       debugPrint('Error saving local data: $e');
     }
@@ -724,6 +733,60 @@ class FirestoreService {
     } else {
       _mockOrders.add(order);
       await _saveLocalData();
+    }
+  }
+
+  Future<void> updateOrderStatus(String orderId, String newStatus) async {
+    if (AuthService.isFirebaseAvailable) {
+      await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
+        'status': newStatus,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } else {
+      await _loadLocalData();
+      final idx = _mockOrders.indexWhere((element) => element['id'] == orderId);
+      if (idx >= 0) {
+        _mockOrders[idx]['status'] = newStatus;
+        _mockOrders[idx]['updatedAt'] = DateTime.now().toIso8601String();
+        await _saveLocalData();
+      }
+    }
+  }
+
+  Future<void> submitReview(Map<String, dynamic> review) async {
+    if (AuthService.isFirebaseAvailable) {
+      final batch = FirebaseFirestore.instance.batch();
+      
+      final reviewRef = FirebaseFirestore.instance.collection('reviews').doc(review['id']);
+      batch.set(reviewRef, review);
+
+      final orderRef = FirebaseFirestore.instance.collection('orders').doc(review['orderId']);
+      batch.update(orderRef, {'isRated': true});
+
+      await batch.commit();
+    } else {
+      await _loadLocalData();
+      _mockReviews.add(review);
+      
+      final idx = _mockOrders.indexWhere((element) => element['id'] == review['orderId']);
+      if (idx >= 0) {
+        _mockOrders[idx]['isRated'] = true;
+      }
+      
+      await _saveLocalData();
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getSellerReviews(String sellerId) async {
+    if (AuthService.isFirebaseAvailable) {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('sellerId', isEqualTo: sellerId)
+          .get();
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    } else {
+      await _loadLocalData();
+      return _mockReviews.where((element) => element['sellerId'] == sellerId).toList();
     }
   }
 }

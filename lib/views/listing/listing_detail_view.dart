@@ -22,9 +22,25 @@ class ListingDetailView extends ConsumerStatefulWidget {
 class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
   int _currentPhotoIndex = 0;
   bool _isLoadingSeller = true;
-  UserModel? _sellerProfile;
-
   Map<String, dynamic>? _listing;
+  UserModel? _sellerProfile;
+  List<Map<String, dynamic>> _sellerReviews = [];
+  double _averageRating = 0.0;
+
+  void _loadReviews(String sellerId) async {
+    final reviews = await FirestoreService().getSellerReviews(sellerId);
+    if (mounted) {
+      setState(() {
+        _sellerReviews = reviews;
+        if (reviews.isNotEmpty) {
+          double sum = reviews.fold(0.0, (acc, r) => acc + (double.tryParse(r['rating'].toString()) ?? 0.0));
+          _averageRating = sum / reviews.length;
+        } else {
+          _averageRating = 0.0;
+        }
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -50,6 +66,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
         final sellerId = match['sellerId'];
         if (sellerId != null) {
           final profile = await FirestoreService().getUserProfile(sellerId);
+          _loadReviews(sellerId);
           if (mounted) {
             setState(() {
               _sellerProfile = profile;
@@ -68,6 +85,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
               orElse: () => {},
             );
             if (myMatch.isNotEmpty && mounted) {
+              _loadReviews(user.id);
               setState(() {
                 _listing = myMatch;
                 _sellerProfile = user;
@@ -529,6 +547,31 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                             ),
                                           ],
                                         ),
+                                        if (_sellerReviews.isNotEmpty) ...[
+                                          const SizedBox(height: 4),
+                                          GestureDetector(
+                                            onTap: _showReviewsBottomSheet,
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.star_rounded,
+                                                  color: Colors.amber,
+                                                  size: 16,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  '${_averageRating.toStringAsFixed(1)} (${_sellerReviews.length} reviews)',
+                                                  style: const TextStyle(
+                                                    color: Color(0xFF1B5E20),
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12,
+                                                    decoration: TextDecoration.underline,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                         const SizedBox(height: 2),
                                         Text(
                                           '${l10n.memberSince}: $sellerDateString',
@@ -728,6 +771,81 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
             ),
         ],
       ),
+    );
+  }
+  void _showReviewsBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Seller Reviews & Ratings',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green[900],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: _sellerReviews.isEmpty
+                    ? const Center(child: Text('No reviews for this seller yet.'))
+                    : ListView.builder(
+                        itemCount: _sellerReviews.length,
+                        itemBuilder: (context, index) {
+                          final rev = _sellerReviews[index];
+                          final rating = int.tryParse(rev['rating'].toString()) ?? 5;
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        rev['buyerName'] ?? 'Buyer',
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      Row(
+                                        children: List.generate(5, (starIdx) {
+                                          return Icon(
+                                            starIdx < rating ? Icons.star_rounded : Icons.star_border_rounded,
+                                            color: Colors.amber,
+                                            size: 16,
+                                          );
+                                        }),
+                                      ),
+                                    ],
+                                  ),
+                                  if (rev['comment'] != null && rev['comment'].toString().isNotEmpty) ...[
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      rev['comment'],
+                                      style: TextStyle(color: Colors.grey[800], fontSize: 13),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

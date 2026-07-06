@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/firestore_service.dart';
+import '../../providers/auth_provider.dart';
 import '../payment/payment_checkout_view.dart';
 
-class CartView extends StatefulWidget {
+class CartView extends ConsumerStatefulWidget {
   const CartView({super.key});
 
   @override
-  State<CartView> createState() => _CartViewState();
+  ConsumerState<CartView> createState() => _CartViewState();
 }
 
-class _CartViewState extends State<CartView> {
+class _CartViewState extends ConsumerState<CartView> {
   List<Map<String, dynamic>> _cartItems = [];
   bool _isLoading = true;
 
@@ -89,7 +91,6 @@ class _CartViewState extends State<CartView> {
                           padding: const EdgeInsets.all(12.0),
                           child: Row(
                             children: [
-                              // Small thumbnail
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: Container(
@@ -100,7 +101,6 @@ class _CartViewState extends State<CartView> {
                                 ),
                               ),
                               const SizedBox(width: 16),
-                              // Title & details
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,21 +111,17 @@ class _CartViewState extends State<CartView> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '$price ETB / ${item['unit']} x $qty',
+                                      '${price.toStringAsFixed(0)} ETB / ${item['unit']}',
                                       style: TextStyle(color: Colors.grey[600], fontSize: 13),
                                     ),
-                                    const SizedBox(height: 2),
+                                    const SizedBox(height: 4),
                                     Text(
-                                      'Subtotal: ${(price * qty).toStringAsFixed(0)} ETB',
-                                      style: const TextStyle(
-                                          color: Color(0xFF1B5E20),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13),
+                                      'Quantity: ${qty.toStringAsFixed(0)}',
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                                     ),
                                   ],
                                 ),
                               ),
-                              // Remove button
                               IconButton(
                                 icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
                                 onPressed: () => _removeItem(item['listingId']),
@@ -137,7 +133,6 @@ class _CartViewState extends State<CartView> {
                     },
                   ),
                 ),
-                // Footer Checkout Area
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: const BoxDecoration(
@@ -164,6 +159,7 @@ class _CartViewState extends State<CartView> {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () {
+                          final user = ref.read(authProvider)!;
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -174,15 +170,24 @@ class _CartViewState extends State<CartView> {
                                 sellerId: 'multi_sellers',
                                 price: total,
                                 onSuccessCallback: () async {
-                                  // Record cart checkouts as purchases in orders history
                                   for (var item in _cartItems) {
+                                    final orderId = 'order_${DateTime.now().millisecondsSinceEpoch}_${item['listingId']}';
                                     await FirestoreService().createOrder({
+                                      'id': orderId,
                                       'listingId': item['listingId'],
                                       'title': item['title'],
                                       'price': item['price'],
                                       'unit': item['unit'],
                                       'quantity': item['quantity'],
+                                      'photoUrl': item['photoUrl'] ?? '',
+                                      'sellerId': item['sellerId'] ?? 'unknown_seller',
+                                      'sellerName': item['sellerName'] ?? 'Seller',
+                                      'buyerId': user.id,
+                                      'buyerName': user.name,
+                                      'status': 'pending',
+                                      'isRated': false,
                                       'createdAt': DateTime.now().toIso8601String(),
+                                      'updatedAt': DateTime.now().toIso8601String(),
                                     });
                                   }
                                   await FirestoreService().clearCart();
@@ -216,14 +221,14 @@ class _CartViewState extends State<CartView> {
 // -----------------------------------------------------------------------------
 // BUYER ORDERS SUB-VIEW
 // -----------------------------------------------------------------------------
-class BuyerOrdersSubView extends StatefulWidget {
+class BuyerOrdersSubView extends ConsumerStatefulWidget {
   const BuyerOrdersSubView({super.key});
 
   @override
-  State<BuyerOrdersSubView> createState() => _BuyerOrdersSubViewState();
+  ConsumerState<BuyerOrdersSubView> createState() => _BuyerOrdersSubViewState();
 }
 
-class _BuyerOrdersSubViewState extends State<BuyerOrdersSubView> {
+class _BuyerOrdersSubViewState extends ConsumerState<BuyerOrdersSubView> {
   List<Map<String, dynamic>> _orders = [];
   bool _isLoading = true;
 
@@ -240,6 +245,126 @@ class _BuyerOrdersSubViewState extends State<BuyerOrdersSubView> {
       _orders = List<Map<String, dynamic>>.from(items);
       _isLoading = false;
     });
+  }
+
+  void _cancelOrder(String orderId) async {
+    await FirestoreService().updateOrderStatus(orderId, 'cancelled');
+    _loadOrders();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Order cancelled successfully.')),
+      );
+    }
+  }
+
+  void _showRatingDialog(Map<String, dynamic> order) {
+    int selectedRating = 5;
+    final commentController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              title: Text(
+                'Rate ${order['sellerName'] ?? 'Seller'}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Select your rating for this transaction:'),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      final starVal = index + 1;
+                      return IconButton(
+                        icon: Icon(
+                          starVal <= selectedRating ? Icons.star_rounded : Icons.star_border_rounded,
+                          color: Colors.amber,
+                          size: 36,
+                        ),
+                        onPressed: () {
+                          setDialogState(() {
+                            selectedRating = starVal;
+                          });
+                        },
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: commentController,
+                    decoration: InputDecoration(
+                      hintText: 'Add an optional feedback comment...',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    maxLines: 2,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final buyer = ref.read(authProvider)!;
+                    final reviewId = 'rev_${DateTime.now().millisecondsSinceEpoch}_${order['id']}';
+                    
+                    await FirestoreService().submitReview({
+                      'id': reviewId,
+                      'orderId': order['id'],
+                      'buyerId': buyer.id,
+                      'buyerName': buyer.name,
+                      'sellerId': order['sellerId'] ?? 'unknown_seller',
+                      'rating': selectedRating,
+                      'comment': commentController.text.trim(),
+                      'createdAt': DateTime.now().toIso8601String(),
+                    });
+
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Thank you! Your feedback has been submitted.')),
+                      );
+                      _loadOrders();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1B5E20),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: const Text('Submit'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return Colors.orange[800]!;
+      case 'confirmed':
+        return Colors.blue[800]!;
+      case 'shipped':
+        return Colors.indigo[800]!;
+      case 'delivered':
+        return Colors.green[800]!;
+      case 'cancelled':
+        return Colors.red[800]!;
+      default:
+        return Colors.grey[800]!;
+    }
   }
 
   @override
@@ -280,47 +405,114 @@ class _BuyerOrdersSubViewState extends State<BuyerOrdersSubView> {
                 final order = _orders[index];
                 final price = double.tryParse(order['price'].toString()) ?? 0.0;
                 final qty = double.tryParse(order['quantity'].toString()) ?? 1.0;
+                final status = order['status'] ?? 'pending';
+                final isRated = order['isRated'] ?? false;
 
                 return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
+                  margin: const EdgeInsets.only(bottom: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.green[50],
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.check_circle_rounded, color: Color(0xFF1B5E20), size: 28),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: _getStatusColor(status).withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                status == 'cancelled'
+                                    ? Icons.cancel_rounded
+                                    : (status == 'delivered' ? Icons.check_circle_rounded : Icons.pending_rounded),
+                                color: _getStatusColor(status),
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    order['title'] ?? 'Product',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Seller: ${order['sellerName'] ?? 'Seller'}',
+                                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: _getStatusColor(status).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: _getStatusColor(status).withOpacity(0.3)),
+                              ),
+                              child: Text(
+                                status.toUpperCase(),
+                                style: TextStyle(
+                                  color: _getStatusColor(status),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 12),
+                        const Divider(height: 1),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${price.toStringAsFixed(0)} ETB / ${order['unit']} x ${qty.toStringAsFixed(0)}',
+                              style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                            ),
+                            Text(
+                              'Total: ${(price * qty).toStringAsFixed(0)} ETB',
+                              style: const TextStyle(
+                                color: Color(0xFF1B5E20),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (status == 'pending' || (status == 'delivered' && !isRated)) ...[
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text(
-                                order['title'] ?? 'Product',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '$price ETB / ${order['unit']} x $qty',
-                                style: TextStyle(color: Colors.grey[600], fontSize: 13),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Paid Subtotal: ${(price * qty).toStringAsFixed(0)} ETB',
-                                style: const TextStyle(
-                                    color: Color(0xFF1B5E20),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13),
-                              ),
+                              if (status == 'pending')
+                                TextButton.icon(
+                                  onPressed: () => _cancelOrder(order['id']),
+                                  icon: const Icon(Icons.cancel_outlined, size: 16, color: Colors.red),
+                                  label: const Text('Cancel Order', style: TextStyle(color: Colors.red, fontSize: 12)),
+                                ),
+                              if (status == 'delivered' && !isRated)
+                                ElevatedButton.icon(
+                                  onPressed: () => _showRatingDialog(order),
+                                  icon: const Icon(Icons.star_rounded, size: 16),
+                                  label: const Text('Rate Seller', style: TextStyle(fontSize: 12)),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.amber[700],
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  ),
+                                ),
                             ],
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ),
