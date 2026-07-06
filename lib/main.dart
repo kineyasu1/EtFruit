@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,14 +22,20 @@ void main() async {
   // Initialize Firebase with fallback support for offline/mock development
   try {
     // Note: If google-services.json is missing or invalid, this will throw.
-    // We catch it to allow running the app in simulator/sandbox mode.
     await Firebase.initializeApp();
     AuthService.isFirebaseAvailable = true;
     debugPrint('Firebase successfully initialized.');
   } catch (e) {
     AuthService.isFirebaseAvailable = false;
     debugPrint('Firebase initialization failed: $e');
-    debugPrint('Running app in sandbox/mock database mode.');
+    if (kReleaseMode) {
+      throw StateError(
+        'CRITICAL: Firebase failed to initialize in release mode. '
+        'Verify google-services.json configuration. Error details: $e'
+      );
+    } else {
+      debugPrint('Running app in sandbox/mock database mode.');
+    }
   }
 
   final prefs = await SharedPreferences.getInstance();
