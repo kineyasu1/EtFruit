@@ -9,9 +9,11 @@ class PaymentService {
   factory PaymentService() => _instance;
   PaymentService._internal();
 
-  // production Firebase Cloud Functions URL (to be replaced by developer)
-  static const String _functionsBaseUrl =
-      'https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net';
+  // Production Firebase Cloud Functions URL (configurable via compile-time --dart-define)
+  static const String _functionsBaseUrl = String.fromEnvironment(
+    'CLOUD_FUNCTIONS_URL',
+    defaultValue: 'https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net',
+  );
 
   // Initiates a payment session
   Future<Map<String, dynamic>> initializePayment({

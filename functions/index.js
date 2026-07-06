@@ -9,8 +9,8 @@ admin.initializeApp();
 // Read Chapa Keys from Firebase environment config.
 // Set these values via command line:
 // firebase functions:config:set chapa.secret="CHAPA_SEC-..." chapa.webhook_secret="your_webhook_secret"
-const CHAPA_SECRET_KEY = process.env.CHAPA_SECRET || functions.config().chapa?.secret || "CHAPA_SEC-test-key";
-const CHAPA_WEBHOOK_SECRET = process.env.CHAPA_WEBHOOK_SECRET || functions.config().chapa?.webhook_secret || "chapa_webhook_secret_key";
+const CHAPA_SECRET_KEY = process.env.CHAPA_SECRET || functions.config().chapa?.secret || "PLACEHOLDER_CHAPA_SECRET_KEY";
+const CHAPA_WEBHOOK_SECRET = process.env.CHAPA_WEBHOOK_SECRET || functions.config().chapa?.webhook_secret || "PLACEHOLDER_CHAPA_WEBHOOK_SECRET";
 
 /**
  * HTTP Endpoint to initiate payment with Chapa.
@@ -31,6 +31,14 @@ exports.initiatePayment = functions.https.onRequest((req, res) => {
 
       // Configure Chapa initialize payload
       // In production, callback_url should point to the chapaWebhook function URL.
+      // Determine the callback URL dynamically based on the environment host (emulator vs. production)
+      let callbackUrl;
+      if (req.headers.host.includes("localhost") || req.headers.host.includes("127.0.0.1") || req.headers.host.includes("10.0.2.2")) {
+        callbackUrl = `http://${req.headers.host}/${process.env.GCLOUD_PROJECT}/us-central1/chapaWebhook`;
+      } else {
+        callbackUrl = `https://${req.headers.host}/chapaWebhook`;
+      }
+
       const chapaPayload = {
         amount: amount.toString(),
         currency: "ETB",
@@ -38,7 +46,7 @@ exports.initiatePayment = functions.https.onRequest((req, res) => {
         first_name: "Buyer",
         last_name: buyerId,
         tx_ref: txId,
-        callback_url: `https://${req.headers.host}/${process.env.GCLOUD_PROJECT}/us-central1/chapaWebhook`,
+        callback_url: callbackUrl,
         customization: {
           title: title || "FarmLink Marketplace",
           description: `Direct Payment for listing ${listingId}`,
@@ -87,10 +95,10 @@ exports.chapaWebhook = functions.https.onRequest(async (req, res) => {
   }
 
   try {
-    // Validate signature
+    // Validate signature using rawBody to prevent stringification mismatches
     const hash = crypto
       .createHmac("sha256", CHAPA_WEBHOOK_SECRET)
-      .update(JSON.stringify(req.body))
+      .update(req.rawBody)
       .digest("hex");
 
     if (hash !== signature) {

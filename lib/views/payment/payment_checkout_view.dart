@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/payment_service.dart';
+import '../../services/auth_service.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class PaymentCheckoutView extends ConsumerStatefulWidget {
@@ -160,6 +161,32 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (!AuthService.isFirebaseAvailable)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.amber[100],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.amber[300]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.warning_amber_rounded, color: Colors.amber[900]),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'SANDBOX MODE ACTIVE\nUsing simulated transactions for offline testing.',
+                        style: TextStyle(
+                          color: Colors.amber[900],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             if (_errorMessage != null)
               Container(
                 padding: const EdgeInsets.all(12),
