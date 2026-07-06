@@ -31,10 +31,6 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
 
-    - name: Verify formatting
-      run: flutter format .
-      continue-on-error: true
-
     - name: Run Dart analyze
       run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
