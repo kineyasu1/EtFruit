@@ -124,7 +124,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 
   void _deleteListing(String id) async {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     
     // Show confirmation dialog
     showDialog(
@@ -157,7 +157,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   }
 
   void _showTermsDialog() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -175,7 +175,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final user = ref.watch(authProvider);
 
     if (user == null) {

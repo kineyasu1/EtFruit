@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/location_data.dart';
-import '../home/home_view.dart';
+import 'onboarding_choice_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class ProfileSetupView extends ConsumerStatefulWidget {
@@ -70,7 +70,7 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedRegion == null || _selectedZone == null || _selectedWoreda == null) {
       setState(() {
-        _errorMessage = AppLocalizations.of(context)?.fillRequiredFields ?? 'Please fill all required fields';
+        _errorMessage = AppLocalizations.of(context).fillRequiredFields;
       });
       return;
     }
@@ -102,7 +102,7 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
       if (success && mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomeView()),
+          MaterialPageRoute(builder: (context) => const OnboardingChoiceView()),
         );
       } else {
         setState(() {
@@ -119,7 +119,7 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(

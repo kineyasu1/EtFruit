@@ -116,7 +116,7 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     final methods = [
       {'id': 'Telebirr', 'name': 'Telebirr', 'color': const Color(0xFF0D47A1), 'icon': Icons.account_balance_wallet_rounded},

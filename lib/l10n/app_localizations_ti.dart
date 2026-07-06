@@ -9,7 +9,7 @@ class AppLocalizationsTi extends AppLocalizations {
   AppLocalizationsTi([String locale = 'ti']) : super(locale);
 
   @override
-  String get appName => 'FarmLink';
+  String get appName => 'Agriገበያ';
 
   @override
   String get selectLanguage => 'ቋንቋ ምረጽ';
@@ -286,7 +286,8 @@ class AppLocalizationsTi extends AppLocalizations {
   String get termsOfUse => 'ናይ ኣጠቓቕማ ደንብታት';
 
   @override
-  String get termsText => 'ናይ FarmLink መተግበሪያ ብምጥቃምኩም ንሕና ኣብ ዝኾነ ናይ ዕደጋ መስርሕ ከምዘይንሳተፍ ትሰማምዑ። ክፍሊት ብቀጥታ ኣብ መንጎ ሸያጥን ዓዳግን ብChapa (ብቴሌብር፣ ብሲቢኢ ብር፣ ብሄሎካሽ) ኣቢሉ ይፈጸም። ብዛዕባ ፅሬት ፍርያት ወይ ኣቅርቦት ምንም ውሕስነት ኣይንህብን።';
+  String get termsText =>
+      'ናይ FarmLink መተግበሪያ ብምጥቃምኩም ንሕና ኣብ ዝኾነ ናይ ዕደጋ መስርሕ ከምዘይንሳተፍ ትሰማምዑ። ክፍሊት ብቀጥታ ኣብ መንጎ ሸያጥን ዓዳግን ብChapa (ብቴሌብር፣ ብሲቢኢ ብር፣ ብሄሎካሽ) ኣቢሉ ይፈጸም። ብዛዕባ ፅሬት ፍርያት ወይ ኣቅርቦት ምንም ውሕስነት ኣይንህብን።';
 
   @override
   String get agreeTerms => 'ብናይ ኣጠቓቕማ ደንብታት እሰማማዕ እለኹ';

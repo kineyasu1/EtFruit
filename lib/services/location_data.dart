@@ -1,40 +1,57 @@
 class LocationData {
   static const Map<String, Map<String, List<String>>> hierarchy = {
     'Addis Ababa': {
-      'Bole Sub-City': ['Bole Woreda 01', 'Bole Woreda 02', 'Bole Woreda 03'],
-      'Yeka Sub-City': ['Yeka Woreda 01', 'Yeka Woreda 02'],
-      'Kirkos Sub-City': ['Kirkos Woreda 01', 'Kirkos Woreda 02'],
+      'City Administration': ['Addis Ababa (Finfinnee)'],
     },
-    'Oromia': {
-      'East Shewa': ['Adama', 'Bishoftu', 'Mojo', 'Batu'],
-      'West Shewa': ['Ambo', 'Guder', 'Ginchi'],
-      'Jimma': ['Jimma City', 'Gomma Woreda', 'Limmu Seka'],
-      'East Hararghe': ['Haramaya', 'Chiro', 'Babille'],
+    'Dire Dawa': {
+      'City Administration': ['Dire Dawa'],
     },
-    'Amhara': {
-      'West Gojjam': ['Bahir Dar', 'Merawi', 'Finote Selam'],
-      'South Wollo': ['Dessie', 'Kombolcha', 'Kalu'],
-      'North Gondar': ['Gondar City', 'Debark', 'Dabat'],
-      'East Gojjam': ['Debre Markos', 'Bichena'],
+    'Oromia Region': {
+      'Capitals': ['Addis Ababa (Finfinnee)'],
+      'Major Cities': ['Adama (Nazret)', 'Jimma', 'Bishoftu (Debre Zeyit)', 'Shashemene', 'Nekemte', 'Asella', 'Robe'],
     },
-    'Tigray': {
-      'Mekelle Zone': ['Mekelle City', 'Ayder', 'Kedamay Weyane'],
-      'Eastern Zone': ['Adigrat', 'Wukro', 'Bizet'],
-      'North Western': ['Shire Indaselassie', 'Sheraro'],
-      'Central Zone': ['Axum City', 'Adwa City'],
+    'Amhara Region': {
+      'Capitals': ['Bahir Dar'],
+      'Major Cities': ['Gondar', 'Dessie', 'Kombolcha', 'Debre Berhan', 'Weldiya', 'Debre Markos'],
     },
-    'Somali': {
-      'Fafan (Jigjiga)': ['Jigjiga City', 'Babilli Woreda', 'Gursum'],
-      'Sitti': ['Shinile', 'Erer'],
-      'Shabelle': ['Gode City', 'Kelafo'],
+    'Tigray Region': {
+      'Capitals': ['Mek\'ele'],
+      'Major Cities': ['Adigrat', 'Shire (Inda Selassie)', 'Axum', 'Alamata', 'Humera'],
     },
-    'Sidama': {
-      'Hawassa Zone': ['Hawassa City', 'Hawassa Zuria'],
-      'Aleta Wondo': ['Wondo City', 'Aleta Wondo Woreda'],
+    'Somali Region': {
+      'Capitals': ['Jijiga'],
+      'Major Cities': ['Gode', 'Kebri Dahar', 'Degehabur', 'Warder'],
     },
-    'Afar': {
-      'Zone 1 (Awusi Rasu)': ['Semera', 'Asaita', 'Dubti'],
-      'Zone 3 (Gabi Rasu)': ['Awash Sub-basin', 'Gewane'],
+    'Sidama Region': {
+      'Capitals': ['Hawassa'],
+      'Major Cities': ['Yirgalem', 'Aleta Wendo', 'Leku'],
+    },
+    'South Ethiopia Regional State': {
+      'Capitals': ['Wolaita Sodo'],
+      'Major Cities': ['Arba Minch', 'Dilla', 'Jinka', 'Sawla'],
+    },
+    'Central Ethiopia Regional State': {
+      'Capitals': ['Hosaina'],
+      'Major Cities': ['Butajira', 'Welkite', 'Alaba Kulito', 'Durame'],
+    },
+    'South West Ethiopia Peoples\' Region': {
+      'Capitals': ['Bonga'],
+      'Major Cities': ['Mizan Teferi', 'Tippi', 'Tercha'],
+    },
+    'Afar Region': {
+      'Capitals': ['Semera'],
+      'Major Cities': ['Logia', 'Asaita', 'Awash', 'Gewane'],
+    },
+    'Benishangul-Gumuz Region': {
+      'Capitals': ['Asosa'],
+      'Major Cities': ['Gilgel Beles', 'Kamashi', 'Metekel'],
+    },
+    'Gambela Region': {
+      'Capitals': ['Gambela'],
+      'Major Cities': ['Itang', 'Abobo', 'Fugnido'],
+    },
+    'Harari Region': {
+      'Capitals & Cities': ['Harar'],
     },
   };
 

@@ -133,7 +133,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
       } else {
         setState(() {
           _isLoading = false;
-          _errorMessage = AppLocalizations.of(context)?.invalidOtp ?? 'Invalid OTP code';
+          _errorMessage = AppLocalizations.of(context).invalidOtp;
         });
       }
     } catch (e) {
@@ -146,7 +146,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: Container(

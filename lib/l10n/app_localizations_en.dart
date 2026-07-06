@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appName => 'FarmLink';
+  String get appName => 'Agriገበያ';
 
   @override
   String get selectLanguage => 'Select Language';
@@ -57,7 +57,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verifyOtp => 'Verify OTP';
 
   @override
-  String get enterVerificationCode => 'Enter the 6-digit code sent to your phone';
+  String get enterVerificationCode =>
+      'Enter the 6-digit code sent to your phone';
 
   @override
   String get verificationCode => 'Verification Code';
@@ -286,7 +287,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get termsOfUse => 'Terms of Use';
 
   @override
-  String get termsText => 'By using FarmLink, you agree that we are not a party to any transaction. Payments are made directly between buyer and seller using Chapa (Telebirr, CBE Birr, HelloCash). We make no guarantee of product quality or delivery.';
+  String get termsText =>
+      'By using FarmLink, you agree that we are not a party to any transaction. Payments are made directly between buyer and seller using Chapa (Telebirr, CBE Birr, HelloCash). We make no guarantee of product quality or delivery.';
 
   @override
   String get agreeTerms => 'I agree to the Terms of Use';
@@ -310,5 +312,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get other => 'Other';
 
   @override
-  String get reportSuccess => 'Report submitted. Thank you for keeping our marketplace safe.';
+  String get reportSuccess =>
+      'Report submitted. Thank you for keeping our marketplace safe.';
 }

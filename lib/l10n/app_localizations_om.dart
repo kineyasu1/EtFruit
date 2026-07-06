@@ -9,7 +9,7 @@ class AppLocalizationsOm extends AppLocalizations {
   AppLocalizationsOm([String locale = 'om']) : super(locale);
 
   @override
-  String get appName => 'FarmLink';
+  String get appName => 'Agriገበያ';
 
   @override
   String get selectLanguage => 'Afaan Filadhu';
@@ -57,7 +57,8 @@ class AppLocalizationsOm extends AppLocalizations {
   String get verifyOtp => 'Koodii mirkaneessi';
 
   @override
-  String get enterVerificationCode => 'Koodii digitii 6 bilbila keessanitti ergame galchaa';
+  String get enterVerificationCode =>
+      'Koodii digitii 6 bilbila keessanitti ergame galchaa';
 
   @override
   String get verificationCode => 'Koodii Mirkaneessaa';
@@ -66,10 +67,12 @@ class AppLocalizationsOm extends AppLocalizations {
   String get verify => 'Mirkaneessi';
 
   @override
-  String get loginFailed => 'Seenuun hin danda\'amne. Maaloo irra deebi\'ii yaali.';
+  String get loginFailed =>
+      'Seenuun hin danda\'amne. Maaloo irra deebi\'ii yaali.';
 
   @override
-  String get invalidOtp => 'Koodiin mirkaneessaa sirrii miti. Maaloo irra deebi\'ii yaali.';
+  String get invalidOtp =>
+      'Koodiin mirkaneessaa sirrii miti. Maaloo irra deebi\'ii yaali.';
 
   @override
   String get setupProfile => 'Profaayili Qopheessi';
@@ -126,7 +129,8 @@ class AppLocalizationsOm extends AppLocalizations {
   String get productName => 'Maqaa Oomishaa';
 
   @override
-  String get customProductName => 'Maqaa Oomishaa biroo (yoo tarree keessa hin jirre)';
+  String get customProductName =>
+      'Maqaa Oomishaa biroo (yoo tarree keessa hin jirre)';
 
   @override
   String get quantity => 'Hamma';
@@ -286,7 +290,8 @@ class AppLocalizationsOm extends AppLocalizations {
   String get termsOfUse => 'Seera Fayyadamummaa';
 
   @override
-  String get termsText => 'FarmLink fayyadamuun kaffaltiin daldalaa fi bitataa gidduutti karaa Chapa (Telebirr, CBE Birr, HelloCash) kallattiin akka raawwatu walii galta. Oomisha qulqullina fi geejjiba irratti wabii hin qabnu.';
+  String get termsText =>
+      'FarmLink fayyadamuun kaffaltiin daldalaa fi bitataa gidduutti karaa Chapa (Telebirr, CBE Birr, HelloCash) kallattiin akka raawwatu walii galta. Oomisha qulqullina fi geejjiba irratti wabii hin qabnu.';
 
   @override
   String get agreeTerms => 'Seera Fayyadamummaa nan walii gala';
@@ -310,5 +315,6 @@ class AppLocalizationsOm extends AppLocalizations {
   String get other => 'Biroo';
 
   @override
-  String get reportSuccess => 'Gabaasni keessan ergameera. Gabaa keenya nagaa gochuu keessaniif galatoomaa.';
+  String get reportSuccess =>
+      'Gabaasni keessan ergameera. Gabaa keenya nagaa gochuu keessaniif galatoomaa.';
 }

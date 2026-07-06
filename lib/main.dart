@@ -49,7 +49,7 @@ class MyApp extends ConsumerWidget {
     final activeLocale = ref.watch(languageProvider);
 
     return MaterialApp(
-      title: 'FarmLink',
+      title: 'Agriገበያ',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,

@@ -9,7 +9,7 @@ class AppLocalizationsSo extends AppLocalizations {
   AppLocalizationsSo([String locale = 'so']) : super(locale);
 
   @override
-  String get appName => 'FarmLink';
+  String get appName => 'Agriገበያ';
 
   @override
   String get selectLanguage => 'Dooro Luuqadda';
@@ -57,7 +57,8 @@ class AppLocalizationsSo extends AppLocalizations {
   String get verifyOtp => 'Hubi koodka OTP';
 
   @override
-  String get enterVerificationCode => 'Geli koodka 6-da god ah ee laguugu soo diray taleefankaaga';
+  String get enterVerificationCode =>
+      'Geli koodka 6-da god ah ee laguugu soo diray taleefankaaga';
 
   @override
   String get verificationCode => 'Koodka Xaqiijinta';
@@ -66,10 +67,12 @@ class AppLocalizationsSo extends AppLocalizations {
   String get verify => 'Xaqiiji';
 
   @override
-  String get loginFailed => 'Soo gelistu way fashilantay. Fadlan isku day markale.';
+  String get loginFailed =>
+      'Soo gelistu way fashilantay. Fadlan isku day markale.';
 
   @override
-  String get invalidOtp => 'Koodka OTP-gu waa khaldan yahay. Fadlan isku day markale.';
+  String get invalidOtp =>
+      'Koodka OTP-gu waa khaldan yahay. Fadlan isku day markale.';
 
   @override
   String get setupProfile => 'Diyaari Macluumaadkaaga';
@@ -162,7 +165,8 @@ class AppLocalizationsSo extends AppLocalizations {
   String get publishListing => 'Daabac Xayeysiiska';
 
   @override
-  String get fillRequiredFields => 'Fadlan buuxi dhammaan meelaha loo baahan yahay';
+  String get fillRequiredFields =>
+      'Fadlan buuxi dhammaan meelaha loo baahan yahay';
 
   @override
   String get searchProducts => 'Raadi dalagyo...';
@@ -286,7 +290,8 @@ class AppLocalizationsSo extends AppLocalizations {
   String get termsOfUse => 'Shuruudaha Adeegsiga';
 
   @override
-  String get termsText => 'Markaad isticmaalayso FarmLink, waxaad ogolaatay inaanan qayb ka ahayn wax kala iibsi ah. Lacagaha waxaa si toos ah u kala bixinaya iibsadaha iyo iibiyaha iyagoo isticmaalaya Chapa (Telebirr, CBE Birr, HelloCash). Ma damaanad qaadayno tayada ama gaarsiinta alaabta.';
+  String get termsText =>
+      'Markaad isticmaalayso FarmLink, waxaad ogolaatay inaanan qayb ka ahayn wax kala iibsi ah. Lacagaha waxaa si toos ah u kala bixinaya iibsadaha iyo iibiyaha iyagoo isticmaalaya Chapa (Telebirr, CBE Birr, HelloCash). Ma damaanad qaadayno tayada ama gaarsiinta alaabta.';
 
   @override
   String get agreeTerms => 'Waan ogolahay Shuruudaha Adeegsiga';
@@ -310,5 +315,6 @@ class AppLocalizationsSo extends AppLocalizations {
   String get other => 'Kale';
 
   @override
-  String get reportSuccess => 'Warbixintaada waa la gudbiyey. Waad ku mahadsan tahay ilaalinta nabadgelyada suuqayaga.';
+  String get reportSuccess =>
+      'Warbixintaada waa la gudbiyey. Waad ku mahadsan tahay ilaalinta nabadgelyada suuqayaga.';
 }

@@ -92,7 +92,7 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final currentUser = ref.read(authProvider);
 
     if (currentUser == null) {

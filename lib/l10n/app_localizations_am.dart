@@ -9,7 +9,7 @@ class AppLocalizationsAm extends AppLocalizations {
   AppLocalizationsAm([String locale = 'am']) : super(locale);
 
   @override
-  String get appName => 'FarmLink';
+  String get appName => 'Agriገበያ';
 
   @override
   String get selectLanguage => 'ቋንቋ ይምረጡ';
@@ -286,7 +286,8 @@ class AppLocalizationsAm extends AppLocalizations {
   String get termsOfUse => 'የአጠቃቀም ደንቦች';
 
   @override
-  String get termsText => 'የ FarmLink መተግበሪያን በመጠቀም እኛ በማንኛውም ግብይት ውስጥ እንደማንሳተፍ ይስማማሉ። ክፍያዎች በሻጭ እና በገዥ መካከል በቀጥታ በChapa (በቴሌብር፣ በሲቢኢ ብር፣ በሄሎካሽ) በኩል ይፈጸማሉ። ስለ ምርቱ ጥራት ወይም አቅርቦት ምንም ዋስትና አንሰጥም።';
+  String get termsText =>
+      'የ FarmLink መተግበሪያን በመጠቀም እኛ በማንኛውም ግብይት ውስጥ እንደማንሳተፍ ይስማማሉ። ክፍያዎች በሻጭ እና በገዥ መካከል በቀጥታ በChapa (በቴሌብር፣ በሲቢኢ ብር፣ በሄሎካሽ) በኩል ይፈጸማሉ። ስለ ምርቱ ጥራት ወይም አቅርቦት ምንም ዋስትና አንሰጥም።';
 
   @override
   String get agreeTerms => 'በአጠቃቀም ደንቦች እስማማለሁ';

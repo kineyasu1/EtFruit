@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../providers/auth_provider.dart';
@@ -168,7 +169,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
   }
 
   void _reportListingPopup() {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) {
@@ -202,7 +203,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
 
   void _submitReport(String reason) async {
     Navigator.pop(context); // Close dialog
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     
     if (_listing != null) {
       await FirestoreService().incrementReportCount(
@@ -226,7 +227,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
       );
     }
 
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final user = ref.read(authProvider);
 
     final photoUrls = List<String>.from(_listing!['photoUrls'] ?? []);
@@ -278,16 +279,28 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                               });
                             },
                             itemBuilder: (context, index) {
-                              return Image.network(
-                                photoUrls[index],
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(
-                                  color: Colors.green[50],
-                                  child: const Icon(Icons.grass_rounded,
-                                      size: 80, color: Colors.green),
-                                ),
-                              );
+                              final pUrl = photoUrls[index];
+                              return pUrl.startsWith('http')
+                                  ? Image.network(
+                                      pUrl,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        color: Colors.green[50],
+                                        child: const Icon(Icons.grass_rounded,
+                                            size: 80, color: Colors.green),
+                                      ),
+                                    )
+                                  : Image.file(
+                                      File(pUrl),
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Container(
+                                        color: Colors.green[50],
+                                        child: const Icon(Icons.grass_rounded,
+                                            size: 80, color: Colors.green),
+                                      ),
+                                    );
                             },
                           ),
                         ),

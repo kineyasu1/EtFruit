@@ -220,13 +220,11 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
           : _selectedProduct!.getName(languageCode);
 
       // In real mode, we upload localFiles to Firebase Storage and get URLs.
-      // In sandbox mode, we use mock URLs.
+      // In sandbox/offline mode, we use the local file path so they can render locally!
       final finalPhotoUrls = List<String>.from(_photoUrls);
       
-      // Simulating upload of local photos by mapping them to placeholder URLs
       for (int i = 0; i < _localPhotos.length; i++) {
-        finalPhotoUrls.add(
-            'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=500&sig=upload_$i');
+        finalPhotoUrls.add(_localPhotos[i].path);
       }
 
       // If no photo was attached, add a category default placeholder
@@ -291,7 +289,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final activeLang = ref.watch(languageProvider).languageCode;
 
     // Filter product sublist based on category

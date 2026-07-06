@@ -51,7 +51,7 @@ class LanguageSelectionView extends ConsumerWidget {
               const SizedBox(height: 16),
               Center(
                 child: Text(
-                  l10n?.appName ?? 'FarmLink',
+                  l10n.appName,
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -64,7 +64,7 @@ class LanguageSelectionView extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Text(
-                  l10n?.selectLanguage ?? 'Select Language / ቋንቋ ይምረጡ',
+                  l10n.selectLanguage,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -171,8 +171,8 @@ class LanguageSelectionView extends ConsumerWidget {
                   ),
                   child: Text(
                     isFromSettings
-                        ? (l10n?.save ?? 'Save')
-                        : (l10n?.next ?? 'Next'),
+                        ? l10n.save
+                        : l10n.next,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

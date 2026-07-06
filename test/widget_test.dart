@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:agrimarketmob/main.dart';
 
 void main() {
-  testWidgets('App boots and renders FarmLink', (WidgetTester tester) async {
+  testWidgets('App boots and renders Agriገበያ', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
       const ProviderScope(
@@ -12,6 +12,6 @@ void main() {
     );
 
     // Verify that our app name is rendered.
-    expect(find.text('FarmLink'), findsOneWidget);
+    expect(find.text('Agriገበያ'), findsOneWidget);
   });
 }

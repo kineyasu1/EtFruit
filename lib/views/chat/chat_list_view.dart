@@ -18,7 +18,7 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final currentUser = ref.watch(authProvider);
 
     if (currentUser == null) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:io';
 import '../../providers/language_provider.dart';
 import '../../services/firestore_service.dart';
 import '../../services/taxonomy_data.dart';
@@ -11,14 +12,17 @@ import '../profile/profile_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class HomeView extends ConsumerStatefulWidget {
-  const HomeView({super.key});
+  const HomeView({super.key, this.openCreateListing = false, this.initialTab = 0});
+
+  final bool openCreateListing;
+  final int initialTab;
 
   @override
   ConsumerState<HomeView> createState() => _HomeViewState();
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
-  int _currentIndex = 0;
+  late int _currentIndex;
 
   // The pages for our bottom navigation tabs
   late final List<Widget> _pages;
@@ -26,11 +30,18 @@ class _HomeViewState extends ConsumerState<HomeView> {
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialTab;
     _pages = [
       const BrowseFeedSubView(),
       const ChatListView(),
       const ProfileView(),
     ];
+
+    if (widget.openCreateListing) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _navigateToCreateListing();
+      });
+    }
   }
 
   void _navigateToCreateListing() {
@@ -51,7 +62,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: IndexedStack(
@@ -145,7 +156,7 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final activeLang = ref.watch(languageProvider).languageCode;
 
     return Scaffold(
@@ -377,16 +388,27 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
                             Expanded(
                               child: Stack(
                                 children: [
-                                  Image.network(
-                                    photoUrl,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Container(
-                                      color: Colors.green[50],
-                                      child: const Icon(Icons.grass_rounded, size: 40, color: Colors.green),
-                                    ),
-                                  ),
+                                  photoUrl.startsWith('http')
+                                      ? Image.network(
+                                          photoUrl,
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) => Container(
+                                            color: Colors.green[50],
+                                            child: const Icon(Icons.grass_rounded, size: 40, color: Colors.green),
+                                          ),
+                                        )
+                                      : Image.file(
+                                          File(photoUrl),
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) => Container(
+                                            color: Colors.green[50],
+                                            child: const Icon(Icons.grass_rounded, size: 40, color: Colors.green),
+                                          ),
+                                        ),
                                   if (item['isNegotiable'] ?? false)
                                     Positioned(
                                       top: 8,
