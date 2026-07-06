@@ -18,7 +18,8 @@ class AuthService {
   String? _mockPhoneNumber;
 
   // Stream controller to notify auth state changes
-  final StreamController<String?> _authStateController = StreamController<String?>.broadcast();
+  final StreamController<String?> _authStateController =
+      StreamController<String?>.broadcast();
 
   Stream<String?> get authStateChanges {
     if (isFirebaseAvailable) {
@@ -106,7 +107,8 @@ class AuthService {
       await Future.delayed(const Duration(milliseconds: 500));
       if (smsCode == '123456' || smsCode.isNotEmpty) {
         _mockLoggedIn = true;
-        _mockUid = 'mock_user_${_mockPhoneNumber?.replaceAll('+', '') ?? '123456'}';
+        _mockUid =
+            'mock_user_${_mockPhoneNumber?.replaceAll('+', '') ?? '123456'}';
         _authStateController.add(_mockUid);
         return true;
       }

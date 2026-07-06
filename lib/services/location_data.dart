@@ -8,15 +8,36 @@ class LocationData {
     },
     'Oromia Region': {
       'Capitals': ['Addis Ababa (Finfinnee)'],
-      'Major Cities': ['Adama (Nazret)', 'Jimma', 'Bishoftu (Debre Zeyit)', 'Shashemene', 'Nekemte', 'Asella', 'Robe'],
+      'Major Cities': [
+        'Adama (Nazret)',
+        'Jimma',
+        'Bishoftu (Debre Zeyit)',
+        'Shashemene',
+        'Nekemte',
+        'Asella',
+        'Robe',
+      ],
     },
     'Amhara Region': {
       'Capitals': ['Bahir Dar'],
-      'Major Cities': ['Gondar', 'Dessie', 'Kombolcha', 'Debre Berhan', 'Weldiya', 'Debre Markos'],
+      'Major Cities': [
+        'Gondar',
+        'Dessie',
+        'Kombolcha',
+        'Debre Berhan',
+        'Weldiya',
+        'Debre Markos',
+      ],
     },
     'Tigray Region': {
       'Capitals': ['Mek\'ele'],
-      'Major Cities': ['Adigrat', 'Shire (Inda Selassie)', 'Axum', 'Alamata', 'Humera'],
+      'Major Cities': [
+        'Adigrat',
+        'Shire (Inda Selassie)',
+        'Axum',
+        'Alamata',
+        'Humera',
+      ],
     },
     'Somali Region': {
       'Capitals': ['Jijiga'],

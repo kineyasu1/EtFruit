@@ -25,7 +25,10 @@ class OnboardingChoiceView extends StatelessWidget {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 32.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -50,17 +53,16 @@ class OnboardingChoiceView extends StatelessWidget {
                 const Text(
                   'Welcome! How would you like to start today?',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white70,
-                  ),
+                  style: TextStyle(fontSize: 16, color: Colors.white70),
                 ),
                 const Spacer(),
-                
+
                 // Buy Card
                 Card(
                   elevation: 6,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   child: InkWell(
                     onTap: () {
                       Navigator.pushReplacement(
@@ -81,7 +83,11 @@ class OnboardingChoiceView extends StatelessWidget {
                               color: Colors.green[50],
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.shopping_basket_rounded, size: 36, color: Color(0xFF1B5E20)),
+                            child: const Icon(
+                              Icons.shopping_basket_rounded,
+                              size: 36,
+                              color: Color(0xFF1B5E20),
+                            ),
                           ),
                           const SizedBox(width: 20),
                           Expanded(
@@ -90,12 +96,19 @@ class OnboardingChoiceView extends StatelessWidget {
                               children: [
                                 const Text(
                                   'I Want to Buy',
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20)),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1B5E20),
+                                  ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Browse agricultural products directly from Ethiopian sellers.',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
                                 ),
                               ],
                             ),
@@ -105,19 +118,24 @@ class OnboardingChoiceView extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Sell Card
                 Card(
                   elevation: 6,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   child: InkWell(
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const HomeView(initialTab: 0, openCreateListing: true),
+                          builder: (context) => const HomeView(
+                            initialTab: 0,
+                            openCreateListing: true,
+                          ),
                         ),
                       );
                     },
@@ -132,7 +150,11 @@ class OnboardingChoiceView extends StatelessWidget {
                               color: Colors.yellow[50],
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.storefront_rounded, size: 36, color: Color(0xFFE65100)),
+                            child: const Icon(
+                              Icons.storefront_rounded,
+                              size: 36,
+                              color: Color(0xFFE65100),
+                            ),
                           ),
                           const SizedBox(width: 20),
                           Expanded(
@@ -141,12 +163,19 @@ class OnboardingChoiceView extends StatelessWidget {
                               children: [
                                 const Text(
                                   'I Want to Sell',
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFFE65100)),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE65100),
+                                  ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   'Post a listing for your crops, livestock, or dairy products.',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
                                 ),
                               ],
                             ),

@@ -7,7 +7,11 @@ import '../payment/payment_checkout_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class ChatDetailView extends ConsumerStatefulWidget {
-  const ChatDetailView({super.key, required this.chatId, required this.otherUserName});
+  const ChatDetailView({
+    super.key,
+    required this.chatId,
+    required this.otherUserName,
+  });
 
   final String chatId;
   final String otherUserName;
@@ -19,7 +23,7 @@ class ChatDetailView extends ConsumerStatefulWidget {
 class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  
+
   Map<String, dynamic>? _chatDoc;
 
   @override
@@ -29,7 +33,9 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
   }
 
   void _loadChatDoc() async {
-    final stream = FirestoreService().watchUserChats(ref.read(authProvider)!.id);
+    final stream = FirestoreService().watchUserChats(
+      ref.read(authProvider)!.id,
+    );
     stream.listen((chats) {
       final match = chats.firstWhere(
         (c) => c['id'] == widget.chatId,
@@ -55,7 +61,7 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
     if (text.isEmpty) return;
 
     _messageController.clear();
-    
+
     final currentUser = ref.read(authProvider)!;
     await FirestoreService().sendMessage(
       chatId: widget.chatId,
@@ -75,7 +81,7 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
 
   void _paySellerShortcut() {
     if (_chatDoc == null) return;
-    
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -96,9 +102,7 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
     final currentUser = ref.read(authProvider);
 
     if (currentUser == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final isBuyer = _chatDoc != null && _chatDoc!['buyerId'] == currentUser.id;
@@ -110,7 +114,11 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
           children: [
             Text(
               widget.otherUserName,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.white,
+              ),
             ),
             if (_chatDoc != null)
               Text(
@@ -131,15 +139,28 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
               padding: const EdgeInsets.only(right: 12.0),
               child: ElevatedButton.icon(
                 onPressed: _paySellerShortcut,
-                icon: const Icon(Icons.payment_rounded, size: 16, color: Color(0xFF1B5E20)),
+                icon: const Icon(
+                  Icons.payment_rounded,
+                  size: 16,
+                  color: Color(0xFF1B5E20),
+                ),
                 label: Text(
                   l10n.paySeller,
-                  style: const TextStyle(color: Color(0xFF1B5E20), fontWeight: FontWeight.bold, fontSize: 13),
+                  style: const TextStyle(
+                    color: Color(0xFF1B5E20),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFBC02D),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 0,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
             ),
@@ -164,7 +185,9 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
 
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (_scrollController.hasClients) {
-                      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+                      _scrollController.jumpTo(
+                        _scrollController.position.maxScrollExtent,
+                      );
                     }
                   });
 
@@ -175,35 +198,47 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
                     itemBuilder: (context, index) {
                       final msg = messages[index];
                       final isMe = msg['senderId'] == currentUser.id;
-                      
+
                       final time = msg['createdAt'] is Timestamp
                           ? (msg['createdAt'] as Timestamp).toDate()
                           : DateTime.now();
-                      final timeString = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                      final timeString =
+                          '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 
                       // Custom styling for message bubbles
                       return Align(
-                        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: isMe
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
                           constraints: BoxConstraints(
                             maxWidth: MediaQuery.of(context).size.width * 0.75,
                           ),
                           decoration: BoxDecoration(
-                            color: isMe ? const Color(0xFF1B5E20) : Colors.white,
+                            color: isMe
+                                ? const Color(0xFF1B5E20)
+                                : Colors.white,
                             borderRadius: BorderRadius.only(
                               topLeft: const Radius.circular(16),
                               topRight: const Radius.circular(16),
-                              bottomLeft: isMe ? const Radius.circular(16) : Radius.zero,
-                              bottomRight: isMe ? Radius.zero : const Radius.circular(16),
+                              bottomLeft: isMe
+                                  ? const Radius.circular(16)
+                                  : Radius.zero,
+                              bottomRight: isMe
+                                  ? Radius.zero
+                                  : const Radius.circular(16),
                             ),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.04),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
-                              )
+                              ),
                             ],
                           ),
                           child: Column(
@@ -233,7 +268,7 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
                 },
               ),
             ),
-            
+
             // Bottom Message input panel
             Container(
               padding: const EdgeInsets.all(12),
@@ -253,7 +288,10 @@ class _ChatDetailViewState extends ConsumerState<ChatDetailView> {
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide.none,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
                         ),
                       ),
                     ),

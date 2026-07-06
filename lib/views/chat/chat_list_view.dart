@@ -15,7 +15,6 @@ class ChatListView extends ConsumerStatefulWidget {
 }
 
 class _ChatListViewState extends ConsumerState<ChatListView> {
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -48,7 +47,9 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
               return const Center(child: CircularProgressIndicator());
             }
             if (snapshot.hasError) {
-              return Center(child: Text('Error loading chats: ${snapshot.error}'));
+              return Center(
+                child: Text('Error loading chats: ${snapshot.error}'),
+              );
             }
             final chats = snapshot.data ?? [];
             if (chats.isEmpty) {
@@ -56,7 +57,11 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.forum_outlined, size: 64, color: Colors.grey[400]),
+                    Icon(
+                      Icons.forum_outlined,
+                      size: 64,
+                      color: Colors.grey[400],
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       l10n.noChatsYet,
@@ -72,25 +77,35 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
               itemCount: chats.length,
               itemBuilder: (context, index) {
                 final chat = chats[index];
-                
+
                 final isBuyer = chat['buyerId'] == currentUser.id;
-                final otherUserId = isBuyer ? chat['sellerId'] : chat['buyerId'];
-                
+                final otherUserId = isBuyer
+                    ? chat['sellerId']
+                    : chat['buyerId'];
+
                 final time = chat['lastMessageTime'] is Timestamp
                     ? (chat['lastMessageTime'] as Timestamp).toDate()
                     : DateTime.now();
-                final timeString = '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+                final timeString =
+                    '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 
                 final photoUrl = chat['listingPhotoUrl'] ?? '';
 
                 return FutureBuilder<UserModel?>(
                   future: FirestoreService().getUserProfile(otherUserId),
                   builder: (context, userSnapshot) {
-                    final otherName = userSnapshot.data?.name ?? (isBuyer ? 'Seller' : 'Buyer');
-                    
+                    final otherName =
+                        userSnapshot.data?.name ??
+                        (isBuyer ? 'Seller' : 'Buyer');
+
                     return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       elevation: 1,
                       child: ListTile(
                         onTap: () {
@@ -104,7 +119,10 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
                             ),
                           );
                         },
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: photoUrl.isNotEmpty
@@ -117,14 +135,20 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
                                     width: 50,
                                     height: 50,
                                     color: Colors.green[50],
-                                    child: const Icon(Icons.grass, color: Colors.green),
+                                    child: const Icon(
+                                      Icons.grass,
+                                      color: Colors.green,
+                                    ),
                                   ),
                                 )
                               : Container(
                                   width: 50,
                                   height: 50,
                                   color: Colors.green[50],
-                                  child: const Icon(Icons.grass, color: Colors.green),
+                                  child: const Icon(
+                                    Icons.grass,
+                                    color: Colors.green,
+                                  ),
                                 ),
                         ),
                         title: Row(
@@ -132,11 +156,17 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
                           children: [
                             Text(
                               otherName,
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                             Text(
                               timeString,
-                              style: TextStyle(color: Colors.grey[500], fontSize: 11),
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 11,
+                              ),
                             ),
                           ],
                         ),

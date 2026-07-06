@@ -80,7 +80,8 @@ class LanguageSelectionView extends ConsumerWidget {
                   itemCount: languages.length,
                   itemBuilder: (context, index) {
                     final lang = languages[index];
-                    final isSelected = currentLocale.languageCode == lang['code'];
+                    final isSelected =
+                        currentLocale.languageCode == lang['code'];
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
                       margin: const EdgeInsets.only(bottom: 16),
@@ -101,7 +102,7 @@ class LanguageSelectionView extends ConsumerWidget {
                                   color: Colors.black.withOpacity(0.15),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
-                                )
+                                ),
                               ]
                             : null,
                       ),
@@ -114,13 +115,17 @@ class LanguageSelectionView extends ConsumerWidget {
                                 .setLocale(lang['code']!);
                           },
                           contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 8),
+                            horizontal: 20,
+                            vertical: 8,
+                          ),
                           title: Text(
                             lang['nativeName']!,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: isSelected ? const Color(0xFF1B5E20) : Colors.white,
+                              color: isSelected
+                                  ? const Color(0xFF1B5E20)
+                                  : Colors.white,
                             ),
                           ),
                           subtitle: Text(
@@ -170,9 +175,7 @@ class LanguageSelectionView extends ConsumerWidget {
                     elevation: 5,
                   ),
                   child: Text(
-                    isFromSettings
-                        ? l10n.save
-                        : l10n.next,
+                    isFromSettings ? l10n.save : l10n.next,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

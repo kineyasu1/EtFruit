@@ -83,7 +83,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
 
   void _saveProfileChanges() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedRegion == null || _selectedZone == null || _selectedWoreda == null) return;
+    if (_selectedRegion == null ||
+        _selectedZone == null ||
+        _selectedWoreda == null)
+      return;
 
     setState(() {
       _isUpdating = true;
@@ -95,8 +98,12 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
       region: _selectedRegion!,
       zone: _selectedZone!,
       woreda: _selectedWoreda!,
-      telegramUsername: _telegramController.text.trim().isEmpty ? null : _telegramController.text.trim(),
-      whatsappNumber: _whatsappController.text.trim().isEmpty ? null : _whatsappController.text.trim(),
+      telegramUsername: _telegramController.text.trim().isEmpty
+          ? null
+          : _telegramController.text.trim(),
+      whatsappNumber: _whatsappController.text.trim().isEmpty
+          ? null
+          : _whatsappController.text.trim(),
       updatedAt: DateTime.now(),
     );
 
@@ -117,15 +124,15 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
   void _markListingAsSold(String id) async {
     await FirestoreService().updateListingStatus(id, 'sold');
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Listing marked as Sold.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Listing marked as Sold.')));
     }
   }
 
   void _deleteListing(String id) async {
     final l10n = AppLocalizations.of(context);
-    
+
     // Show confirmation dialog
     showDialog(
       context: context,
@@ -190,7 +197,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(_isEditing ? Icons.close_rounded : Icons.edit_rounded, color: Colors.white),
+            icon: Icon(
+              _isEditing ? Icons.close_rounded : Icons.edit_rounded,
+              color: Colors.white,
+            ),
             onPressed: () {
               setState(() {
                 if (_isEditing) {
@@ -215,7 +225,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                 color: const Color(0xFF1B5E20),
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                 child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: _isEditing
@@ -227,7 +239,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                 Text(
                                   l10n.editProfile,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green[900]),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.green[900],
+                                  ),
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 16),
@@ -235,20 +250,32 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                   controller: _nameController,
                                   decoration: InputDecoration(
                                     labelText: l10n.name,
-                                    prefixIcon: const Icon(Icons.person_outline),
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    prefixIcon: const Icon(
+                                      Icons.person_outline,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
-                                  validator: (value) => value == null || value.trim().isEmpty ? 'Enter name' : null,
+                                  validator: (value) =>
+                                      value == null || value.trim().isEmpty
+                                      ? 'Enter name'
+                                      : null,
                                 ),
                                 const SizedBox(height: 12),
                                 DropdownButtonFormField<String>(
                                   value: _selectedRegion,
                                   decoration: InputDecoration(
                                     labelText: l10n.region,
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                   items: LocationData.getRegions().map((r) {
-                                    return DropdownMenuItem(value: r, child: Text(r));
+                                    return DropdownMenuItem(
+                                      value: r,
+                                      child: Text(r),
+                                    );
                                   }).toList(),
                                   onChanged: _onRegionChanged,
                                 ),
@@ -257,10 +284,15 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                   value: _selectedZone,
                                   decoration: InputDecoration(
                                     labelText: l10n.zone,
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                   items: _zones.map((z) {
-                                    return DropdownMenuItem(value: z, child: Text(z));
+                                    return DropdownMenuItem(
+                                      value: z,
+                                      child: Text(z),
+                                    );
                                   }).toList(),
                                   onChanged: _onZoneChanged,
                                 ),
@@ -269,20 +301,31 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                   value: _selectedWoreda,
                                   decoration: InputDecoration(
                                     labelText: l10n.woreda,
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                   items: _woredas.map((w) {
-                                    return DropdownMenuItem(value: w, child: Text(w));
+                                    return DropdownMenuItem(
+                                      value: w,
+                                      child: Text(w),
+                                    );
                                   }).toList(),
-                                  onChanged: (value) => setState(() => _selectedWoreda = value),
+                                  onChanged: (value) =>
+                                      setState(() => _selectedWoreda = value),
                                 ),
                                 const SizedBox(height: 12),
                                 TextFormField(
                                   controller: _telegramController,
                                   decoration: InputDecoration(
                                     labelText: l10n.telegramUsername,
-                                    prefixIcon: const Icon(Icons.telegram_rounded, color: Colors.blue),
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    prefixIcon: const Icon(
+                                      Icons.telegram_rounded,
+                                      color: Colors.blue,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
@@ -290,21 +333,34 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                   controller: _whatsappController,
                                   decoration: InputDecoration(
                                     labelText: l10n.whatsappNumber,
-                                    prefixIcon: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.green),
-                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    prefixIcon: const Icon(
+                                      Icons.chat_bubble_outline_rounded,
+                                      color: Colors.green,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 20),
                                 ElevatedButton(
-                                  onPressed: _isUpdating ? null : _saveProfileChanges,
+                                  onPressed: _isUpdating
+                                      ? null
+                                      : _saveProfileChanges,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color(0xFF1B5E20),
                                     foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 12),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                   child: _isUpdating
-                                      ? const CircularProgressIndicator(color: Colors.white)
+                                      ? const CircularProgressIndicator(
+                                          color: Colors.white,
+                                        )
                                       : Text(l10n.save),
                                 ),
                               ],
@@ -315,112 +371,170 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                               CircleAvatar(
                                 radius: 36,
                                 backgroundColor: Colors.green[50],
-                                child: Icon(Icons.person_rounded, size: 48, color: Colors.green[800]),
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  size: 48,
+                                  color: Colors.green[800],
+                                ),
                               ),
                               const SizedBox(height: 12),
                               Text(
                                 user.name,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 user.phoneNumber,
-                                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                ),
                               ),
                               const SizedBox(height: 4),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.location_on_outlined, color: Colors.grey, size: 16),
+                                  const Icon(
+                                    Icons.location_on_outlined,
+                                    color: Colors.grey,
+                                    size: 16,
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(
                                     '${user.region}, ${user.woreda}',
-                                    style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                                    style: TextStyle(
+                                      color: Colors.grey[700],
+                                      fontSize: 13,
+                                    ),
                                   ),
                                 ],
                               ),
-                              if (user.telegramUsername != null || user.whatsappNumber != null) ...[
+                              if (user.telegramUsername != null ||
+                                  user.whatsappNumber != null) ...[
                                 const SizedBox(height: 12),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     if (user.telegramUsername != null)
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0,
+                                        ),
                                         child: Chip(
-                                          avatar: const Icon(Icons.telegram, color: Colors.blue, size: 18),
-                                          label: Text('@${user.telegramUsername}'),
+                                          avatar: const Icon(
+                                            Icons.telegram,
+                                            color: Colors.blue,
+                                            size: 18,
+                                          ),
+                                          label: Text(
+                                            '@${user.telegramUsername}',
+                                          ),
                                           padding: EdgeInsets.zero,
                                           backgroundColor: Colors.blue[50],
                                         ),
                                       ),
                                     if (user.whatsappNumber != null)
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0,
+                                        ),
                                         child: Chip(
-                                          avatar: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.green, size: 16),
+                                          avatar: const Icon(
+                                            Icons.chat_bubble_outline_rounded,
+                                            color: Colors.green,
+                                            size: 16,
+                                          ),
                                           label: Text(user.whatsappNumber!),
                                           padding: EdgeInsets.zero,
                                           backgroundColor: Colors.green[50],
                                         ),
                                       ),
                                   ],
-                                )
-                              ]
+                                ),
+                              ],
                             ],
                           ),
                   ),
                 ),
               ),
-              
+
               // -------------------------------------------------------------
               // SETTINGS & CONTROL SECTION
               // -------------------------------------------------------------
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 12,
+                ),
                 child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Column(
                     children: [
                       ListTile(
-                        leading: const Icon(Icons.g_translate_rounded, color: Color(0xFF1B5E20)),
+                        leading: const Icon(
+                          Icons.g_translate_rounded,
+                          color: Color(0xFF1B5E20),
+                        ),
                         title: Text(l10n.language),
                         trailing: const Icon(Icons.chevron_right_rounded),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const LanguageSelectionView(isFromSettings: true),
+                              builder: (context) => const LanguageSelectionView(
+                                isFromSettings: true,
+                              ),
                             ),
                           );
                         },
                       ),
                       const Divider(height: 1),
                       ListTile(
-                        leading: const Icon(Icons.description_outlined, color: Color(0xFF1B5E20)),
+                        leading: const Icon(
+                          Icons.description_outlined,
+                          color: Color(0xFF1B5E20),
+                        ),
                         title: Text(l10n.termsOfUse),
                         trailing: const Icon(Icons.chevron_right_rounded),
                         onTap: _showTermsDialog,
                       ),
                       const Divider(height: 1),
                       ListTile(
-                        leading: const Icon(Icons.logout_rounded, color: Colors.red),
-                        title: Text(l10n.signOut, style: const TextStyle(color: Colors.red)),
+                        leading: const Icon(
+                          Icons.logout_rounded,
+                          color: Colors.red,
+                        ),
+                        title: Text(
+                          l10n.signOut,
+                          style: const TextStyle(color: Colors.red),
+                        ),
                         onTap: () => ref.read(authProvider.notifier).signOut(),
                       ),
                     ],
                   ),
                 ),
               ),
-              
+
               // -------------------------------------------------------------
               // MY LISTINGS SECTION
               // -------------------------------------------------------------
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 8,
+                ),
                 child: Text(
                   l10n.myListings,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green[900]),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[900],
+                  ),
                 ),
               ),
               StreamBuilder<List<Map<String, dynamic>>>(
@@ -431,7 +545,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                   }
                   final listings = snapshot.data ?? [];
                   // Filter out deleted ones
-                  final activeListings = listings.where((l) => l['status'] != 'deleted').toList();
+                  final activeListings = listings
+                      .where((l) => l['status'] != 'deleted')
+                      .toList();
 
                   if (activeListings.isEmpty) {
                     return Padding(
@@ -451,13 +567,22 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     itemCount: activeListings.length,
                     itemBuilder: (context, index) {
                       final item = activeListings[index];
-                      final photoUrls = List<String>.from(item['photoUrls'] ?? []);
-                      final photoUrl = photoUrls.isNotEmpty ? photoUrls.first : '';
+                      final photoUrls = List<String>.from(
+                        item['photoUrls'] ?? [],
+                      );
+                      final photoUrl = photoUrls.isNotEmpty
+                          ? photoUrls.first
+                          : '';
                       final isSold = item['status'] == 'sold';
 
                       return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),
                           child: Row(
@@ -473,7 +598,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                     width: 60,
                                     height: 60,
                                     color: Colors.green[50],
-                                    child: const Icon(Icons.grass, color: Colors.green),
+                                    child: const Icon(
+                                      Icons.grass,
+                                      color: Colors.green,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -484,20 +612,31 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                   children: [
                                     Text(
                                       item['title'] ?? '',
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       '${item['price']} ETB / ${item['unit']}',
-                                      style: TextStyle(color: Colors.green[800], fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                        color: Colors.green[800],
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     const SizedBox(height: 4),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: isSold ? Colors.orange[100] : Colors.green[100],
+                                        color: isSold
+                                            ? Colors.orange[100]
+                                            : Colors.green[100],
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(
@@ -505,7 +644,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.bold,
-                                          color: isSold ? Colors.orange[800] : Colors.green[800],
+                                          color: isSold
+                                              ? Colors.orange[800]
+                                              : Colors.green[800],
                                         ),
                                       ),
                                     ),
@@ -518,14 +659,21 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                 children: [
                                   if (!isSold)
                                     IconButton(
-                                      icon: const Icon(Icons.check_circle_outline_rounded, color: Colors.orange),
-                                      onPressed: () => _markListingAsSold(item['id']),
+                                      icon: const Icon(
+                                        Icons.check_circle_outline_rounded,
+                                        color: Colors.orange,
+                                      ),
+                                      onPressed: () =>
+                                          _markListingAsSold(item['id']),
                                       tooltip: l10n.markAsSold,
                                       constraints: const BoxConstraints(),
                                       padding: const EdgeInsets.all(8),
                                     ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+                                    icon: const Icon(
+                                      Icons.delete_outline_rounded,
+                                      color: Colors.red,
+                                    ),
                                     onPressed: () => _deleteListing(item['id']),
                                     tooltip: l10n.deleteListing,
                                     constraints: const BoxConstraints(),

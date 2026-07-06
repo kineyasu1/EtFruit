@@ -12,7 +12,11 @@ import '../profile/profile_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class HomeView extends ConsumerStatefulWidget {
-  const HomeView({super.key, this.openCreateListing = false, this.initialTab = 0});
+  const HomeView({
+    super.key,
+    this.openCreateListing = false,
+    this.initialTab = 0,
+  });
 
   final bool openCreateListing;
   final int initialTab;
@@ -65,10 +69,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 8.0,
@@ -81,7 +82,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
               IconButton(
                 icon: Icon(
                   Icons.grid_view_rounded,
-                  color: _currentIndex == 0 ? const Color(0xFF1B5E20) : Colors.grey,
+                  color: _currentIndex == 0
+                      ? const Color(0xFF1B5E20)
+                      : Colors.grey,
                 ),
                 onPressed: () => setState(() => _currentIndex = 0),
                 tooltip: 'Browse',
@@ -90,7 +93,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
               IconButton(
                 icon: Icon(
                   Icons.chat_bubble_rounded,
-                  color: _currentIndex == 1 ? const Color(0xFF1B5E20) : Colors.grey,
+                  color: _currentIndex == 1
+                      ? const Color(0xFF1B5E20)
+                      : Colors.grey,
                 ),
                 onPressed: () => setState(() => _currentIndex = 1),
                 tooltip: l10n.chats,
@@ -98,7 +103,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
               IconButton(
                 icon: Icon(
                   Icons.person_rounded,
-                  color: _currentIndex == 2 ? const Color(0xFF1B5E20) : Colors.grey,
+                  color: _currentIndex == 2
+                      ? const Color(0xFF1B5E20)
+                      : Colors.grey,
                 ),
                 onPressed: () => setState(() => _currentIndex = 2),
                 tooltip: l10n.myAccount,
@@ -132,11 +139,11 @@ class BrowseFeedSubView extends ConsumerStatefulWidget {
 
 class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
   final _searchController = TextEditingController();
-  
+
   String? _selectedCategoryId;
   String? _selectedRegion;
   String _searchKeyword = '';
-  
+
   bool _isFilterOpen = false;
 
   @override
@@ -163,11 +170,18 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
       appBar: AppBar(
         title: Row(
           children: [
-            const Icon(Icons.agriculture_rounded, color: Colors.white, size: 28),
+            const Icon(
+              Icons.agriculture_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
             const SizedBox(width: 8),
             Text(
               l10n.appName,
-              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ],
         ),
@@ -176,7 +190,9 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
         actions: [
           IconButton(
             icon: Icon(
-              _isFilterOpen ? Icons.filter_alt_off_rounded : Icons.filter_alt_rounded,
+              _isFilterOpen
+                  ? Icons.filter_alt_off_rounded
+                  : Icons.filter_alt_rounded,
               color: Colors.white,
             ),
             onPressed: () {
@@ -201,7 +217,10 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: l10n.searchProducts,
-                    prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF1B5E20)),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: Color(0xFF1B5E20),
+                    ),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? GestureDetector(
                             onTap: () {
@@ -245,12 +264,19 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
                               hint: Text(l10n.region),
                               isExpanded: true,
                               items: [
-                                const DropdownMenuItem(value: null, child: Text('All Regions')),
+                                const DropdownMenuItem(
+                                  value: null,
+                                  child: Text('All Regions'),
+                                ),
                                 ...LocationData.getRegions().map(
-                                  (r) => DropdownMenuItem(value: r, child: Text(r)),
+                                  (r) => DropdownMenuItem(
+                                    value: r,
+                                    child: Text(r),
+                                  ),
                                 ),
                               ],
-                              onChanged: (val) => setState(() => _selectedRegion = val),
+                              onChanged: (val) =>
+                                  setState(() => _selectedRegion = val),
                             ),
                           ),
                         ),
@@ -273,7 +299,7 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
               ],
             ),
           ),
-          
+
           // Category Chips Row (Always visible)
           Container(
             height: 50,
@@ -294,11 +320,12 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
                       labelStyle: TextStyle(
                         color: isSelected ? Colors.white : Colors.black87,
                       ),
-                      onSelected: (_) => setState(() => _selectedCategoryId = null),
+                      onSelected: (_) =>
+                          setState(() => _selectedCategoryId = null),
                     ),
                   );
                 }
-                
+
                 final cat = TaxonomyData.categories[index - 1];
                 final isSelected = _selectedCategoryId == cat.id;
                 return Padding(
@@ -320,7 +347,7 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
               },
             ),
           ),
-          
+
           // Listings Stream List
           Expanded(
             child: StreamBuilder<List<Map<String, dynamic>>>(
@@ -342,11 +369,18 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.search_off_rounded, size: 64, color: Colors.grey[400]),
+                        Icon(
+                          Icons.search_off_rounded,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
                         const SizedBox(height: 12),
                         Text(
                           l10n.noListingsFound,
-                          style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                     ),
@@ -364,15 +398,20 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
                   itemCount: listings.length,
                   itemBuilder: (context, index) {
                     final item = listings[index];
-                    final photoUrls = List<String>.from(item['photoUrls'] ?? []);
-                    final photoUrl = photoUrls.isNotEmpty ? photoUrls.first : '';
-                    
+                    final photoUrls = List<String>.from(
+                      item['photoUrls'] ?? [],
+                    );
+                    final photoUrl = photoUrls.isNotEmpty
+                        ? photoUrls.first
+                        : '';
+
                     return GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ListingDetailView(listingId: item['id']),
+                            builder: (context) =>
+                                ListingDetailView(listingId: item['id']),
                           ),
                         );
                       },
@@ -394,30 +433,45 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
                                           width: double.infinity,
                                           height: double.infinity,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) => Container(
-                                            color: Colors.green[50],
-                                            child: const Icon(Icons.grass_rounded, size: 40, color: Colors.green),
-                                          ),
+                                          errorBuilder: (_, __, ___) =>
+                                              Container(
+                                                color: Colors.green[50],
+                                                child: const Icon(
+                                                  Icons.grass_rounded,
+                                                  size: 40,
+                                                  color: Colors.green,
+                                                ),
+                                              ),
                                         )
                                       : Image.file(
                                           File(photoUrl),
                                           width: double.infinity,
                                           height: double.infinity,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) => Container(
-                                            color: Colors.green[50],
-                                            child: const Icon(Icons.grass_rounded, size: 40, color: Colors.green),
-                                          ),
+                                          errorBuilder: (_, __, ___) =>
+                                              Container(
+                                                color: Colors.green[50],
+                                                child: const Icon(
+                                                  Icons.grass_rounded,
+                                                  size: 40,
+                                                  color: Colors.green,
+                                                ),
+                                              ),
                                         ),
                                   if (item['isNegotiable'] ?? false)
                                     Positioned(
                                       top: 8,
                                       left: 8,
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFFBC02D),
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: Text(
                                           l10n.negotiable,
@@ -458,14 +512,21 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      const Icon(Icons.location_on_outlined, size: 12, color: Colors.grey),
+                                      const Icon(
+                                        Icons.location_on_outlined,
+                                        size: 12,
+                                        color: Colors.grey,
+                                      ),
                                       const SizedBox(width: 2),
                                       Expanded(
                                         child: Text(
                                           '${item['region']}, ${item['woreda']}',
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                          style: const TextStyle(
+                                            fontSize: 11,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                       ),
                                     ],

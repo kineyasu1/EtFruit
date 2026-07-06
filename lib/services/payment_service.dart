@@ -10,7 +10,8 @@ class PaymentService {
   PaymentService._internal();
 
   // production Firebase Cloud Functions URL (to be replaced by developer)
-  static const String _functionsBaseUrl = 'https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net';
+  static const String _functionsBaseUrl =
+      'https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net';
 
   // Initiates a payment session
   Future<Map<String, dynamic>> initializePayment({
@@ -62,11 +63,11 @@ class PaymentService {
           final data = json.decode(response.body);
           if (data['status'] == 'success') {
             final checkoutUrl = data['data']['checkout_url'];
-            
+
             // Update transaction record with checkout URL
             txDoc['checkoutUrl'] = checkoutUrl;
             await FirestoreService().saveTransaction(txDoc);
-            
+
             return {
               'success': true,
               'txId': txId,
@@ -75,8 +76,10 @@ class PaymentService {
             };
           }
         }
-        
-        debugPrint('Cloud Function payment init failed, falling back to mock sandbox: ${response.body}');
+
+        debugPrint(
+          'Cloud Function payment init failed, falling back to mock sandbox: ${response.body}',
+        );
       } catch (e) {
         debugPrint('Error calling backend, falling back to mock sandbox: $e');
       }
@@ -101,16 +104,18 @@ class PaymentService {
     final tx = await FirestoreService().getTransaction(txId);
     if (tx != null) {
       tx['status'] = 'completed';
-      tx['gatewayReferenceId'] = 'chapa_ref_${DateTime.now().millisecondsSinceEpoch}';
+      tx['gatewayReferenceId'] =
+          'chapa_ref_${DateTime.now().millisecondsSinceEpoch}';
       tx['updatedAt'] = DateTime.now();
       await FirestoreService().saveTransaction(tx);
-      
+
       // Send receipt notification message to the in-app chat thread if active
       final chatId = '${tx['listingId']}_${tx['buyerId']}_${tx['sellerId']}';
       await FirestoreService().sendMessage(
         chatId: chatId,
         senderId: 'system',
-        text: '🔔 PAYMENT CONFIRMED RECEIPT:\nAmount: ${tx['amount']} ETB\nPayment Method: ${tx['paymentMethod']}\nTransaction ID: ${tx['id']}',
+        text:
+            '🔔 PAYMENT CONFIRMED RECEIPT:\nAmount: ${tx['amount']} ETB\nPayment Method: ${tx['paymentMethod']}\nTransaction ID: ${tx['id']}',
       );
     }
   }

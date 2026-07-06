@@ -23,7 +23,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
   int _currentPhotoIndex = 0;
   bool _isLoadingSeller = true;
   UserModel? _sellerProfile;
-  
+
   Map<String, dynamic>? _listing;
 
   @override
@@ -102,7 +102,8 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
     final number = _sellerProfile!.whatsappNumber!.replaceAll('+', '');
     final title = _listing?['title'] ?? 'listing';
     final text = Uri.encodeComponent(
-        "Hi, I'm interested in your '$title' listing on FarmLink");
+      "Hi, I'm interested in your '$title' listing on FarmLink",
+    );
     final url = Uri.parse('https://wa.me/$number?text=$text');
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
@@ -127,7 +128,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
     }
 
     setState(() {});
-    
+
     final photoUrls = List<String>.from(_listing!['photoUrls'] ?? []);
     final photoUrl = photoUrls.isNotEmpty ? photoUrls.first : null;
 
@@ -204,7 +205,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
   void _submitReport(String reason) async {
     Navigator.pop(context); // Close dialog
     final l10n = AppLocalizations.of(context);
-    
+
     if (_listing != null) {
       await FirestoreService().incrementReportCount(
         _listing!['id'],
@@ -212,9 +213,9 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
         reason: reason,
       );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.reportSuccess)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.reportSuccess)));
       }
     }
   }
@@ -222,9 +223,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
   @override
   Widget build(BuildContext context) {
     if (_listing == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final l10n = AppLocalizations.of(context);
@@ -287,8 +286,11 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                       fit: BoxFit.cover,
                                       errorBuilder: (_, __, ___) => Container(
                                         color: Colors.green[50],
-                                        child: const Icon(Icons.grass_rounded,
-                                            size: 80, color: Colors.green),
+                                        child: const Icon(
+                                          Icons.grass_rounded,
+                                          size: 80,
+                                          color: Colors.green,
+                                        ),
                                       ),
                                     )
                                   : Image.file(
@@ -297,8 +299,11 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                       fit: BoxFit.cover,
                                       errorBuilder: (_, __, ___) => Container(
                                         color: Colors.green[50],
-                                        child: const Icon(Icons.grass_rounded,
-                                            size: 80, color: Colors.green),
+                                        child: const Icon(
+                                          Icons.grass_rounded,
+                                          size: 80,
+                                          color: Colors.green,
+                                        ),
                                       ),
                                     );
                             },
@@ -310,7 +315,9 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                             right: 16,
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.black.withOpacity(0.6),
                                 borderRadius: BorderRadius.circular(12),
@@ -318,21 +325,23 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                               child: Text(
                                 '${_currentPhotoIndex + 1}/${photoUrls.length}',
                                 style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
                       ],
                     ),
-                  
+
                   // Product details card
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Card(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
@@ -353,7 +362,9 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                 if (isNegotiable)
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFFBC02D),
                                       borderRadius: BorderRadius.circular(8),
@@ -383,8 +394,10 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                             const SizedBox(height: 12),
                             Row(
                               children: [
-                                const Icon(Icons.shopping_basket_outlined,
-                                    color: Colors.grey),
+                                const Icon(
+                                  Icons.shopping_basket_outlined,
+                                  color: Colors.grey,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   '${l10n.quantity}: ${_listing!['quantity']} ${_listing!['unit']}',
@@ -395,8 +408,10 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                const Icon(Icons.location_on_outlined,
-                                    color: Colors.grey),
+                                const Icon(
+                                  Icons.location_on_outlined,
+                                  color: Colors.grey,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -409,8 +424,10 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                const Icon(Icons.calendar_month_outlined,
-                                    color: Colors.grey),
+                                const Icon(
+                                  Icons.calendar_month_outlined,
+                                  color: Colors.grey,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Posted: $dateString',
@@ -431,7 +448,8 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Card(
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16)),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -440,13 +458,17 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                               Text(
                                 l10n.description,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 _listing!['description'],
                                 style: const TextStyle(
-                                    fontSize: 15, height: 1.4),
+                                  fontSize: 15,
+                                  height: 1.4,
+                                ),
                               ),
                             ],
                           ),
@@ -459,7 +481,8 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                     padding: const EdgeInsets.all(16.0),
                     child: Card(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: _isLoadingSeller
@@ -469,8 +492,11 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                   CircleAvatar(
                                     radius: 26,
                                     backgroundColor: Colors.green[50],
-                                    child: Icon(Icons.person_rounded,
-                                        size: 32, color: Colors.green[800]),
+                                    child: Icon(
+                                      Icons.person_rounded,
+                                      size: 32,
+                                      color: Colors.green[800],
+                                    ),
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(
@@ -481,20 +507,25 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                         Text(
                                           _sellerProfile?.name ?? 'Seller',
                                           style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                         const SizedBox(height: 4),
                                         Row(
                                           children: [
-                                            const Icon(Icons.check_circle_rounded,
-                                                color: Colors.blue, size: 14),
+                                            const Icon(
+                                              Icons.check_circle_rounded,
+                                              color: Colors.blue,
+                                              size: 14,
+                                            ),
                                             const SizedBox(width: 4),
                                             Text(
                                               l10n.verifiedPhone,
                                               style: TextStyle(
-                                                  color: Colors.grey[600],
-                                                  fontSize: 12),
+                                                color: Colors.grey[600],
+                                                fontSize: 12,
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -502,8 +533,9 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                         Text(
                                           '${l10n.memberSince}: $sellerDateString',
                                           style: TextStyle(
-                                              color: Colors.grey[500],
-                                              fontSize: 12),
+                                            color: Colors.grey[500],
+                                            fontSize: 12,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -518,7 +550,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
               ),
             ),
           ),
-          
+
           // Action Buttons panel at bottom
           if (!isMyListing)
             Container(
@@ -545,15 +577,20 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: _launchWhatsApp,
-                            icon: const Icon(Icons.chat_bubble_outline_rounded,
-                                color: Colors.green),
-                            label: const Text('WhatsApp',
-                                style: TextStyle(color: Colors.green)),
+                            icon: const Icon(
+                              Icons.chat_bubble_outline_rounded,
+                              color: Colors.green,
+                            ),
+                            label: const Text(
+                              'WhatsApp',
+                              style: TextStyle(color: Colors.green),
+                            ),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Colors.green),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           ),
                         ),
@@ -567,15 +604,20 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                         Expanded(
                           child: OutlinedButton.icon(
                             onPressed: _launchTelegram,
-                            icon: const Icon(Icons.telegram_rounded,
-                                color: Colors.blue),
-                            label: const Text('Telegram',
-                                style: TextStyle(color: Colors.blue)),
+                            icon: const Icon(
+                              Icons.telegram_rounded,
+                              color: Colors.blue,
+                            ),
+                            label: const Text(
+                              'Telegram',
+                              style: TextStyle(color: Colors.blue),
+                            ),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Colors.blue),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           ),
                         ),
@@ -589,15 +631,20 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: _startInAppChat,
-                            icon: const Icon(Icons.message_rounded,
-                                color: Colors.white),
-                            label: Text(l10n.contactSeller,
-                                style: const TextStyle(color: Colors.white)),
+                            icon: const Icon(
+                              Icons.message_rounded,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              l10n.contactSeller,
+                              style: const TextStyle(color: Colors.white),
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF1B5E20),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                           ),
                         ),
@@ -606,17 +653,23 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: _paySellerDirect,
-                          icon: const Icon(Icons.payment_rounded,
-                              color: Color(0xFF1B5E20)),
-                          label: Text(l10n.paySeller,
-                              style: const TextStyle(
-                                  color: Color(0xFF1B5E20),
-                                  fontWeight: FontWeight.bold)),
+                          icon: const Icon(
+                            Icons.payment_rounded,
+                            color: Color(0xFF1B5E20),
+                          ),
+                          label: Text(
+                            l10n.paySeller,
+                            style: const TextStyle(
+                              color: Color(0xFF1B5E20),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFFBC02D),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ),

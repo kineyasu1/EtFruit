@@ -65,8 +65,11 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
           _woredas = LocationData.getWoredas(user.region, user.zone);
           _selectedWoreda = user.woreda;
 
-          _enableTelegram = user.telegramUsername != null && user.telegramUsername!.isNotEmpty;
-          _enableWhatsapp = user.whatsappNumber != null && user.whatsappNumber!.isNotEmpty;
+          _enableTelegram =
+              user.telegramUsername != null &&
+              user.telegramUsername!.isNotEmpty;
+          _enableWhatsapp =
+              user.whatsappNumber != null && user.whatsappNumber!.isNotEmpty;
         });
       }
     });
@@ -138,36 +141,45 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
   // Simulated photo upload helper to bypass camera dependency in testing
   void _addMockPhoto() {
     if (_localPhotos.length + _photoUrls.length >= 5) return;
-    
+
     // Choose Unsplash mockup based on category
-    String url = 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600'; // Wheat default
+    String url =
+        'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600'; // Wheat default
     if (_selectedCategory != null) {
       switch (_selectedCategory!.id) {
         case 'cereals_grains':
-          url = 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600';
+          url =
+              'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600';
           break;
         case 'coffee_cash_crops':
-          url = 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600';
+          url =
+              'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600';
           break;
         case 'vegetables':
-          url = 'https://images.unsplash.com/photo-1610348725531-843dff163e2c?w=600';
+          url =
+              'https://images.unsplash.com/photo-1610348725531-843dff163e2c?w=600';
           break;
         case 'fruits':
-          url = 'https://images.unsplash.com/photo-1610832958506-ee56336191d1?w=600';
+          url =
+              'https://images.unsplash.com/photo-1610832958506-ee56336191d1?w=600';
           break;
         case 'livestock':
-          url = 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=600';
+          url =
+              'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=600';
           break;
         case 'dairy_animal_products':
-          url = 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=600';
+          url =
+              'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=600';
           break;
         default:
-          url = 'https://images.unsplash.com/photo-1610348725531-843dff163e2c?w=600';
+          url =
+              'https://images.unsplash.com/photo-1610348725531-843dff163e2c?w=600';
       }
     }
     // Append a unique timestamp parameter to bypass cache
-    url = '$url&sig=${DateTime.now().millisecondsSinceEpoch}_${_photoUrls.length}';
-    
+    url =
+        '$url&sig=${DateTime.now().millisecondsSinceEpoch}_${_photoUrls.length}';
+
     setState(() {
       _photoUrls.add(url);
     });
@@ -197,7 +209,9 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
       setState(() => _errorMessage = 'Please enter custom product name');
       return;
     }
-    if (_selectedRegion == null || _selectedZone == null || _selectedWoreda == null) {
+    if (_selectedRegion == null ||
+        _selectedZone == null ||
+        _selectedWoreda == null) {
       setState(() => _errorMessage = 'Please fill location');
       return;
     }
@@ -222,7 +236,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
       // In real mode, we upload localFiles to Firebase Storage and get URLs.
       // In sandbox/offline mode, we use the local file path so they can render locally!
       final finalPhotoUrls = List<String>.from(_photoUrls);
-      
+
       for (int i = 0; i < _localPhotos.length; i++) {
         finalPhotoUrls.add(_localPhotos[i].path);
       }
@@ -230,7 +244,8 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
       // If no photo was attached, add a category default placeholder
       if (finalPhotoUrls.isEmpty) {
         finalPhotoUrls.add(
-            'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=500&sig=default');
+          'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=500&sig=default',
+        );
       }
 
       final listingData = {
@@ -311,10 +326,19 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
           'so': 'Dalag kale',
           'ti': 'ካልእ ፍርያት',
         },
-      )
+      ),
     ];
 
-    final units = ['kg', 'quintal', 'head', 'crate', 'sack', 'liter', 'piece', 'bunch'];
+    final units = [
+      'kg',
+      'quintal',
+      'head',
+      'crate',
+      'sack',
+      'liter',
+      'piece',
+      'bunch',
+    ];
 
     final totalImages = _photoUrls.length + _localPhotos.length;
 
@@ -326,9 +350,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
         elevation: 0,
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFFF4F6F2),
-        ),
+        decoration: const BoxDecoration(color: Color(0xFFF4F6F2)),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
@@ -352,7 +374,9 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                   ),
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -373,7 +397,9 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                           decoration: InputDecoration(
                             labelText: l10n.productCategory,
                             prefixIcon: const Icon(Icons.category_outlined),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                           items: TaxonomyData.categories.map((c) {
                             return DropdownMenuItem(
@@ -382,7 +408,8 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                             );
                           }).toList(),
                           onChanged: _onCategoryChanged,
-                          validator: (value) => value == null ? 'Select Category' : null,
+                          validator: (value) =>
+                              value == null ? 'Select Category' : null,
                         ),
                         if (_selectedCategory != null) ...[
                           const SizedBox(height: 16),
@@ -392,7 +419,9 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                             decoration: InputDecoration(
                               labelText: l10n.productName,
                               prefixIcon: const Icon(Icons.grass_rounded),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                             items: productItems.map((p) {
                               return DropdownMenuItem(
@@ -401,7 +430,8 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                               );
                             }).toList(),
                             onChanged: _onProductChanged,
-                            validator: (value) => value == null ? 'Select Product' : null,
+                            validator: (value) =>
+                                value == null ? 'Select Product' : null,
                           ),
                         ],
                         if (_isCustomProduct) ...[
@@ -412,10 +442,13 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                             decoration: InputDecoration(
                               labelText: l10n.customProductName,
                               prefixIcon: const Icon(Icons.edit_note_rounded),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
                             validator: (value) {
-                              if (_isCustomProduct && (value == null || value.trim().isEmpty)) {
+                              if (_isCustomProduct &&
+                                  (value == null || value.trim().isEmpty)) {
                                 return 'Enter custom product name';
                               }
                               return null;
@@ -429,7 +462,9 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                 const SizedBox(height: 16),
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -441,14 +476,21 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                               // Quantity
                               child: TextFormField(
                                 controller: _quantityController,
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
                                 decoration: InputDecoration(
                                   labelText: l10n.quantity,
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty) return 'Enter quantity';
-                                  if (double.tryParse(value) == null) return 'Enter valid number';
+                                  if (value == null || value.trim().isEmpty)
+                                    return 'Enter quantity';
+                                  if (double.tryParse(value) == null)
+                                    return 'Enter valid number';
                                   return null;
                                 },
                               ),
@@ -460,13 +502,20 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                                 value: _selectedUnit,
                                 decoration: InputDecoration(
                                   labelText: l10n.unit,
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
                                 items: units.map((u) {
-                                  return DropdownMenuItem(value: u, child: Text(u));
+                                  return DropdownMenuItem(
+                                    value: u,
+                                    child: Text(u),
+                                  );
                                 }).toList(),
-                                onChanged: (value) => setState(() => _selectedUnit = value),
-                                validator: (value) => value == null ? 'Select unit' : null,
+                                onChanged: (value) =>
+                                    setState(() => _selectedUnit = value),
+                                validator: (value) =>
+                                    value == null ? 'Select unit' : null,
                               ),
                             ),
                           ],
@@ -478,15 +527,22 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                               // Price
                               child: TextFormField(
                                 controller: _priceController,
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
                                 decoration: InputDecoration(
                                   labelText: l10n.price,
                                   prefixText: 'ETB ',
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty) return 'Enter price';
-                                  if (double.tryParse(value) == null) return 'Enter valid number';
+                                  if (value == null || value.trim().isEmpty)
+                                    return 'Enter price';
+                                  if (double.tryParse(value) == null)
+                                    return 'Enter valid number';
                                   return null;
                                 },
                               ),
@@ -498,9 +554,16 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                                 Checkbox(
                                   value: _isNegotiable,
                                   activeColor: const Color(0xFF1B5E20),
-                                  onChanged: (val) => setState(() => _isNegotiable = val ?? false),
+                                  onChanged: (val) => setState(
+                                    () => _isNegotiable = val ?? false,
+                                  ),
                                 ),
-                                Text(l10n.negotiable, style: const TextStyle(fontWeight: FontWeight.w600)),
+                                Text(
+                                  l10n.negotiable,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -512,7 +575,9 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                 const SizedBox(height: 16),
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -545,24 +610,43 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                                               child: Wrap(
                                                 children: [
                                                   ListTile(
-                                                    leading: const Icon(Icons.camera_alt_rounded),
-                                                    title: const Text('Take Photo'),
+                                                    leading: const Icon(
+                                                      Icons.camera_alt_rounded,
+                                                    ),
+                                                    title: const Text(
+                                                      'Take Photo',
+                                                    ),
                                                     onTap: () {
                                                       Navigator.pop(ctx);
-                                                      _pickImage(ImageSource.camera);
+                                                      _pickImage(
+                                                        ImageSource.camera,
+                                                      );
                                                     },
                                                   ),
                                                   ListTile(
-                                                    leading: const Icon(Icons.photo_library_rounded),
-                                                    title: const Text('Choose from Gallery'),
+                                                    leading: const Icon(
+                                                      Icons
+                                                          .photo_library_rounded,
+                                                    ),
+                                                    title: const Text(
+                                                      'Choose from Gallery',
+                                                    ),
                                                     onTap: () {
                                                       Navigator.pop(ctx);
-                                                      _pickImage(ImageSource.gallery);
+                                                      _pickImage(
+                                                        ImageSource.gallery,
+                                                      );
                                                     },
                                                   ),
                                                   ListTile(
-                                                    leading: const Icon(Icons.add_photo_alternate_outlined, color: Colors.green),
-                                                    title: const Text('Simulate Photo (No Camera)'),
+                                                    leading: const Icon(
+                                                      Icons
+                                                          .add_photo_alternate_outlined,
+                                                      color: Colors.green,
+                                                    ),
+                                                    title: const Text(
+                                                      'Simulate Photo (No Camera)',
+                                                    ),
                                                     onTap: () {
                                                       Navigator.pop(ctx);
                                                       _addMockPhoto();
@@ -575,13 +659,23 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                                         },
                                         child: Container(
                                           width: 90,
-                                          margin: const EdgeInsets.only(right: 8),
+                                          margin: const EdgeInsets.only(
+                                            right: 8,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: Colors.grey[200],
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(color: Colors.grey[400]!, style: BorderStyle.solid),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.grey[400]!,
+                                              style: BorderStyle.solid,
+                                            ),
                                           ),
-                                          child: const Icon(Icons.add_a_photo_outlined, color: Colors.grey),
+                                          child: const Icon(
+                                            Icons.add_a_photo_outlined,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                       );
                               }
@@ -619,7 +713,11 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                                       child: const CircleAvatar(
                                         radius: 12,
                                         backgroundColor: Colors.red,
-                                        child: Icon(Icons.close, size: 14, color: Colors.white),
+                                        child: Icon(
+                                          Icons.close,
+                                          size: 14,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -635,7 +733,9 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                 const SizedBox(height: 16),
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -654,39 +754,49 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                           value: _selectedRegion,
                           decoration: InputDecoration(
                             labelText: l10n.region,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                           items: LocationData.getRegions().map((r) {
                             return DropdownMenuItem(value: r, child: Text(r));
                           }).toList(),
                           onChanged: _onRegionChanged,
-                          validator: (value) => value == null ? 'Select Region' : null,
+                          validator: (value) =>
+                              value == null ? 'Select Region' : null,
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
                           value: _selectedZone,
                           decoration: InputDecoration(
                             labelText: l10n.zone,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                           items: _zones.map((z) {
                             return DropdownMenuItem(value: z, child: Text(z));
                           }).toList(),
                           onChanged: _onZoneChanged,
-                          validator: (value) => value == null ? 'Select Zone' : null,
+                          validator: (value) =>
+                              value == null ? 'Select Zone' : null,
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
                           value: _selectedWoreda,
                           decoration: InputDecoration(
                             labelText: l10n.woreda,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                           items: _woredas.map((w) {
                             return DropdownMenuItem(value: w, child: Text(w));
                           }).toList(),
-                          onChanged: (value) => setState(() => _selectedWoreda = value),
-                          validator: (value) => value == null ? 'Select Woreda' : null,
+                          onChanged: (value) =>
+                              setState(() => _selectedWoreda = value),
+                          validator: (value) =>
+                              value == null ? 'Select Woreda' : null,
                         ),
                       ],
                     ),
@@ -695,7 +805,9 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                 const SizedBox(height: 16),
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -714,8 +826,11 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                           controller: _descriptionController,
                           maxLines: 3,
                           decoration: InputDecoration(
-                            hintText: 'Describe quality, transport arrangements, etc.',
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            hintText:
+                                'Describe quality, transport arrangements, etc.',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ],
@@ -725,7 +840,9 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                 const SizedBox(height: 16),
                 Card(
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -744,19 +861,22 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                           title: Text(l10n.enableTelegram),
                           value: _enableTelegram,
                           activeColor: const Color(0xFF1B5E20),
-                          onChanged: (val) => setState(() => _enableTelegram = val ?? false),
+                          onChanged: (val) =>
+                              setState(() => _enableTelegram = val ?? false),
                         ),
                         CheckboxListTile(
                           title: Text(l10n.enableWhatsapp),
                           value: _enableWhatsapp,
                           activeColor: const Color(0xFF1B5E20),
-                          onChanged: (val) => setState(() => _enableWhatsapp = val ?? false),
+                          onChanged: (val) =>
+                              setState(() => _enableWhatsapp = val ?? false),
                         ),
                         CheckboxListTile(
                           title: Text(l10n.enableInAppChat),
                           value: _enableInAppChat,
                           activeColor: const Color(0xFF1B5E20),
-                          onChanged: (val) => setState(() => _enableInAppChat = val ?? false),
+                          onChanged: (val) =>
+                              setState(() => _enableInAppChat = val ?? false),
                         ),
                       ],
                     ),
@@ -769,7 +889,9 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                     backgroundColor: const Color(0xFF1B5E20),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: _isLoading
                       ? const SizedBox(
@@ -777,12 +899,17 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : Text(
                           l10n.publishListing,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
                 const SizedBox(height: 40),

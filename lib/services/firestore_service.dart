@@ -26,7 +26,8 @@ class FirestoreService {
       StreamController<List<Map<String, dynamic>>>.broadcast();
   final StreamController<List<Map<String, dynamic>>> _chatsStreamController =
       StreamController<List<Map<String, dynamic>>>.broadcast();
-  final Map<String, StreamController<List<Map<String, dynamic>>>> _messagesStreamControllers = {};
+  final Map<String, StreamController<List<Map<String, dynamic>>>>
+  _messagesStreamControllers = {};
 
   // -------------------------------------------------------------
   // Categories (Seed Data)
@@ -40,7 +41,7 @@ class FirestoreService {
         'nameOm': 'Midhaan',
         'nameSo': 'Mishaarka & Firileyda',
         'nameTi': 'ጥረታት',
-        'suggestedUnits': ['quintal', 'kg']
+        'suggestedUnits': ['quintal', 'kg'],
       },
       {
         'id': 'pulses_oilseeds',
@@ -49,7 +50,7 @@ class FirestoreService {
         'nameOm': 'Kuduraa fi Muka',
         'nameSo': 'Saliidaha & Digirta',
         'nameTi': 'ጥረታት ዘይቲ',
-        'suggestedUnits': ['quintal', 'kg']
+        'suggestedUnits': ['quintal', 'kg'],
       },
       {
         'id': 'coffee_cash_crops',
@@ -58,7 +59,7 @@ class FirestoreService {
         'nameOm': 'Buna fi Oomishaalee Gabaa',
         'nameSo': 'Bunka & Dalagyada Lacagta',
         'nameTi': 'ቡናን ካልኦት ዘፈርን',
-        'suggestedUnits': ['kg', 'quintal', 'crate']
+        'suggestedUnits': ['kg', 'quintal', 'crate'],
       },
       {
         'id': 'vegetables',
@@ -67,7 +68,7 @@ class FirestoreService {
         'nameOm': 'Muduraa',
         'nameSo': 'Khudaarta',
         'nameTi': 'ኣሕምልቲ',
-        'suggestedUnits': ['kg', 'crate', 'sack']
+        'suggestedUnits': ['kg', 'crate', 'sack'],
       },
       {
         'id': 'fruits',
@@ -76,7 +77,7 @@ class FirestoreService {
         'nameOm': 'Fuduraalee',
         'nameSo': 'Miroha',
         'nameTi': 'ፍራፍረታት',
-        'suggestedUnits': ['kg', 'crate', 'piece']
+        'suggestedUnits': ['kg', 'crate', 'piece'],
       },
       {
         'id': 'livestock',
@@ -85,7 +86,7 @@ class FirestoreService {
         'nameOm': 'Horii',
         'nameSo': 'Xoolaha',
         'nameTi': 'ኸብቲ',
-        'suggestedUnits': ['head']
+        'suggestedUnits': ['head'],
       },
       {
         'id': 'dairy_animal_products',
@@ -94,8 +95,8 @@ class FirestoreService {
         'nameOm': 'Aanan fi Oomisha Hori',
         'nameSo': 'Caanaha & Waxyaabaha Xoolaha',
         'nameTi': 'ፍርያት ጸባን ከብትን',
-        'suggestedUnits': ['liter', 'kg', 'piece']
-      }
+        'suggestedUnits': ['liter', 'kg', 'piece'],
+      },
     ];
     _mockCategories.addAll(categoriesSeed);
   }
@@ -147,7 +148,8 @@ class FirestoreService {
   // Listings
   // -------------------------------------------------------------
   Future<void> saveListing(Map<String, dynamic> listingData) async {
-    final id = listingData['id'] ?? DateTime.now().millisecondsSinceEpoch.toString();
+    final id =
+        listingData['id'] ?? DateTime.now().millisecondsSinceEpoch.toString();
     listingData['id'] = id;
     listingData['createdAt'] = listingData['createdAt'] ?? Timestamp.now();
     listingData['updatedAt'] = Timestamp.now();
@@ -177,7 +179,10 @@ class FirestoreService {
 
   void _notifyListingsChanged() {
     final list = _mockListings.values.toList();
-    list.sort((a, b) => (b['createdAt'] as Timestamp).compareTo(a['createdAt'] as Timestamp));
+    list.sort(
+      (a, b) =>
+          (b['createdAt'] as Timestamp).compareTo(a['createdAt'] as Timestamp),
+    );
     _listingsStreamController.add(list);
   }
 
@@ -187,7 +192,9 @@ class FirestoreService {
     String? searchKeyword,
   }) {
     if (AuthService.isFirebaseAvailable) {
-      Query query = _firestore.collection('listings').where('status', isEqualTo: 'active');
+      Query query = _firestore
+          .collection('listings')
+          .where('status', isEqualTo: 'active');
       if (categoryId != null && categoryId.isNotEmpty) {
         query = query.where('categoryId', isEqualTo: categoryId);
       }
@@ -195,8 +202,10 @@ class FirestoreService {
         query = query.where('region', isEqualTo: region);
       }
       return query.snapshots().map((snap) {
-        var list = snap.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-        
+        var list = snap.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList();
+
         // Local filtering for search text to support free-form checks
         if (searchKeyword != null && searchKeyword.isNotEmpty) {
           final keyword = searchKeyword.toLowerCase();
@@ -206,20 +215,30 @@ class FirestoreService {
             return title.contains(keyword) || desc.contains(keyword);
           }).toList();
         }
-        
-        list.sort((a, b) => (b['createdAt'] as Timestamp).compareTo(a['createdAt'] as Timestamp));
+
+        list.sort(
+          (a, b) => (b['createdAt'] as Timestamp).compareTo(
+            a['createdAt'] as Timestamp,
+          ),
+        );
         return list;
       });
     } else {
       // Memory watch
       Timer.run(() => _notifyListingsChanged());
       return _listingsStreamController.stream.map((list) {
-        var filtered = list.where((item) => item['status'] == 'active').toList();
+        var filtered = list
+            .where((item) => item['status'] == 'active')
+            .toList();
         if (categoryId != null && categoryId.isNotEmpty) {
-          filtered = filtered.where((item) => item['categoryId'] == categoryId).toList();
+          filtered = filtered
+              .where((item) => item['categoryId'] == categoryId)
+              .toList();
         }
         if (region != null && region.isNotEmpty) {
-          filtered = filtered.where((item) => item['region'] == region).toList();
+          filtered = filtered
+              .where((item) => item['region'] == region)
+              .toList();
         }
         if (searchKeyword != null && searchKeyword.isNotEmpty) {
           final keyword = searchKeyword.toLowerCase();
@@ -241,10 +260,14 @@ class FirestoreService {
           .where('sellerId', isEqualTo: sellerId)
           .snapshots()
           .map((snap) {
-        var list = snap.docs.map((doc) => doc.data()).toList();
-        list.sort((a, b) => (b['createdAt'] as Timestamp).compareTo(a['createdAt'] as Timestamp));
-        return list;
-      });
+            var list = snap.docs.map((doc) => doc.data()).toList();
+            list.sort(
+              (a, b) => (b['createdAt'] as Timestamp).compareTo(
+                a['createdAt'] as Timestamp,
+              ),
+            );
+            return list;
+          });
     } else {
       Timer.run(() => _notifyListingsChanged());
       return _listingsStreamController.stream.map((list) {
@@ -253,7 +276,11 @@ class FirestoreService {
     }
   }
 
-  Future<void> incrementReportCount(String listingId, {String? reporterId, String? reason}) async {
+  Future<void> incrementReportCount(
+    String listingId, {
+    String? reporterId,
+    String? reason,
+  }) async {
     final reportId = 'rep_${DateTime.now().millisecondsSinceEpoch}';
     final reportDoc = {
       'id': reportId,
@@ -304,7 +331,10 @@ class FirestoreService {
     };
 
     if (AuthService.isFirebaseAvailable) {
-      await _firestore.collection('chats').doc(chatId).set(chatDoc, SetOptions(merge: true));
+      await _firestore
+          .collection('chats')
+          .doc(chatId)
+          .set(chatDoc, SetOptions(merge: true));
     } else {
       _mockChats[chatId] = chatDoc;
       _notifyChatsChanged();
@@ -314,7 +344,11 @@ class FirestoreService {
 
   void _notifyChatsChanged() {
     final list = _mockChats.values.toList();
-    list.sort((a, b) => (b['lastMessageTime'] as Timestamp).compareTo(a['lastMessageTime'] as Timestamp));
+    list.sort(
+      (a, b) => (b['lastMessageTime'] as Timestamp).compareTo(
+        a['lastMessageTime'] as Timestamp,
+      ),
+    );
     _chatsStreamController.add(list);
   }
 
@@ -328,7 +362,9 @@ class FirestoreService {
     } else {
       Timer.run(() => _notifyChatsChanged());
       return _chatsStreamController.stream.map((list) {
-        return list.where((chat) => (chat['participantIds'] as List).contains(userId)).toList();
+        return list
+            .where((chat) => (chat['participantIds'] as List).contains(userId))
+            .toList();
       });
     }
   }
@@ -344,7 +380,8 @@ class FirestoreService {
           .map((snap) => snap.docs.map((doc) => doc.data()).toList());
     } else {
       if (!_messagesStreamControllers.containsKey(chatId)) {
-        _messagesStreamControllers[chatId] = StreamController<List<Map<String, dynamic>>>.broadcast();
+        _messagesStreamControllers[chatId] =
+            StreamController<List<Map<String, dynamic>>>.broadcast();
       }
       Timer.run(() => _notifyMessagesChanged(chatId));
       return _messagesStreamControllers[chatId]!.stream;
@@ -353,7 +390,10 @@ class FirestoreService {
 
   void _notifyMessagesChanged(String chatId) {
     final list = _mockMessages[chatId] ?? [];
-    list.sort((a, b) => (a['createdAt'] as Timestamp).compareTo(b['createdAt'] as Timestamp));
+    list.sort(
+      (a, b) =>
+          (a['createdAt'] as Timestamp).compareTo(b['createdAt'] as Timestamp),
+    );
     _messagesStreamControllers[chatId]?.add(list);
   }
 
@@ -375,7 +415,7 @@ class FirestoreService {
       final batch = _firestore.batch();
       final chatRef = _firestore.collection('chats').doc(chatId);
       final msgRef = chatRef.collection('messages').doc(messageId);
-      
+
       batch.set(msgRef, messageDoc);
       batch.update(chatRef, {
         'lastMessageText': text,
@@ -389,7 +429,7 @@ class FirestoreService {
         _mockMessages[chatId] = [];
       }
       _mockMessages[chatId]!.add(messageDoc);
-      
+
       if (_mockChats.containsKey(chatId)) {
         _mockChats[chatId]!['lastMessageText'] = text;
         _mockChats[chatId]!['lastMessageSenderId'] = senderId;
@@ -426,10 +466,17 @@ class FirestoreService {
 
   Stream<Map<String, dynamic>?> watchTransaction(String txId) {
     if (AuthService.isFirebaseAvailable) {
-      return _firestore.collection('transactions').doc(txId).snapshots().map((doc) => doc.data());
+      return _firestore
+          .collection('transactions')
+          .doc(txId)
+          .snapshots()
+          .map((doc) => doc.data());
     } else {
       // Mock stream that emits updates
-      return Stream.periodic(const Duration(seconds: 1), (_) => _mockTransactions[txId]);
+      return Stream.periodic(
+        const Duration(seconds: 1),
+        (_) => _mockTransactions[txId],
+      );
     }
   }
 }

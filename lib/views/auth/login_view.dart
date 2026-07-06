@@ -17,12 +17,12 @@ class LoginView extends ConsumerStatefulWidget {
 class _LoginViewState extends ConsumerState<LoginView> {
   final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
-  
+
   bool _isOtpSent = false;
   bool _isLoading = false;
   String? _errorMessage;
   String _phoneNumber = '';
-  
+
   // For sandbox testing demonstration
   final bool _isSandbox = !AuthService.isFirebaseAvailable;
 
@@ -52,21 +52,23 @@ class _LoginViewState extends ConsumerState<LoginView> {
     });
 
     try {
-      await ref.read(authProvider.notifier).sendOtp(
-        phoneNumber: formattedPhone,
-        onCodeSent: (verificationId) {
-          setState(() {
-            _isLoading = false;
-            _isOtpSent = true;
-          });
-        },
-        onFailed: (error) {
-          setState(() {
-            _isLoading = false;
-            _errorMessage = error;
-          });
-        },
-      );
+      await ref
+          .read(authProvider.notifier)
+          .sendOtp(
+            phoneNumber: formattedPhone,
+            onCodeSent: (verificationId) {
+              setState(() {
+                _isLoading = false;
+                _isOtpSent = true;
+              });
+            },
+            onFailed: (error) {
+              setState(() {
+                _isLoading = false;
+                _errorMessage = error;
+              });
+            },
+          );
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -86,16 +88,16 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
     try {
       final notifier = ref.read(authProvider.notifier);
-      
+
       // If Firebase is available, check if the profile exists in Firestore.
       // Otherwise, the authNotifier mock flow handles this.
       // We will perform a simple verification check
       final success = await AuthService().verifyOtp(smsCode);
-      
+
       if (success) {
         final currentUid = AuthService().currentUid!;
         final profile = await FirestoreService().getUserProfile(currentUid);
-        
+
         setState(() {
           _isLoading = false;
         });
@@ -106,7 +108,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => ProfileSetupView(phoneNumber: _phoneNumber),
+                builder: (context) =>
+                    ProfileSetupView(phoneNumber: _phoneNumber),
               ),
             );
           }
@@ -124,9 +127,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           if (mounted) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(
-                builder: (context) => const HomeView(),
-              ),
+              MaterialPageRoute(builder: (context) => const HomeView()),
             );
           }
         }
@@ -154,11 +155,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1B5E20),
-              Color(0xFF388E3C),
-              Color(0xFF81C784),
-            ],
+            colors: [Color(0xFF1B5E20), Color(0xFF388E3C), Color(0xFF81C784)],
           ),
         ),
         child: SafeArea(
@@ -228,12 +225,18 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               ),
                               child: const Row(
                                 children: [
-                                  Icon(Icons.info_outline, color: Colors.orange),
+                                  Icon(
+                                    Icons.info_outline,
+                                    color: Colors.orange,
+                                  ),
                                   SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
                                       'Sandbox Mode Active. You can use any phone number and enter "123456" as the OTP code.',
-                                      style: TextStyle(fontSize: 12, color: Colors.black87),
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black87,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -249,7 +252,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               ),
                               child: Text(
                                 _errorMessage!,
-                                style: const TextStyle(color: Colors.red, fontSize: 13),
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 13,
+                                ),
                                 textAlign: TextAlign.center,
                               ),
                             ),
@@ -273,7 +279,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF1B5E20),
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -285,13 +293,17 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         valueColor:
-                                            AlwaysStoppedAnimation<Color>(Colors.white),
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
                                       ),
                                     )
                                   : Text(
                                       l10n.sendOtp,
                                       style: const TextStyle(
-                                          fontSize: 16, fontWeight: FontWeight.bold),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                             ),
                           ] else ...[
@@ -300,7 +312,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               keyboardType: TextInputType.number,
                               maxLength: 6,
                               decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.lock_outline_rounded),
+                                prefixIcon: const Icon(
+                                  Icons.lock_outline_rounded,
+                                ),
                                 labelText: l10n.verificationCode,
                                 counterText: '',
                                 border: OutlineInputBorder(
@@ -315,7 +329,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF1B5E20),
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
@@ -327,13 +343,17 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         valueColor:
-                                            AlwaysStoppedAnimation<Color>(Colors.white),
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
                                       ),
                                     )
                                   : Text(
                                       l10n.verify,
                                       style: const TextStyle(
-                                          fontSize: 16, fontWeight: FontWeight.bold),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                             ),
                             const SizedBox(height: 12),
@@ -346,7 +366,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               },
                               child: Text(
                                 l10n.cancel,
-                                style: const TextStyle(color: Color(0xFF1B5E20)),
+                                style: const TextStyle(
+                                  color: Color(0xFF1B5E20),
+                                ),
                               ),
                             ),
                           ],

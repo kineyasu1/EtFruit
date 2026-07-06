@@ -32,11 +32,7 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final hasSelectedLanguage = prefs.containsKey('language_code');
 
-  runApp(
-    ProviderScope(
-      child: MyApp(hasSelectedLanguage: hasSelectedLanguage),
-    ),
-  );
+  runApp(ProviderScope(child: MyApp(hasSelectedLanguage: hasSelectedLanguage)));
 }
 
 class MyApp extends ConsumerWidget {
@@ -61,10 +57,7 @@ class MyApp extends ConsumerWidget {
           background: const Color(0xFFF9FBF7),
         ),
         scaffoldBackgroundColor: const Color(0xFFF9FBF7),
-        cardTheme: const CardThemeData(
-          color: Colors.white,
-          elevation: 2,
-        ),
+        cardTheme: const CardThemeData(color: Colors.white, elevation: 2),
       ),
       locale: activeLocale,
       localizationsDelegates: const [

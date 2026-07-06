@@ -68,7 +68,9 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
 
   void _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedRegion == null || _selectedZone == null || _selectedWoreda == null) {
+    if (_selectedRegion == null ||
+        _selectedZone == null ||
+        _selectedWoreda == null) {
       setState(() {
         _errorMessage = AppLocalizations.of(context).fillRequiredFields;
       });
@@ -81,8 +83,11 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
     });
 
     try {
-      final success = await ref.read(authProvider.notifier).verifyOtpAndSetupProfile(
-            smsCode: '123456', // Already verified, passing default static code for user store hook
+      final success = await ref
+          .read(authProvider.notifier)
+          .verifyOtpAndSetupProfile(
+            smsCode:
+                '123456', // Already verified, passing default static code for user store hook
             name: _nameController.text.trim(),
             region: _selectedRegion!,
             zone: _selectedZone!,
@@ -133,11 +138,7 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF1B5E20),
-              Color(0xFF388E3C),
-              Color(0xFFF1F8E9),
-            ],
+            colors: [Color(0xFF1B5E20), Color(0xFF388E3C), Color(0xFFF1F8E9)],
             stops: [0.0, 0.3, 0.8],
           ),
         ),
@@ -176,7 +177,10 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
                           ),
                           child: Text(
                             _errorMessage!,
-                            style: const TextStyle(color: Colors.red, fontSize: 13),
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 13,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -230,7 +234,8 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
                           return DropdownMenuItem(value: r, child: Text(r));
                         }).toList(),
                         onChanged: _onRegionChanged,
-                        validator: (value) => value == null ? 'Select Region' : null,
+                        validator: (value) =>
+                            value == null ? 'Select Region' : null,
                       ),
                       const SizedBox(height: 16),
                       // Zone Dropdown
@@ -247,7 +252,8 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
                           return DropdownMenuItem(value: z, child: Text(z));
                         }).toList(),
                         onChanged: _onZoneChanged,
-                        validator: (value) => value == null ? 'Select Zone' : null,
+                        validator: (value) =>
+                            value == null ? 'Select Zone' : null,
                       ),
                       const SizedBox(height: 16),
                       // Woreda Dropdown
@@ -268,7 +274,8 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
                             _selectedWoreda = value;
                           });
                         },
-                        validator: (value) => value == null ? 'Select Woreda' : null,
+                        validator: (value) =>
+                            value == null ? 'Select Woreda' : null,
                       ),
                       const SizedBox(height: 24),
                       Text(
@@ -285,7 +292,10 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
                       TextFormField(
                         controller: _telegramController,
                         decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.telegram_rounded, color: Colors.blue),
+                          prefixIcon: const Icon(
+                            Icons.telegram_rounded,
+                            color: Colors.blue,
+                          ),
                           labelText: l10n.telegramUsername,
                           hintText: 'e.g. farmer_john',
                           border: OutlineInputBorder(
@@ -298,7 +308,10 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
                       TextFormField(
                         controller: _whatsappController,
                         decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.green),
+                          prefixIcon: const Icon(
+                            Icons.chat_bubble_outline_rounded,
+                            color: Colors.green,
+                          ),
                           labelText: l10n.whatsappNumber,
                           hintText: 'e.g. +251911000000',
                           border: OutlineInputBorder(
@@ -324,14 +337,17 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
                                 ),
                               )
                             : Text(
                                 l10n.saveProfile,
                                 style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                       ),
                     ],

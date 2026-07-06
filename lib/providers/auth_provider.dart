@@ -23,7 +23,7 @@ class AuthNotifier extends StateNotifier<UserModel?> {
         await _loadProfile(uid);
       }
     });
-    
+
     // Check initial user
     final initialUid = _authService.currentUid;
     if (initialUid != null) {
