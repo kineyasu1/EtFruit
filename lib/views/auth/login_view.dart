@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
-import '../../services/firestore_service.dart';
-import '../../services/auth_service.dart';
 import 'profile_setup_view.dart';
+import 'onboarding_choice_view.dart';
 import '../home/home_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
@@ -16,125 +15,92 @@ class LoginView extends ConsumerStatefulWidget {
 
 class _LoginViewState extends ConsumerState<LoginView> {
   final _phoneController = TextEditingController();
-  final _otpController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  bool _isOtpSent = false;
+  bool _isSignUp = false;
   bool _isLoading = false;
+  bool _obscurePassword = true;
   String? _errorMessage;
-  String _phoneNumber = '';
-
-  // For sandbox testing demonstration
-  final bool _isSandbox = !AuthService.isFirebaseAvailable;
 
   @override
   void dispose() {
     _phoneController.dispose();
-    _otpController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _sendOtp() async {
-    final rawPhone = _phoneController.text.trim();
-    if (rawPhone.isEmpty) return;
+  void _submit() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    // Validate phone number format (must fit Ethiopia +251 format)
-    String formattedPhone = rawPhone;
-    if (rawPhone.startsWith('0')) {
-      formattedPhone = '+251${rawPhone.substring(1)}';
-    } else if (!rawPhone.startsWith('+')) {
-      formattedPhone = '+251$rawPhone';
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
+
+    // Format phone number to national/international representation
+    String formattedPhone = phone;
+    if (phone.startsWith('0')) {
+      formattedPhone = '+251${phone.substring(1)}';
+    } else if (!phone.startsWith('+')) {
+      formattedPhone = '+251$phone';
     }
 
     setState(() {
       _isLoading = true;
       _errorMessage = null;
-      _phoneNumber = formattedPhone;
     });
 
     try {
-      await ref
-          .read(authProvider.notifier)
-          .sendOtp(
-            phoneNumber: formattedPhone,
-            onCodeSent: (verificationId) {
-              setState(() {
-                _isLoading = false;
-                _isOtpSent = true;
-              });
-            },
-            onFailed: (error) {
-              setState(() {
-                _isLoading = false;
-                _errorMessage = error;
-              });
-            },
-          );
-    } catch (e) {
+      bool success = false;
+      final authNotifier = ref.read(authProvider.notifier);
+
+      if (_isSignUp) {
+        success = await authNotifier.signUpWithPassword(
+          phoneNumber: formattedPhone,
+          password: password,
+        );
+      } else {
+        success = await authNotifier.signInWithPassword(
+          phoneNumber: formattedPhone,
+          password: password,
+        );
+      }
+
       setState(() {
         _isLoading = false;
-        _errorMessage = e.toString();
       });
-    }
-  }
-
-  void _verifyOtp() async {
-    final smsCode = _otpController.text.trim();
-    if (smsCode.isEmpty) return;
-
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
-    try {
-      final notifier = ref.read(authProvider.notifier);
-
-      // If Firebase is available, check if the profile exists in Firestore.
-      // Otherwise, the authNotifier mock flow handles this.
-      // We will perform a simple verification check
-      final success = await AuthService().verifyOtp(smsCode);
 
       if (success) {
-        final currentUid = AuthService().currentUid!;
-        final profile = await FirestoreService().getUserProfile(currentUid);
+        if (!mounted) return;
+        final user = ref.read(authProvider)!;
 
-        setState(() {
-          _isLoading = false;
-        });
-
-        if (profile == null) {
-          // If the profile doesn't exist yet, go to setup profile
-          if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    ProfileSetupView(phoneNumber: _phoneNumber),
-              ),
-            );
-          }
-        } else {
-          // Re-populate state and go to home
-          await notifier.verifyOtpAndSetupProfile(
-            smsCode: smsCode,
-            name: profile.name,
-            region: profile.region,
-            zone: profile.zone,
-            woreda: profile.woreda,
-            telegramUsername: profile.telegramUsername,
-            whatsappNumber: profile.whatsappNumber,
+        // Route reactively or manually
+        if (user.name.isEmpty || user.region.isEmpty) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProfileSetupView(phoneNumber: formattedPhone),
+            ),
           );
-          if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeView()),
-            );
-          }
+        } else if (user.role.isEmpty) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const OnboardingChoiceView(),
+            ),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeView()),
+          );
         }
       } else {
         setState(() {
-          _isLoading = false;
-          _errorMessage = AppLocalizations.of(context).invalidOtp;
+          _errorMessage = _isSignUp
+              ? 'Registration failed. User may already exist.'
+              : 'Invalid phone number or password.';
         });
       }
     } catch (e) {
@@ -162,221 +128,211 @@ class _LoginViewState extends ConsumerState<LoginView> {
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Icon(
-                    Icons.agriculture_rounded,
-                    size: 80,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.appName,
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Icon(
+                      Icons.agriculture_rounded,
+                      size: 80,
                       color: Colors.white,
-                      letterSpacing: 1.2,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 30),
-                  Card(
-                    elevation: 8,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.appName,
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 1.2,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            _isOtpSent ? l10n.verifyOtp : l10n.phoneLogin,
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green[900],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            _isOtpSent
-                                ? l10n.enterVerificationCode
-                                : l10n.enterPhoneNumber,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 24),
-                          if (_isSandbox)
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.orange[50],
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.orange[200]!),
-                              ),
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.info_outline,
-                                    color: Colors.orange,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      'Sandbox Mode Active. You can use any phone number and enter "123456" as the OTP code.',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.black87,
-                                      ),
+                    const SizedBox(height: 30),
+                    Card(
+                      elevation: 8,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Mode Selector (Login / Sign Up)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isSignUp = false;
+                                      _errorMessage = null;
+                                    });
+                                  },
+                                  child: Text(
+                                    'Log In',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: !_isSignUp ? Colors.green[900] : Colors.grey,
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                          if (_errorMessage != null)
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.red[50],
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                _errorMessage!,
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 13,
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isSignUp = true;
+                                      _errorMessage = null;
+                                    });
+                                  },
+                                  child: Text(
+                                    'Sign Up',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: _isSignUp ? Colors.green[900] : Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          if (!_isOtpSent) ...[
+                            const Divider(),
+                            const SizedBox(height: 16),
+
+                            if (_errorMessage != null)
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                margin: const EdgeInsets.only(bottom: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.red[50],
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.red[200]!),
+                                ),
+                                child: Text(
+                                  _errorMessage!,
+                                  style: const TextStyle(color: Colors.red, fontSize: 13),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+
+                            // Phone Number Field
                             TextFormField(
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
                               decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.phone_rounded),
+                                prefixIcon: const Icon(Icons.phone_rounded, color: Colors.green),
                                 labelText: l10n.phoneNumber,
-                                hintText: '0911000000 or +251911000000',
+                                hintText: '0911000000 or 911000000',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
-                              onFieldSubmitted: (_) => _sendOtp(),
-                            ),
-                            const SizedBox(height: 24),
-                            ElevatedButton(
-                              onPressed: _isLoading ? null : _sendOtp,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF1B5E20),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Colors.white,
-                                            ),
-                                      ),
-                                    )
-                                  : Text(
-                                      l10n.sendOtp,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                            ),
-                          ] else ...[
-                            TextFormField(
-                              controller: _otpController,
-                              keyboardType: TextInputType.number,
-                              maxLength: 6,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(
-                                  Icons.lock_outline_rounded,
-                                ),
-                                labelText: l10n.verificationCode,
-                                counterText: '',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              onFieldSubmitted: (_) => _verifyOtp(),
-                            ),
-                            const SizedBox(height: 24),
-                            ElevatedButton(
-                              onPressed: _isLoading ? null : _verifyOtp,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF1B5E20),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Colors.white,
-                                            ),
-                                      ),
-                                    )
-                                  : Text(
-                                      l10n.verify,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                            ),
-                            const SizedBox(height: 12),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isOtpSent = false;
-                                  _otpController.clear();
-                                });
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return l10n.enterPhoneNumber;
+                                }
+                                return null;
                               },
-                              child: Text(
-                                l10n.cancel,
-                                style: const TextStyle(
-                                  color: Color(0xFF1B5E20),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Password Field
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: _obscurePassword,
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.lock_rounded, color: Colors.green),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                    color: Colors.grey,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
+                                labelText: 'Password',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Please enter password';
+                                }
+                                if (value.trim().length < 6) {
+                                  return 'Password must be at least 6 characters';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Confirm Password Field (Sign Up Only)
+                            if (_isSignUp) ...[
+                              TextFormField(
+                                controller: _confirmPasswordController,
+                                obscureText: _obscurePassword,
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.lock_outline_rounded, color: Colors.green),
+                                  labelText: 'Confirm Password',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please confirm password';
+                                  }
+                                  if (value.trim() != _passwordController.text.trim()) {
+                                    return 'Passwords do not match';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+
+                            // Action Button
+                            ElevatedButton(
+                              onPressed: _isLoading ? null : _submit,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF1B5E20),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 4,
+                              ),
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      ),
+                                    )
+                                  : Text(
+                                      _isSignUp ? 'Sign Up' : 'Log In',
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                             ),
                           ],
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

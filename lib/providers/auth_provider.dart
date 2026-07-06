@@ -91,6 +91,36 @@ class AuthNotifier extends StateNotifier<UserModel?> {
     return true;
   }
 
+  Future<bool> signInWithPassword({
+    required String phoneNumber,
+    required String password,
+  }) async {
+    final success = await _authService.mockSignInWithPassword(phoneNumber, password);
+    if (success) {
+      final uid = _authService.currentUid;
+      if (uid != null) {
+        await _loadProfile(uid);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<bool> signUpWithPassword({
+    required String phoneNumber,
+    required String password,
+  }) async {
+    final success = await _authService.mockRegisterWithPassword(phoneNumber, password);
+    if (success) {
+      final uid = _authService.currentUid;
+      if (uid != null) {
+        await _loadProfile(uid);
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future<void> updateProfile(UserModel updatedUser) async {
     await _firestoreService.saveUserProfile(updatedUser);
     state = updatedUser;

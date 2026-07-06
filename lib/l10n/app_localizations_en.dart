@@ -288,7 +288,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get termsText =>
-      'By using FarmLink, you agree that we are not a party to any transaction. Payments are made directly between buyer and seller using Chapa (Telebirr, CBE Birr, HelloCash). We make no guarantee of product quality or delivery.';
+      'By using Agriገበያ, you agree that we are not a party to any transaction. Payments are made directly between buyer and seller using Chapa (Telebirr, CBE Birr, e-Birr). We make no guarantee of product quality or delivery.';
 
   @override
   String get agreeTerms => 'I agree to the Terms of Use';

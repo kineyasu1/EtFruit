@@ -291,7 +291,7 @@ class AppLocalizationsOm extends AppLocalizations {
 
   @override
   String get termsText =>
-      'FarmLink fayyadamuun kaffaltiin daldalaa fi bitataa gidduutti karaa Chapa (Telebirr, CBE Birr, HelloCash) kallattiin akka raawwatu walii galta. Oomisha qulqullina fi geejjiba irratti wabii hin qabnu.';
+      'Agriገበያ fayyadamuun kaffaltiin daldalaa fi bitataa gidduutti karaa Chapa (Telebirr, CBE Birr, e-Birr) kallattiin akka raawwatu walii galta. Oomisha qulqullina fi geejjiba irratti wabii hin qabnu.';
 
   @override
   String get agreeTerms => 'Seera Fayyadamummaa nan walii gala';

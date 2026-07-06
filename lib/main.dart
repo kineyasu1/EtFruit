@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,6 +12,7 @@ import 'services/auth_service.dart';
 import 'views/language_selection_view.dart';
 import 'views/auth/login_view.dart';
 import 'views/auth/profile_setup_view.dart';
+import 'views/auth/onboarding_choice_view.dart';
 import 'views/home/home_view.dart';
 
 void main() async {
@@ -62,6 +64,8 @@ class MyApp extends ConsumerWidget {
       locale: activeLocale,
       localizationsDelegates: const [
         AppLocalizations.delegate,
+        FallbackMaterialLocalizationsDelegate(),
+        FallbackCupertinoLocalizationsDelegate(),
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
@@ -102,7 +106,44 @@ class AppRootNavigator extends ConsumerWidget {
       return ProfileSetupView(phoneNumber: user.phoneNumber);
     }
 
-    // Flow 4: Profile is complete, route to Home
+    // Flow 3.5: If profile is complete but role is not chosen, show Onboarding Choice
+    if (user.role.isEmpty) {
+      return const OnboardingChoiceView();
+    }
+
+    // Flow 4: Profile & Role are complete, route to Home
     return const HomeView();
   }
+}
+
+class FallbackMaterialLocalizationsDelegate
+    extends LocalizationsDelegate<MaterialLocalizations> {
+  const FallbackMaterialLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) =>
+      ['om', 'so', 'ti'].contains(locale.languageCode);
+
+  @override
+  Future<MaterialLocalizations> load(Locale locale) =>
+      GlobalMaterialLocalizations.delegate.load(const Locale('en', ''));
+
+  @override
+  bool shouldReload(FallbackMaterialLocalizationsDelegate old) => false;
+}
+
+class FallbackCupertinoLocalizationsDelegate
+    extends LocalizationsDelegate<CupertinoLocalizations> {
+  const FallbackCupertinoLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) =>
+      ['om', 'so', 'ti'].contains(locale.languageCode);
+
+  @override
+  Future<CupertinoLocalizations> load(Locale locale) =>
+      GlobalCupertinoLocalizations.delegate.load(const Locale('en', ''));
+
+  @override
+  bool shouldReload(FallbackCupertinoLocalizationsDelegate old) => false;
 }

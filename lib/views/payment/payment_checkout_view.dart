@@ -13,6 +13,7 @@ class PaymentCheckoutView extends ConsumerStatefulWidget {
     required this.price,
     required this.sellerId,
     required this.sellerName,
+    this.onSuccessCallback,
   });
 
   final String listingId;
@@ -20,6 +21,7 @@ class PaymentCheckoutView extends ConsumerStatefulWidget {
   final double price;
   final String sellerId;
   final String sellerName;
+  final VoidCallback? onSuccessCallback;
 
   @override
   ConsumerState<PaymentCheckoutView> createState() =>
@@ -36,7 +38,7 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
   void initState() {
     super.initState();
     if (widget.price > 0) {
-      _amountController.text = widget.price.toString();
+      _amountController.text = widget.price.toStringAsFixed(0);
     }
   }
 
@@ -84,7 +86,6 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
 
         if (mounted) {
           if (isMock) {
-            // Push local Sandbox Simulator view
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -93,15 +94,18 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
                   amount: amount,
                   paymentMethod: _selectedMethod,
                   sellerName: widget.sellerName,
+                  onSuccessCallback: widget.onSuccessCallback,
                 ),
               ),
             );
           } else {
-            // Launch real Chapa browser link
             launchUrl(
               Uri.parse(checkoutUrl),
               mode: LaunchMode.externalApplication,
             );
+            if (widget.onSuccessCallback != null) {
+              widget.onSuccessCallback!();
+            }
             Navigator.pop(context);
           }
         }
@@ -127,19 +131,19 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
         'id': 'Telebirr',
         'name': 'Telebirr',
         'color': const Color(0xFF0D47A1),
-        'icon': Icons.account_balance_wallet_rounded,
+        'icon': Icons.account_balance_wallet_rounded
       },
       {
         'id': 'CBE Birr',
         'name': 'CBE Birr',
         'color': const Color(0xFF4A148C),
-        'icon': Icons.account_balance_rounded,
+        'icon': Icons.account_balance_rounded
       },
       {
-        'id': 'HelloCash',
-        'name': 'HelloCash',
+        'id': 'e-Birr',
+        'name': 'e-Birr',
         'color': const Color(0xFFE65100),
-        'icon': Icons.phone_android_rounded,
+        'icon': Icons.phone_android_rounded
       },
     ];
 
@@ -165,15 +169,10 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.red[200]!),
                 ),
-                child: Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red),
-                ),
+                child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
               ),
             Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -181,10 +180,7 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
                   children: [
                     Text(
                       widget.listingTitle,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -194,18 +190,13 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
                     const SizedBox(height: 20),
                     const Divider(),
                     const SizedBox(height: 20),
-                    // Amount Input field
                     TextFormField(
                       controller: _amountController,
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         labelText: l10n.amountToPay,
                         prefixText: 'ETB ',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                     ),
                   ],
@@ -215,14 +206,9 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
             const SizedBox(height: 20),
             Text(
               l10n.paymentMethod,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.green[900],
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green[900]),
             ),
             const SizedBox(height: 10),
-            // Selectable Payment Options list
             Expanded(
               child: ListView.builder(
                 itemCount: methods.length,
@@ -235,33 +221,19 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: isSelected
-                            ? (m['color'] as Color)
-                            : Colors.transparent,
+                        color: isSelected ? (m['color'] as Color) : Colors.transparent,
                         width: 2.5,
                       ),
                     ),
                     child: ListTile(
-                      onTap: () =>
-                          setState(() => _selectedMethod = m['id'] as String),
-                      leading: Icon(
-                        m['icon'] as IconData,
-                        color: m['color'] as Color,
-                        size: 28,
-                      ),
+                      onTap: () => setState(() => _selectedMethod = m['id'] as String),
+                      leading: Icon(m['icon'] as IconData, color: m['color'] as Color, size: 28),
                       title: Text(
                         m['name'] as String,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
                       trailing: isSelected
-                          ? Icon(
-                              Icons.check_circle_rounded,
-                              color: m['color'] as Color,
-                              size: 26,
-                            )
+                          ? Icon(Icons.check_circle_rounded, color: m['color'] as Color, size: 26)
                           : null,
                     ),
                   );
@@ -274,9 +246,7 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
                 backgroundColor: const Color(0xFF1B5E20),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: _isLoading
                   ? const SizedBox(
@@ -289,10 +259,7 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
                     )
                   : Text(
                       l10n.paySeller,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
             ),
           ],
@@ -302,9 +269,6 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
   }
 }
 
-// -----------------------------------------------------------------------------
-// CHAPA SANDBOX SIMULATOR VIEW (webview replacement for local tests)
-// -----------------------------------------------------------------------------
 class ChapaSandboxSimulatorView extends StatefulWidget {
   const ChapaSandboxSimulatorView({
     super.key,
@@ -312,12 +276,14 @@ class ChapaSandboxSimulatorView extends StatefulWidget {
     required this.amount,
     required this.paymentMethod,
     required this.sellerName,
+    this.onSuccessCallback,
   });
 
   final String txId;
   final double amount;
   final String paymentMethod;
   final String sellerName;
+  final VoidCallback? onSuccessCallback;
 
   @override
   State<ChapaSandboxSimulatorView> createState() =>
@@ -325,16 +291,19 @@ class ChapaSandboxSimulatorView extends StatefulWidget {
 }
 
 class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
-  String _simStatus = 'pending'; // 'pending', 'success', 'cancelled'
+  String _simStatus = 'pending';
 
   void _triggerSuccess() async {
     setState(() {
       _simStatus = 'processing';
     });
 
-    // Simulate backend webhook latency
     await Future.delayed(const Duration(seconds: 2));
     await PaymentService().simulatePaymentSuccess(widget.txId);
+
+    if (widget.onSuccessCallback != null) {
+      widget.onSuccessCallback!();
+    }
 
     if (mounted) {
       setState(() {
@@ -369,7 +338,7 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
         ),
         centerTitle: true,
         automaticallyImplyLeading: false,
-        backgroundColor: const Color(0xFF5E35B1), // Chapa Purple
+        backgroundColor: const Color(0xFF5E35B1),
         foregroundColor: Colors.white,
       ),
       body: Center(
@@ -379,7 +348,6 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Logo
               Icon(Icons.payment_rounded, size: 64, color: Colors.purple[800]),
               const SizedBox(height: 8),
               const Text(
@@ -434,7 +402,7 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          '${widget.amount} ETB',
+                          '${widget.amount.toStringAsFixed(0)} ETB',
                           style: const TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w900,
@@ -484,7 +452,7 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
                     backgroundColor: Colors.green,
                   ),
                   child: const Text(
-                    'Return to FarmLink',
+                    'Return to Agriገበያ',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -501,7 +469,7 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text(
-                    'Return to FarmLink',
+                    'Return to Agriገበያ',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

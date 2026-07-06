@@ -650,6 +650,54 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                         ),
                       if (_listing!['inAppChatEnabled'] ?? true)
                         const SizedBox(width: 12),
+                      
+                      // Add to Cart Button (Only for Buyers)
+                      if (ref.read(authProvider)?.role == 'buyer') ...[
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
+                              final photoUrls = (_listing!['photoUrls'] as List?)?.map((e) => e.toString()).toList() ?? [];
+                              await FirestoreService().addToCart({
+                                'listingId': widget.listingId,
+                                'title': _listing!['title'],
+                                'price': double.tryParse(_listing!['price'].toString()) ?? 0.0,
+                                'unit': _listing!['unit'],
+                                'quantity': 1.0,
+                                'photoUrl': photoUrls.isNotEmpty ? photoUrls[0] : '',
+                                'sellerId': _listing!['sellerId'],
+                                'sellerName': _listing!['sellerName'] ?? 'Seller',
+                              });
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('${_listing!['title']} added to cart!'),
+                                  backgroundColor: const Color(0xFF1B5E20),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.add_shopping_cart_rounded,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              'Add to Cart',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1B5E20),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                      ],
+
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: _paySellerDirect,

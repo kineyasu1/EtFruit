@@ -653,7 +653,7 @@ abstract class AppLocalizations {
   /// No description provided for @termsText.
   ///
   /// In en, this message translates to:
-  /// **'By using FarmLink, you agree that we are not a party to any transaction. Payments are made directly between buyer and seller using Chapa (Telebirr, CBE Birr, HelloCash). We make no guarantee of product quality or delivery.'**
+  /// **'By using Agriገበያ, you agree that we are not a party to any transaction. Payments are made directly between buyer and seller using Chapa (Telebirr, CBE Birr, e-Birr). We make no guarantee of product quality or delivery.'**
   String get termsText;
 
   /// No description provided for @agreeTerms.

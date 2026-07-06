@@ -291,7 +291,7 @@ class AppLocalizationsSo extends AppLocalizations {
 
   @override
   String get termsText =>
-      'Markaad isticmaalayso FarmLink, waxaad ogolaatay inaanan qayb ka ahayn wax kala iibsi ah. Lacagaha waxaa si toos ah u kala bixinaya iibsadaha iyo iibiyaha iyagoo isticmaalaya Chapa (Telebirr, CBE Birr, HelloCash). Ma damaanad qaadayno tayada ama gaarsiinta alaabta.';
+      'Markaad isticmaalayso Agriገበያ, waxaad ogolaatay inaanan qayb ka ahayn wax kala iibsi ah. Lacagaha waxaa si toos ah u kala bixinaya iibsadaha iyo iibiyaha iyagoo isticmaalaya Chapa (Telebirr, CBE Birr, e-Birr). Ma damaanad qaadayno tayada ama gaarsiinta alaabta.';
 
   @override
   String get agreeTerms => 'Waan ogolahay Shuruudaha Adeegsiga';

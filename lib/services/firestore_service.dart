@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import 'auth_service.dart';
 
@@ -9,6 +11,7 @@ class FirestoreService {
   factory FirestoreService() => _instance;
   FirestoreService._internal() {
     _seedMockCategories();
+    _loadLocalData();
   }
 
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
@@ -21,13 +24,17 @@ class FirestoreService {
   final Map<String, List<Map<String, dynamic>>> _mockMessages = {};
   final Map<String, Map<String, dynamic>> _mockTransactions = {};
 
+  // Shopping Cart & Orders local storage caches
+  final List<Map<String, dynamic>> _mockCart = [];
+  final List<Map<String, dynamic>> _mockOrders = [];
+
   // Stream controllers for mock real-time updates
   final StreamController<List<Map<String, dynamic>>> _listingsStreamController =
       StreamController<List<Map<String, dynamic>>>.broadcast();
   final StreamController<List<Map<String, dynamic>>> _chatsStreamController =
       StreamController<List<Map<String, dynamic>>>.broadcast();
   final Map<String, StreamController<List<Map<String, dynamic>>>>
-  _messagesStreamControllers = {};
+      _messagesStreamControllers = {};
 
   // -------------------------------------------------------------
   // Categories (Seed Data)
@@ -101,11 +108,143 @@ class FirestoreService {
     _mockCategories.addAll(categoriesSeed);
   }
 
+  // -------------------------------------------------------------
+  // Local Database Persistence (JSON/SharedPreferences)
+  // -------------------------------------------------------------
+  static dynamic _convertJsonToFirestoreTypes(dynamic value) {
+    if (value is Map) {
+      final Map<String, dynamic> result = {};
+      value.forEach((key, val) {
+        if ((key == 'createdAt' || key == 'updatedAt' || key == 'lastMessageTime') && val is String) {
+          final dt = DateTime.tryParse(val);
+          if (dt != null) {
+            result[key] = Timestamp.fromDate(dt);
+          } else {
+            result[key] = val;
+          }
+        } else {
+          result[key] = _convertJsonToFirestoreTypes(val);
+        }
+      });
+      return result;
+    } else if (value is List) {
+      return value.map((item) => _convertJsonToFirestoreTypes(item)).toList();
+    }
+    return value;
+  }
+
+  static dynamic _convertFirestoreTypesToJson(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate().toIso8601String();
+    } else if (value is Map) {
+      final Map<String, dynamic> result = {};
+      value.forEach((key, val) {
+        result[key] = _convertFirestoreTypesToJson(val);
+      });
+      return result;
+    } else if (value is List) {
+      return value.map((item) => _convertFirestoreTypesToJson(item)).toList();
+    }
+    return value;
+  }
+
+  Future<void> _loadLocalData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      final usersJson = prefs.getString('mock_users');
+      if (usersJson != null) {
+        final Map<String, dynamic> decoded = jsonDecode(usersJson);
+        _mockUsers.clear();
+        decoded.forEach((key, value) {
+          _mockUsers[key] = UserModel.fromMap(Map<String, dynamic>.from(value), key);
+        });
+      }
+
+      final listingsJson = prefs.getString('mock_listings');
+      if (listingsJson != null) {
+        final Map<String, dynamic> decoded = jsonDecode(listingsJson);
+        _mockListings.clear();
+        decoded.forEach((key, value) {
+          _mockListings[key] = Map<String, dynamic>.from(_convertJsonToFirestoreTypes(value));
+        });
+      }
+
+      final chatsJson = prefs.getString('mock_chats');
+      if (chatsJson != null) {
+        final Map<String, dynamic> decoded = jsonDecode(chatsJson);
+        _mockChats.clear();
+        decoded.forEach((key, value) {
+          _mockChats[key] = Map<String, dynamic>.from(_convertJsonToFirestoreTypes(value));
+        });
+      }
+
+      final messagesJson = prefs.getString('mock_messages');
+      if (messagesJson != null) {
+        final Map<String, dynamic> decoded = jsonDecode(messagesJson);
+        _mockMessages.clear();
+        decoded.forEach((key, value) {
+          final list = (value as List).map((item) => Map<String, dynamic>.from(_convertJsonToFirestoreTypes(item))).toList();
+          _mockMessages[key] = list;
+        });
+      }
+
+      final txJson = prefs.getString('mock_transactions');
+      if (txJson != null) {
+        final Map<String, dynamic> decoded = jsonDecode(txJson);
+        _mockTransactions.clear();
+        decoded.forEach((key, value) {
+          _mockTransactions[key] = Map<String, dynamic>.from(_convertJsonToFirestoreTypes(value));
+        });
+      }
+
+      final cartJson = prefs.getString('mock_cart');
+      if (cartJson != null) {
+        final List decoded = jsonDecode(cartJson);
+        _mockCart.clear();
+        _mockCart.addAll(decoded.map((item) => Map<String, dynamic>.from(item)).toList());
+      }
+
+      final ordersJson = prefs.getString('mock_orders');
+      if (ordersJson != null) {
+        final List decoded = jsonDecode(ordersJson);
+        _mockOrders.clear();
+        _mockOrders.addAll(decoded.map((item) => Map<String, dynamic>.from(_convertJsonToFirestoreTypes(item))).toList());
+      }
+
+      _notifyListingsChanged();
+      _notifyChatsChanged();
+    } catch (e) {
+      debugPrint('Error loading local data: $e');
+    }
+  }
+
+  Future<void> _saveLocalData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      final Map<String, dynamic> usersMap = {};
+      _mockUsers.forEach((key, value) {
+        usersMap[key] = value.toMap();
+        usersMap[key]['createdAt'] = value.createdAt.toIso8601String();
+        usersMap[key]['updatedAt'] = value.updatedAt.toIso8601String();
+      });
+      await prefs.setString('mock_users', jsonEncode(usersMap));
+      await prefs.setString('mock_listings', jsonEncode(_convertFirestoreTypesToJson(_mockListings)));
+      await prefs.setString('mock_chats', jsonEncode(_convertFirestoreTypesToJson(_mockChats)));
+      await prefs.setString('mock_messages', jsonEncode(_convertFirestoreTypesToJson(_mockMessages)));
+      await prefs.setString('mock_transactions', jsonEncode(_convertFirestoreTypesToJson(_mockTransactions)));
+      await prefs.setString('mock_cart', jsonEncode(_mockCart));
+      await prefs.setString('mock_orders', jsonEncode(_convertFirestoreTypesToJson(_mockOrders)));
+    } catch (e) {
+      debugPrint('Error saving local data: $e');
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getCategories() async {
     if (AuthService.isFirebaseAvailable) {
       final snap = await _firestore.collection('categories').get();
       if (snap.docs.isEmpty) {
-        // Seed Firebase categories if empty
         for (var cat in _mockCategories) {
           await _firestore.collection('categories').doc(cat['id']).set(cat);
         }
@@ -132,8 +271,19 @@ class FirestoreService {
       }
       return null;
     } else {
+      await _loadLocalData();
       return _mockUsers[uid];
     }
+  }
+
+  Future<UserModel?> getMockUserByPhoneNumber(String phoneNumber) async {
+    await _loadLocalData();
+    for (var user in _mockUsers.values) {
+      if (user.phoneNumber == phoneNumber) {
+        return user;
+      }
+    }
+    return null;
   }
 
   Future<void> saveUserProfile(UserModel user) async {
@@ -141,6 +291,7 @@ class FirestoreService {
       await _firestore.collection('users').doc(user.id).set(user.toMap());
     } else {
       _mockUsers[user.id] = user;
+      await _saveLocalData();
     }
   }
 
@@ -148,8 +299,7 @@ class FirestoreService {
   // Listings
   // -------------------------------------------------------------
   Future<void> saveListing(Map<String, dynamic> listingData) async {
-    final id =
-        listingData['id'] ?? DateTime.now().millisecondsSinceEpoch.toString();
+    final id = listingData['id'] ?? DateTime.now().millisecondsSinceEpoch.toString();
     listingData['id'] = id;
     listingData['createdAt'] = listingData['createdAt'] ?? Timestamp.now();
     listingData['updatedAt'] = Timestamp.now();
@@ -158,6 +308,7 @@ class FirestoreService {
       await _firestore.collection('listings').doc(id).set(listingData);
     } else {
       _mockListings[id] = listingData;
+      await _saveLocalData();
       _notifyListingsChanged();
     }
   }
@@ -172,6 +323,7 @@ class FirestoreService {
       if (_mockListings.containsKey(listingId)) {
         _mockListings[listingId]!['status'] = status;
         _mockListings[listingId]!['updatedAt'] = Timestamp.now();
+        await _saveLocalData();
         _notifyListingsChanged();
       }
     }
@@ -180,8 +332,7 @@ class FirestoreService {
   void _notifyListingsChanged() {
     final list = _mockListings.values.toList();
     list.sort(
-      (a, b) =>
-          (b['createdAt'] as Timestamp).compareTo(a['createdAt'] as Timestamp),
+      (a, b) => (b['createdAt'] as Timestamp).compareTo(a['createdAt'] as Timestamp),
     );
     _listingsStreamController.add(list);
   }
@@ -192,9 +343,7 @@ class FirestoreService {
     String? searchKeyword,
   }) {
     if (AuthService.isFirebaseAvailable) {
-      Query query = _firestore
-          .collection('listings')
-          .where('status', isEqualTo: 'active');
+      Query query = _firestore.collection('listings').where('status', isEqualTo: 'active');
       if (categoryId != null && categoryId.isNotEmpty) {
         query = query.where('categoryId', isEqualTo: categoryId);
       }
@@ -202,11 +351,8 @@ class FirestoreService {
         query = query.where('region', isEqualTo: region);
       }
       return query.snapshots().map((snap) {
-        var list = snap.docs
-            .map((doc) => doc.data() as Map<String, dynamic>)
-            .toList();
+        var list = snap.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
-        // Local filtering for search text to support free-form checks
         if (searchKeyword != null && searchKeyword.isNotEmpty) {
           final keyword = searchKeyword.toLowerCase();
           list = list.where((item) {
@@ -217,28 +363,19 @@ class FirestoreService {
         }
 
         list.sort(
-          (a, b) => (b['createdAt'] as Timestamp).compareTo(
-            a['createdAt'] as Timestamp,
-          ),
+          (a, b) => (b['createdAt'] as Timestamp).compareTo(a['createdAt'] as Timestamp),
         );
         return list;
       });
     } else {
-      // Memory watch
       Timer.run(() => _notifyListingsChanged());
       return _listingsStreamController.stream.map((list) {
-        var filtered = list
-            .where((item) => item['status'] == 'active')
-            .toList();
+        var filtered = list.where((item) => item['status'] == 'active').toList();
         if (categoryId != null && categoryId.isNotEmpty) {
-          filtered = filtered
-              .where((item) => item['categoryId'] == categoryId)
-              .toList();
+          filtered = filtered.where((item) => item['categoryId'] == categoryId).toList();
         }
         if (region != null && region.isNotEmpty) {
-          filtered = filtered
-              .where((item) => item['region'] == region)
-              .toList();
+          filtered = filtered.where((item) => item['region'] == region).toList();
         }
         if (searchKeyword != null && searchKeyword.isNotEmpty) {
           final keyword = searchKeyword.toLowerCase();
@@ -260,14 +397,12 @@ class FirestoreService {
           .where('sellerId', isEqualTo: sellerId)
           .snapshots()
           .map((snap) {
-            var list = snap.docs.map((doc) => doc.data()).toList();
-            list.sort(
-              (a, b) => (b['createdAt'] as Timestamp).compareTo(
-                a['createdAt'] as Timestamp,
-              ),
-            );
-            return list;
-          });
+        var list = snap.docs.map((doc) => doc.data()).toList();
+        list.sort(
+          (a, b) => (b['createdAt'] as Timestamp).compareTo(a['createdAt'] as Timestamp),
+        );
+        return list;
+      });
     } else {
       Timer.run(() => _notifyListingsChanged());
       return _listingsStreamController.stream.map((list) {
@@ -301,6 +436,7 @@ class FirestoreService {
       if (_mockListings.containsKey(listingId)) {
         final current = _mockListings[listingId]!['reportCount'] ?? 0;
         _mockListings[listingId]!['reportCount'] = current + 1;
+        await _saveLocalData();
       }
     }
   }
@@ -331,12 +467,10 @@ class FirestoreService {
     };
 
     if (AuthService.isFirebaseAvailable) {
-      await _firestore
-          .collection('chats')
-          .doc(chatId)
-          .set(chatDoc, SetOptions(merge: true));
+      await _firestore.collection('chats').doc(chatId).set(chatDoc, SetOptions(merge: true));
     } else {
       _mockChats[chatId] = chatDoc;
+      await _saveLocalData();
       _notifyChatsChanged();
     }
     return chatId;
@@ -345,9 +479,7 @@ class FirestoreService {
   void _notifyChatsChanged() {
     final list = _mockChats.values.toList();
     list.sort(
-      (a, b) => (b['lastMessageTime'] as Timestamp).compareTo(
-        a['lastMessageTime'] as Timestamp,
-      ),
+      (a, b) => (b['lastMessageTime'] as Timestamp).compareTo(a['lastMessageTime'] as Timestamp),
     );
     _chatsStreamController.add(list);
   }
@@ -362,9 +494,7 @@ class FirestoreService {
     } else {
       Timer.run(() => _notifyChatsChanged());
       return _chatsStreamController.stream.map((list) {
-        return list
-            .where((chat) => (chat['participantIds'] as List).contains(userId))
-            .toList();
+        return list.where((chat) => (chat['participantIds'] as List).contains(userId)).toList();
       });
     }
   }
@@ -391,8 +521,7 @@ class FirestoreService {
   void _notifyMessagesChanged(String chatId) {
     final list = _mockMessages[chatId] ?? [];
     list.sort(
-      (a, b) =>
-          (a['createdAt'] as Timestamp).compareTo(b['createdAt'] as Timestamp),
+      (a, b) => (a['createdAt'] as Timestamp).compareTo(b['createdAt'] as Timestamp),
     );
     _messagesStreamControllers[chatId]?.add(list);
   }
@@ -424,7 +553,6 @@ class FirestoreService {
       });
       await batch.commit();
     } else {
-      // Memory Store
       if (!_mockMessages.containsKey(chatId)) {
         _mockMessages[chatId] = [];
       }
@@ -435,6 +563,7 @@ class FirestoreService {
         _mockChats[chatId]!['lastMessageSenderId'] = senderId;
         _mockChats[chatId]!['lastMessageTime'] = timestamp;
       }
+      await _saveLocalData();
       _notifyMessagesChanged(chatId);
       _notifyChatsChanged();
     }
@@ -452,6 +581,7 @@ class FirestoreService {
       await _firestore.collection('transactions').doc(id).set(txData);
     } else {
       _mockTransactions[id] = txData;
+      await _saveLocalData();
     }
   }
 
@@ -472,11 +602,48 @@ class FirestoreService {
           .snapshots()
           .map((doc) => doc.data());
     } else {
-      // Mock stream that emits updates
       return Stream.periodic(
         const Duration(seconds: 1),
         (_) => _mockTransactions[txId],
       );
     }
+  }
+
+  // -------------------------------------------------------------
+  // Shopping Cart & Orders
+  // -------------------------------------------------------------
+  Future<List<Map<String, dynamic>>> getCartItems() async {
+    await _loadLocalData();
+    return _mockCart;
+  }
+
+  Future<void> addToCart(Map<String, dynamic> item) async {
+    final index = _mockCart.indexWhere((element) => element['listingId'] == item['listingId']);
+    if (index >= 0) {
+      _mockCart[index]['quantity'] = (_mockCart[index]['quantity'] ?? 1.0) + (item['quantity'] ?? 1.0);
+    } else {
+      _mockCart.add(item);
+    }
+    await _saveLocalData();
+  }
+
+  Future<void> removeFromCart(String listingId) async {
+    _mockCart.removeWhere((element) => element['listingId'] == listingId);
+    await _saveLocalData();
+  }
+
+  Future<void> clearCart() async {
+    _mockCart.clear();
+    await _saveLocalData();
+  }
+
+  Future<List<Map<String, dynamic>>> getOrders() async {
+    await _loadLocalData();
+    return _mockOrders;
+  }
+
+  Future<void> createOrder(Map<String, dynamic> order) async {
+    _mockOrders.add(order);
+    await _saveLocalData();
   }
 }

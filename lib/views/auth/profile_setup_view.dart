@@ -83,36 +83,31 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
     });
 
     try {
-      final success = await ref
-          .read(authProvider.notifier)
-          .verifyOtpAndSetupProfile(
-            smsCode:
-                '123456', // Already verified, passing default static code for user store hook
-            name: _nameController.text.trim(),
-            region: _selectedRegion!,
-            zone: _selectedZone!,
-            woreda: _selectedWoreda!,
-            telegramUsername: _telegramController.text.trim().isEmpty
-                ? null
-                : _telegramController.text.trim().replaceAll('@', ''),
-            whatsappNumber: _whatsappController.text.trim().isEmpty
-                ? null
-                : _whatsappController.text.trim(),
-          );
+      final currentUser = ref.read(authProvider)!;
+      final updatedUser = currentUser.copyWith(
+        name: _nameController.text.trim(),
+        region: _selectedRegion!,
+        zone: _selectedZone!,
+        woreda: _selectedWoreda!,
+        telegramUsername: _telegramController.text.trim().isEmpty
+            ? null
+            : _telegramController.text.trim().replaceAll('@', ''),
+        whatsappNumber: _whatsappController.text.trim().isEmpty
+            ? null
+            : _whatsappController.text.trim(),
+      );
+
+      await ref.read(authProvider.notifier).updateProfile(updatedUser);
 
       setState(() {
         _isLoading = false;
       });
 
-      if (success && mounted) {
+      if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const OnboardingChoiceView()),
         );
-      } else {
-        setState(() {
-          _errorMessage = 'Failed to save profile. Please try again.';
-        });
       }
     } catch (e) {
       setState(() {

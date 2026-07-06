@@ -13,6 +13,8 @@ class UserModel {
   final bool isVerified;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String role; // 'buyer' or 'seller' or ''
+  final String password;
 
   UserModel({
     required this.id,
@@ -27,7 +29,17 @@ class UserModel {
     this.isVerified = true,
     required this.createdAt,
     required this.updatedAt,
+    this.role = '',
+    this.password = '',
   });
+
+  static DateTime parseDateTime(dynamic value) {
+    if (value == null) return DateTime.now();
+    if (value is Timestamp) return value.toDate();
+    if (value is String) return DateTime.parse(value);
+    if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+    return DateTime.now();
+  }
 
   factory UserModel.fromMap(Map<String, dynamic> map, String documentId) {
     return UserModel(
@@ -41,12 +53,10 @@ class UserModel {
       telegramUsername: map['telegramUsername'],
       whatsappNumber: map['whatsappNumber'],
       isVerified: map['isVerified'] ?? true,
-      createdAt: map['createdAt'] != null
-          ? (map['createdAt'] as Timestamp).toDate()
-          : DateTime.now(),
-      updatedAt: map['updatedAt'] != null
-          ? (map['updatedAt'] as Timestamp).toDate()
-          : DateTime.now(),
+      createdAt: parseDateTime(map['createdAt']),
+      updatedAt: parseDateTime(map['updatedAt']),
+      role: map['role'] ?? '',
+      password: map['password'] ?? '',
     );
   }
 
@@ -63,6 +73,8 @@ class UserModel {
       'isVerified': isVerified,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
+      'role': role,
+      'password': password,
     };
   }
 
@@ -78,6 +90,8 @@ class UserModel {
     bool? isVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? role,
+    String? password,
   }) {
     return UserModel(
       id: id,
@@ -92,6 +106,8 @@ class UserModel {
       isVerified: isVerified ?? this.isVerified,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      role: role ?? this.role,
+      password: password ?? this.password,
     );
   }
 }

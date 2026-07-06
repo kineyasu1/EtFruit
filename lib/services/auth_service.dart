@@ -1,11 +1,16 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'firestore_service.dart';
+import '../models/user_model.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
   factory AuthService() => _instance;
-  AuthService._internal();
+  AuthService._internal() {
+    _loadSession();
+  }
 
   FirebaseAuth get _auth => FirebaseAuth.instance;
 
@@ -45,6 +50,29 @@ class AuthService {
     }
   }
 
+  Future<void> _loadSession() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedUid = prefs.getString('mock_logged_in_uid');
+      if (savedUid != null) {
+        _mockLoggedIn = true;
+        _mockUid = savedUid;
+        // Seed initial auth state change
+        Timer(const Duration(milliseconds: 100), () {
+          _authStateController.add(_mockUid);
+        });
+        
+        // Fetch phone number from profile
+        final profile = await FirestoreService().getUserProfile(savedUid);
+        if (profile != null) {
+          _mockPhoneNumber = profile.phoneNumber;
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading mock auth session: $e');
+    }
+  }
+
   // Verification ID returned by Firebase for OTP flow
   String? _verificationId;
 
@@ -59,7 +87,6 @@ class AuthService {
         await _auth.verifyPhoneNumber(
           phoneNumber: phoneNumber,
           verificationCompleted: (PhoneAuthCredential credential) async {
-            // Auto-retrieval or instant verification
             await _auth.signInWithCredential(credential);
           },
           verificationFailed: (FirebaseAuthException e) {
@@ -78,7 +105,6 @@ class AuthService {
         onFailed(e.toString());
       }
     } else {
-      // Mock OTP Send
       debugPrint('MOCK: Sending OTP to $phoneNumber');
       await Future.delayed(const Duration(seconds: 1));
       _mockPhoneNumber = phoneNumber;
@@ -103,12 +129,14 @@ class AuthService {
         return false;
       }
     } else {
-      // Mock OTP Verification (Accepts 123456 or any code for mock testing)
       await Future.delayed(const Duration(milliseconds: 500));
       if (smsCode == '123456' || smsCode.isNotEmpty) {
         _mockLoggedIn = true;
-        _mockUid =
-            'mock_user_${_mockPhoneNumber?.replaceAll('+', '') ?? '123456'}';
+        _mockUid = 'mock_user_${_mockPhoneNumber?.replaceAll('+', '') ?? '123456'}';
+        
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('mock_logged_in_uid', _mockUid!);
+
         _authStateController.add(_mockUid);
         return true;
       }
@@ -116,8 +144,64 @@ class AuthService {
     }
   }
 
+  // -------------------------------------------------------------
+  // Mock Password Register & Login (Enhanced Custom flow)
+  // -------------------------------------------------------------
+  Future<bool> mockSignInWithPassword(String phoneNumber, String password) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final mockUser = await FirestoreService().getMockUserByPhoneNumber(phoneNumber);
+    if (mockUser != null && mockUser.password == password) {
+      _mockLoggedIn = true;
+      _mockUid = mockUser.id;
+      _mockPhoneNumber = phoneNumber;
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('mock_logged_in_uid', _mockUid!);
+
+      _authStateController.add(_mockUid);
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> mockRegisterWithPassword(String phoneNumber, String password) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final uid = 'mock_user_${phoneNumber.replaceAll('+', '').replaceAll(' ', '')}';
+    final existingUser = await FirestoreService().getMockUserByPhoneNumber(phoneNumber);
+    if (existingUser != null) {
+      return false; // User already exists!
+    }
+
+    _mockLoggedIn = true;
+    _mockUid = uid;
+    _mockPhoneNumber = phoneNumber;
+
+    final newUser = UserModel(
+      id: uid,
+      name: '',
+      phoneNumber: phoneNumber,
+      region: '',
+      zone: '',
+      woreda: '',
+      password: password,
+      role: '',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    await FirestoreService().saveUserProfile(newUser);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('mock_logged_in_uid', uid);
+
+    _authStateController.add(_mockUid);
+    return true;
+  }
+
   // Logs the user out
   Future<void> signOut() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('mock_logged_in_uid');
+
     if (isFirebaseAvailable) {
       await _auth.signOut();
     } else {
