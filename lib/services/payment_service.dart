@@ -79,30 +79,33 @@ class PaymentService {
           }
         }
 
-        debugPrint(
-          'Cloud Function payment init failed, falling back to mock sandbox: ${response.body}',
-        );
+        throw Exception('Cloud Function initiation failed with status: ${response.statusCode}');
       } catch (e) {
-        debugPrint('Error calling backend, falling back to mock sandbox: $e');
+        debugPrint('Production payment initialization failed: $e');
+        rethrow;
       }
+    } else {
+      // FALLBACK / SANDBOX SIMULATION MODE
+      // Generate a mock checkout URL pointing to a simulator
+      final mockCheckoutUrl = 'https://chapa-sandbox-simulator.web.app/pay/$txId';
+      txDoc['checkoutUrl'] = mockCheckoutUrl;
+      await FirestoreService().saveTransaction(txDoc);
+
+      return {
+        'success': true,
+        'txId': txId,
+        'checkoutUrl': mockCheckoutUrl,
+        'isMock': true,
+      };
     }
-
-    // FALLBACK / SANDBOX SIMULATION MODE
-    // Generate a mock checkout URL pointing to a simulator
-    final mockCheckoutUrl = 'https://chapa-sandbox-simulator.web.app/pay/$txId';
-    txDoc['checkoutUrl'] = mockCheckoutUrl;
-    await FirestoreService().saveTransaction(txDoc);
-
-    return {
-      'success': true,
-      'txId': txId,
-      'checkoutUrl': mockCheckoutUrl,
-      'isMock': true,
-    };
   }
 
   // Simulates a webhook success trigger for sandbox testing
   Future<void> simulatePaymentSuccess(String txId) async {
+    if (AuthService.isFirebaseAvailable) {
+      debugPrint('Simulation blocked: Firebase is live. Webhook must handle updates.');
+      return;
+    }
     final tx = await FirestoreService().getTransaction(txId);
     if (tx != null) {
       tx['status'] = 'completed';
@@ -124,6 +127,10 @@ class PaymentService {
 
   // Simulates a webhook failure trigger for sandbox testing
   Future<void> simulatePaymentFailure(String txId) async {
+    if (AuthService.isFirebaseAvailable) {
+      debugPrint('Simulation blocked: Firebase is live. Webhook must handle updates.');
+      return;
+    }
     final tx = await FirestoreService().getTransaction(txId);
     if (tx != null) {
       tx['status'] = 'failed';
