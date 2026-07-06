@@ -34,6 +34,7 @@ class PaymentService {
       'buyerId': buyerId,
       'sellerId': sellerId,
       'listingId': listingId,
+      'listingTitle': listingTitle,
       'paymentMethod': paymentMethod,
       'status': 'pending',
       'gatewayReferenceId': '',

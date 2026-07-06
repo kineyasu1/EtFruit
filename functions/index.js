@@ -161,12 +161,81 @@ exports.chapaWebhook = functions.https.onRequest(async (req, res) => {
       });
 
       console.log(`Transaction ${txId} successfully updated to completed.`);
+
+      // 3. Send payment success push notifications to buyer and seller
+      try {
+        // Fetch Buyer details
+        const buyerDoc = await db.collection("users").doc(txData.buyerId).get();
+        if (buyerDoc.exists) {
+          const buyerData = buyerDoc.data();
+          if (buyerData.fcmToken) {
+            await admin.messaging().send({
+              token: buyerData.fcmToken,
+              notification: {
+                title: "Payment Successful",
+                body: `Your payment of ${txData.amount} ETB for "${txData.listingTitle || 'product'}" is confirmed.`,
+              },
+              data: {
+                type: "payment",
+                transactionId: txId,
+              }
+            });
+            console.log(`FCM success push sent to Buyer: ${txData.buyerId}`);
+          }
+        }
+
+        // Fetch Seller details
+        const sellerDoc = await db.collection("users").doc(txData.sellerId).get();
+        if (sellerDoc.exists) {
+          const sellerData = sellerDoc.data();
+          if (sellerData.fcmToken) {
+            await admin.messaging().send({
+              token: sellerData.fcmToken,
+              notification: {
+                title: "Product Sold",
+                body: `Payment of ${txData.amount} ETB received for "${txData.listingTitle || 'your product'}"!`,
+              },
+              data: {
+                type: "payment",
+                transactionId: txId,
+              }
+            });
+            console.log(`FCM success push sent to Seller: ${txData.sellerId}`);
+          }
+        }
+      } catch (fcmErr) {
+        console.error("FCM Webhook success notification error (skipped):", fcmErr.message);
+      }
     } else {
       await txRef.update({
         status: "failed",
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
       console.log(`Transaction ${txId} updated to failed.`);
+
+      // Send payment failure notification to buyer
+      try {
+        const buyerDoc = await db.collection("users").doc(txData.buyerId).get();
+        if (buyerDoc.exists) {
+          const buyerData = buyerDoc.data();
+          if (buyerData.fcmToken) {
+            await admin.messaging().send({
+              token: buyerData.fcmToken,
+              notification: {
+                title: "Payment Failed",
+                body: `Your payment of ${txData.amount} ETB for "${txData.listingTitle || 'product'}" has failed.`,
+              },
+              data: {
+                type: "payment",
+                transactionId: txId,
+              }
+            });
+            console.log(`FCM failure push sent to Buyer: ${txData.buyerId}`);
+          }
+        }
+      } catch (fcmErr) {
+        console.error("FCM Webhook failure notification error (skipped):", fcmErr.message);
+      }
     }
 
     return res.status(200).send("Webhook handled successfully");
@@ -175,3 +244,78 @@ exports.chapaWebhook = functions.https.onRequest(async (req, res) => {
     return res.status(500).send("Internal Server Error");
   }
 });
+
+/**
+ * Cloud Function triggered on new message creation in any chat room.
+ * Looks up the recipient's FCM token and dispatches a push notification.
+ */
+exports.onMessageCreated = functions.firestore
+  .document("chats/{chatId}/messages/{messageId}")
+  .onCreate(async (snap, context) => {
+    const message = snap.data();
+
+    // Skip notifications for system receipt messages
+    if (message.senderId === "system") {
+      return null;
+    }
+
+    const chatId = context.params.chatId;
+    const db = admin.firestore();
+
+    try {
+      // 1. Fetch chat room details to read participants
+      const chatDoc = await db.collection("chats").doc(chatId).get();
+      if (!chatDoc.exists) {
+        console.warn(`Chat room ${chatId} not found.`);
+        return null;
+      }
+
+      const chatData = chatDoc.data();
+      const participantIds = chatData.participantIds || [];
+
+      // 2. Identify the recipient user ID
+      const recipientId = participantIds.find(id => id !== message.senderId);
+      if (!recipientId) {
+        console.warn("FCM Message Push: No recipient identified.");
+        return null;
+      }
+
+      // 3. Look up recipient profile details
+      const recipientDoc = await db.collection("users").doc(recipientId).get();
+      if (!recipientDoc.exists) {
+        console.warn(`Recipient user ${recipientId} not found.`);
+        return null;
+      }
+
+      const recipientData = recipientDoc.data();
+      const fcmToken = recipientData.fcmToken;
+
+      // 4. Send the message notification payload
+      if (fcmToken) {
+        // Retrieve sender's name to personalize the notification header
+        const senderDoc = await db.collection("users").doc(message.senderId).get();
+        const senderName = senderDoc.exists ? (senderDoc.data().name || "Seller") : "User";
+
+        const payload = {
+          token: fcmToken,
+          notification: {
+            title: senderName,
+            body: message.text,
+          },
+          data: {
+            type: "chat",
+            chatId: chatId,
+            otherUserName: senderName,
+          },
+        };
+
+        await admin.messaging().send(payload);
+        console.log(`FCM push message successfully sent to user ${recipientId} in chat ${chatId}`);
+      } else {
+        console.log(`Recipient ${recipientId} has no registered FCM token. Skipping notification.`);
+      }
+    } catch (error) {
+      console.error("FCM Message trigger failed (skipped):", error);
+    }
+    return null;
+  });
