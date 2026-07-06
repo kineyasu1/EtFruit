@@ -15,6 +15,11 @@ service cloud.firestore {
     // Users: can only read/write their own document
     match /users/{userId} {
       allow read, write: if isOwner(userId);
+
+      // Cart subcollection: read/write only by the owner
+      match /cart/{itemId} {
+        allow read, write: if isOwner(userId);
+      }
     }
 
     // Listings: public read, write only by the owning sellerId
@@ -49,6 +54,14 @@ service cloud.firestore {
         && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId)
         && request.resource.data.status == 'pending'
         && resource.data.status == 'pending';
+      allow delete: if false;
+    }
+
+    // Orders: readable by involved buyer/seller, created by buyer, updated by buyer/seller
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId);
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.buyerId;
+      allow update: if isAuthenticated() && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId);
       allow delete: if false;
     }
   }
