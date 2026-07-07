@@ -30,7 +30,5 @@
 -dontwarn javax.security.**
 
 # Suppress Play Store Deferred Component warnings
--dontwarn com.google.android.play.core.tasks.OnFailureListener
--dontwarn com.google.android.play.core.tasks.OnSuccessListener
--dontwarn com.google.android.play.core.tasks.Task
+-dontwarn com.google.android.play.core.**
 -dontwarn io.flutter.embedding.engine.deferredcomponents.PlayStoreDeferredComponentManager
