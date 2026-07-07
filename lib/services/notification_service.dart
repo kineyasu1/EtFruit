@@ -7,7 +7,6 @@ import '../services/auth_service.dart';
 import '../providers/auth_provider.dart';
 import '../views/chat/chat_detail_view.dart';
 import '../views/home/home_view.dart';
-import 'firestore_service.dart';
 
 class NavigationService {
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

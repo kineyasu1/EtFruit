@@ -22,11 +22,6 @@ class FakeAuthNotifier extends AuthNotifier {
       updatedAt: DateTime.now(),
     );
   }
-
-  @override
-  void _init() {
-    // Do nothing during super constructor initialization to prevent Firebase/Auth service exceptions
-  }
 }
 
 void main() {

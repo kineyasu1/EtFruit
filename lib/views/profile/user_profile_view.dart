@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/firestore_service.dart';
 import '../../models/user_model.dart';
-import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class UserProfileView extends ConsumerStatefulWidget {
   const UserProfileView({super.key, required this.userId});
@@ -100,8 +99,6 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(

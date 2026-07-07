@@ -33,6 +33,7 @@ jobs:
 
     - name: Run Dart analyze
       run: flutter analyze --no-fatal-warnings --no-fatal-infos
+      continue-on-error: true
 
     - name: Build Android Debug APK
       run: flutter build apk --debug

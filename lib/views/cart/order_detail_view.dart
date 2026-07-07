@@ -97,8 +97,6 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
   }
 
   Widget _buildTracker(String status) {
-    final steps = ['Pending', 'Confirmed', 'Preparing', 'Shipped', 'Delivered'];
-    
     int currentStepIndex = 0;
     if (status == 'confirmed') currentStepIndex = 1;
     if (status == 'preparing') currentStepIndex = 2;
@@ -166,8 +164,6 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text(
