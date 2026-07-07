@@ -55,18 +55,25 @@ void main() async {
 
 String? _firebaseInitError;
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key, required this.hasSelectedLanguage, this.initError});
 
   final bool hasSelectedLanguage;
   final String? initError;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  bool _bypassError = false;
+
+  @override
+  Widget build(BuildContext context) {
     // Set the global Riverpod container context for push notifications Tap Navigation
     NotificationService().refProviderContext = ProviderScope.containerOf(context);
 
-    if (initError != null) {
+    if (widget.initError != null && !_bypassError) {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -74,52 +81,72 @@ class MyApp extends ConsumerWidget {
             color: const Color(0xFFD32F2F),
             padding: const EdgeInsets.all(24.0),
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline_rounded,
-                    color: Colors.white,
-                    size: 80,
-                  ),
-                  const SizedBox(height: 24),
-                  const Text(
-                    'FATAL INITIALIZATION ERROR',
-                    style: TextStyle(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline_rounded,
                       color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+                      size: 80,
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Firebase failed to initialize in release mode. Production builds require a valid google-services.json configuration.',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                      height: 1.4,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.black26,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      initError!,
-                      style: const TextStyle(
+                    const SizedBox(height: 24),
+                    const Text(
+                      'FATAL INITIALIZATION ERROR',
+                      style: TextStyle(
                         color: Colors.white,
-                        fontFamily: 'monospace',
-                        fontSize: 11,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
                       ),
-                      textAlign: TextAlign.left,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Firebase failed to initialize in release mode. Production builds require a valid google-services.json configuration.',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        height: 1.4,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.black26,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        widget.initError!,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'monospace',
+                          fontSize: 11,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _bypassError = true;
+                        });
+                      },
+                      icon: const Icon(Icons.science_outlined),
+                      label: const Text('Continue in Sandbox Mode'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: const Color(0xFFD32F2F),
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -161,7 +188,7 @@ class MyApp extends ConsumerWidget {
         Locale('so', ''), // Somali
         Locale('ti', ''), // Tigrinya
       ],
-      home: AppRootNavigator(hasSelectedLanguage: hasSelectedLanguage),
+      home: AppRootNavigator(hasSelectedLanguage: widget.hasSelectedLanguage),
     );
   }
 }
