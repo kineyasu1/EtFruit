@@ -399,6 +399,110 @@ class FirestoreService {
     }
   }
 
+  Future<ListingsPageResult> getListingsPage({
+    String? categoryId,
+    String? region,
+    String? searchKeyword,
+    dynamic startAfter,
+    int limit = 6,
+  }) async {
+    if (AuthService.isFirebaseAvailable) {
+      Query query = _firestore.collection('listings')
+          .where('status', isEqualTo: 'active')
+          .orderBy('createdAt', descending: true);
+
+      if (categoryId != null && categoryId.isNotEmpty) {
+        query = query.where('categoryId', isEqualTo: categoryId);
+      }
+      if (region != null && region.isNotEmpty) {
+        query = query.where('region', isEqualTo: region);
+      }
+
+      int queryLimit = limit;
+      if (searchKeyword != null && searchKeyword.isNotEmpty) {
+        queryLimit = limit * 4; // Fetch more since client-side filtering will discard non-matching titles/descriptions
+      }
+
+      Query pageQuery = query.limit(queryLimit + 1);
+      if (startAfter != null && startAfter is DocumentSnapshot) {
+        pageQuery = query.startAfterDocument(startAfter).limit(queryLimit + 1);
+      }
+
+      final snapshot = await pageQuery.get();
+      final List<DocumentSnapshot> docs = List.from(snapshot.docs);
+      
+      var listingsList = docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      
+      // Client-side filtering for keywords
+      if (searchKeyword != null && searchKeyword.isNotEmpty) {
+        final keyword = searchKeyword.toLowerCase();
+        listingsList = listingsList.where((item) {
+          final title = (item['title'] ?? '').toString().toLowerCase();
+          final desc = (item['description'] ?? '').toString().toLowerCase();
+          return title.contains(keyword) || desc.contains(keyword);
+        }).toList();
+      }
+
+      final bool hasMore = docs.length > queryLimit;
+      if (hasMore && docs.isNotEmpty) {
+        docs.removeLast();
+        if (listingsList.length > limit) {
+          listingsList = listingsList.sublist(0, limit);
+        }
+      }
+
+      final lastDoc = docs.isNotEmpty ? docs.last : null;
+
+      return ListingsPageResult(
+        listings: listingsList,
+        cursor: lastDoc,
+        hasMore: hasMore,
+      );
+    } else {
+      await _loadLocalData();
+      var filtered = _mockListings.values.where((item) => item['status'] == 'active').toList();
+      if (categoryId != null && categoryId.isNotEmpty) {
+        filtered = filtered.where((item) => item['categoryId'] == categoryId).toList();
+      }
+      if (region != null && region.isNotEmpty) {
+        filtered = filtered.where((item) => item['region'] == region).toList();
+      }
+      if (searchKeyword != null && searchKeyword.isNotEmpty) {
+        final keyword = searchKeyword.toLowerCase();
+        filtered = filtered.where((item) {
+          final title = (item['title'] ?? '').toString().toLowerCase();
+          final desc = (item['description'] ?? '').toString().toLowerCase();
+          return title.contains(keyword) || desc.contains(keyword);
+        }).toList();
+      }
+
+      // Sort descending by createdAt
+      filtered.sort((a, b) {
+        final dateA = UserModel.parseDateTime(a['createdAt']);
+        final dateB = UserModel.parseDateTime(b['createdAt']);
+        return dateB.compareTo(dateA);
+      });
+
+      int startIndex = 0;
+      if (startAfter != null && startAfter is int) {
+        startIndex = startAfter;
+      }
+
+      final endIndex = startIndex + limit;
+      final listingsList = filtered.sublist(
+        startIndex,
+        endIndex > filtered.length ? filtered.length : endIndex,
+      );
+      final hasMore = endIndex < filtered.length;
+
+      return ListingsPageResult(
+        listings: listingsList,
+        cursor: hasMore ? endIndex : null,
+        hasMore: hasMore,
+      );
+    }
+  }
+
   Stream<List<Map<String, dynamic>>> watchMyListings(String sellerId) {
     if (AuthService.isFirebaseAvailable) {
       return _firestore
@@ -724,6 +828,17 @@ class FirestoreService {
     }
   }
 
+  Future<Map<String, dynamic>?> getOrderById(String orderId) async {
+    if (AuthService.isFirebaseAvailable) {
+      final doc = await FirebaseFirestore.instance.collection('orders').doc(orderId).get();
+      return doc.data();
+    } else {
+      await _loadLocalData();
+      final idx = _mockOrders.indexWhere((element) => element['id'] == orderId);
+      return idx >= 0 ? _mockOrders[idx] : null;
+    }
+  }
+
   Future<void> createOrder(Map<String, dynamic> order) async {
     if (AuthService.isFirebaseAvailable) {
       await FirebaseFirestore.instance
@@ -789,4 +904,16 @@ class FirestoreService {
       return _mockReviews.where((element) => element['sellerId'] == sellerId).toList();
     }
   }
+}
+
+class ListingsPageResult {
+  final List<Map<String, dynamic>> listings;
+  final dynamic cursor;
+  final bool hasMore;
+
+  ListingsPageResult({
+    required this.listings,
+    required this.cursor,
+    required this.hasMore,
+  });
 }

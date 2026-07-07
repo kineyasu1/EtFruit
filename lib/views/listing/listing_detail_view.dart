@@ -9,6 +9,7 @@ import '../../models/user_model.dart';
 import '../chat/chat_detail_view.dart';
 import '../payment/payment_checkout_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ListingDetailView extends ConsumerStatefulWidget {
   const ListingDetailView({super.key, required this.listingId});
@@ -298,11 +299,21 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                             itemBuilder: (context, index) {
                               final pUrl = photoUrls[index];
                               return pUrl.startsWith('http')
-                                  ? Image.network(
-                                      pUrl,
+                                  ? CachedNetworkImage(
+                                      imageUrl: pUrl,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => Container(
+                                      placeholder: (context, url) => Container(
+                                        color: Colors.grey[200],
+                                        child: const Center(
+                                          child: SizedBox(
+                                            width: 32,
+                                            height: 32,
+                                            child: CircularProgressIndicator(strokeWidth: 2),
+                                          ),
+                                        ),
+                                      ),
+                                      errorWidget: (_, __, ___) => Container(
                                         color: Colors.green[50],
                                         child: const Icon(
                                           Icons.grass_rounded,

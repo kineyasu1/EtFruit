@@ -11,6 +11,7 @@ import '../../services/taxonomy_data.dart';
 import '../../services/firestore_service.dart';
 import '../../services/auth_service.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CreateListingView extends ConsumerStatefulWidget {
   const CreateListingView({super.key, this.onSuccess});
@@ -704,11 +705,32 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
 
                               final isMock = index < _photoUrls.length;
                               final Widget imageWidget = isMock
-                                  ? Image.network(
-                                      _photoUrls[index],
+                                  ? CachedNetworkImage(
+                                      imageUrl: _photoUrls[index],
                                       width: 90,
                                       height: 90,
                                       fit: BoxFit.cover,
+                                      placeholder: (context, url) => Container(
+                                        width: 90,
+                                        height: 90,
+                                        color: Colors.grey[200],
+                                        child: const Center(
+                                          child: SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(strokeWidth: 2),
+                                          ),
+                                        ),
+                                      ),
+                                      errorWidget: (_, __, ___) => Container(
+                                        width: 90,
+                                        height: 90,
+                                        color: Colors.green[50],
+                                        child: const Icon(
+                                          Icons.broken_image_outlined,
+                                          color: Colors.green,
+                                        ),
+                                      ),
                                     )
                                   : Image.file(
                                       _localPhotos[index - _photoUrls.length],

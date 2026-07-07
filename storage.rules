@@ -2,16 +2,33 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     
-    // Listing photos: public read, write only by the authenticated owner of the folder
+    // Helper to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper to check if file size is below 5MB and is an image type
+    function isValidImage() {
+      return request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // Listings photos: public read, write only by the authenticated seller who owns the folder
     match /listings/{userId}/{allPaths=**} {
       allow read: if true;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow write: if isAuthenticated() && request.auth.uid == userId && isValidImage();
     }
     
-    // General fallback rules - restrict writes by default outside listings
+    // User profile pictures: public read, write only by the owning authenticated user
+    match /users/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && request.auth.uid == userId && isValidImage();
+    }
+    
+    // General fallback rules - restrict reads and block all writes by default
     match /{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if false; // Block all other writes by default
+      allow read: if isAuthenticated();
+      allow write: if false;
     }
   }
 }

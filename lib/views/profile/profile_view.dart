@@ -5,6 +5,7 @@ import '../../services/firestore_service.dart';
 import '../../services/location_data.dart';
 import '../language_selection_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfileView extends ConsumerStatefulWidget {
   const ProfileView({super.key});
@@ -632,12 +633,24 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  photoUrl,
+                                child: CachedNetworkImage(
+                                  imageUrl: photoUrl,
                                   width: 60,
                                   height: 60,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => Container(
+                                  placeholder: (context, url) => Container(
+                                    width: 60,
+                                    height: 60,
+                                    color: Colors.grey[200],
+                                    child: const Center(
+                                      child: SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(strokeWidth: 1.5),
+                                      ),
+                                    ),
+                                  ),
+                                  errorWidget: (_, __, ___) => Container(
                                     width: 60,
                                     height: 60,
                                     color: Colors.green[50],

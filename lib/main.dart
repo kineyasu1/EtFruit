@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'dart:async';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,6 +17,10 @@ import 'views/auth/login_view.dart';
 import 'views/auth/profile_setup_view.dart';
 import 'views/auth/onboarding_choice_view.dart';
 import 'views/home/home_view.dart';
+import 'views/listing/listing_detail_view.dart';
+import 'views/cart/order_detail_view.dart';
+import 'views/profile/user_profile_view.dart';
+import 'package:app_links/app_links.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -161,17 +166,87 @@ class MyApp extends ConsumerWidget {
   }
 }
 
-class AppRootNavigator extends ConsumerWidget {
+class AppRootNavigator extends ConsumerStatefulWidget {
   const AppRootNavigator({super.key, required this.hasSelectedLanguage});
 
   final bool hasSelectedLanguage;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppRootNavigator> createState() => _AppRootNavigatorState();
+}
+
+class _AppRootNavigatorState extends ConsumerState<AppRootNavigator> {
+  late final AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _initDeepLinks();
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    try {
+      final initialUri = await _appLinks.getInitialLink();
+      if (initialUri != null) {
+        _handleDeepLink(initialUri);
+      }
+    } catch (e) {
+      debugPrint('Error getting initial deep link: $e');
+    }
+
+    _linkSubscription = _appLinks.uriLinkStream.listen(
+      (uri) => _handleDeepLink(uri),
+      onError: (err) {
+        debugPrint('Error listening to deep links: $err');
+      },
+    );
+  }
+
+  void _handleDeepLink(Uri uri) {
+    debugPrint('Received deep link: $uri');
+    final context = NavigationService.navigatorKey.currentContext;
+    if (context == null) return;
+
+    final pathSegments = uri.pathSegments;
+    if (pathSegments.isEmpty) return;
+
+    final type = pathSegments[0].toLowerCase();
+    if (type == 'product' && pathSegments.length > 1) {
+      final productId = pathSegments[1];
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ListingDetailView(listingId: productId)),
+      );
+    } else if (type == 'order' && pathSegments.length > 1) {
+      final orderId = pathSegments[1];
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => OrderDetailView(orderId: orderId)),
+      );
+    } else if (type == 'user' && pathSegments.length > 1) {
+      final userId = pathSegments[1];
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => UserProfileView(userId: userId)),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(authProvider);
 
     // Flow 1: If language hasn't been chosen yet, show Language Selector
-    if (!hasSelectedLanguage) {
+    if (!widget.hasSelectedLanguage) {
       return const LanguageSelectionView(isFromSettings: false);
     }
 

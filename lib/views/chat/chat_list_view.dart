@@ -6,6 +6,7 @@ import '../../services/firestore_service.dart';
 import '../../models/user_model.dart';
 import 'chat_detail_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ChatListView extends ConsumerStatefulWidget {
   const ChatListView({super.key});
@@ -126,12 +127,24 @@ class _ChatListViewState extends ConsumerState<ChatListView> {
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: photoUrl.isNotEmpty
-                              ? Image.network(
-                                  photoUrl,
+                              ? CachedNetworkImage(
+                                  imageUrl: photoUrl,
                                   width: 50,
                                   height: 50,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => Container(
+                                  placeholder: (context, url) => Container(
+                                    width: 50,
+                                    height: 50,
+                                    color: Colors.grey[200],
+                                    child: const Center(
+                                      child: SizedBox(
+                                        width: 14,
+                                        height: 14,
+                                        child: CircularProgressIndicator(strokeWidth: 1.5),
+                                      ),
+                                    ),
+                                  ),
+                                  errorWidget: (_, __, ___) => Container(
                                     width: 50,
                                     height: 50,
                                     color: Colors.green[50],

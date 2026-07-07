@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.farmlink.agrimarketmob",
+      "sha256_cert_fingerprints": [
+        "FA:2C:1D:95:90:E5:60:F4:60:8C:7E:6D:77:E5:31:07:3E:2F:38:0B:4D:44:81:4A:26:A6:49:AE:B6:5D:89:A0"
+      ]
+    }
+  }
+]

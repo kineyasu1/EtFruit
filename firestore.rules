@@ -2,100 +2,229 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper to check if user is logged in
+    // ==========================================
+    // HELPER FUNCTIONS
+    // ==========================================
+
+    // Check if the request is authenticated
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Helper to check ownership
+    // Check if user is operating on their own document
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Users: can only read/write their own document
-    match /users/{userId} {
-      allow read, write: if isOwner(userId);
+    // Get the user's role from the database
+    function getUserRole(userId) {
+      return get(/databases/$(database)/documents/users/$(userId)).data.role;
+    }
 
-      // Cart subcollection: read/write only by the owner
+    // Check if the current user has a specific role
+    function hasRole(role) {
+      return isAuthenticated() && getUserRole(request.auth.uid) == role;
+    }
+
+    // Check if the user is an admin
+    function isAdmin() {
+      return hasRole('admin');
+    }
+
+    // ==========================================
+    // USERS COLLECTION RULES
+    // ==========================================
+    match /users/{userId} {
+      // Admins can read/write all profiles. Users can read/write their own profiles.
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && isOwner(userId) 
+        && request.resource.data.name is string 
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.phoneNumber is string
+        && (request.resource.data.role == 'buyer' || request.resource.data.role == 'seller' || request.resource.data.role == 'admin');
+      
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin())
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 100
+        && (request.resource.data.role == resource.data.role || isAdmin()); // Prevent self role elevation unless admin
+
+      allow delete: if isAdmin();
+
+      // Cart subcollection: read/write only by the owner or admin
       match /cart/{itemId} {
-        allow read, write: if isOwner(userId);
+        allow read, write: if isAuthenticated() && (isOwner(userId) || isAdmin());
       }
     }
 
-    // Listings: public read, write only by the owning sellerId
+    // ==========================================
+    // LISTINGS (PRODUCTS) COLLECTION RULES
+    // ==========================================
     match /listings/{listingId} {
-      allow read: if true;
-      allow create: if isAuthenticated() && request.resource.data.sellerId == request.auth.uid;
-      allow update, delete: if isAuthenticated() && resource.data.sellerId == request.auth.uid;
+      // Anyone (authenticated or guest) can read active listings. Only authenticated users can read sold/deleted ones.
+      allow read: if resource.data.status == 'active' || (isAuthenticated() && (resource.data.sellerId == request.auth.uid || isAdmin()));
+      
+      // Sellers can create listings
+      allow create: if isAuthenticated() 
+        && (hasRole('seller') || isAdmin())
+        && request.resource.data.sellerId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 3
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.price is number
+        && request.resource.data.price > 0
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.unit is string
+        && request.resource.data.unit.size() > 0;
+
+      // Sellers can update/delete their own listings; Admins can do anything
+      allow update: if isAuthenticated() 
+        && (resource.data.sellerId == request.auth.uid || isAdmin())
+        && request.resource.data.sellerId == resource.data.sellerId // Prevent transferring ownership
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 3
+        && request.resource.data.price is number
+        && request.resource.data.price > 0
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0;
+
+      allow delete: if isAuthenticated() && (resource.data.sellerId == request.auth.uid || isAdmin());
     }
 
-    // Chats: readable/writable only by the two participants
+    // ==========================================
+    // CHATS COLLECTION RULES
+    // ==========================================
     match /chats/{chatId} {
-      allow read: if isAuthenticated() && (request.auth.uid in resource.data.participantIds);
+      allow read: if isAuthenticated() && (request.auth.uid in resource.data.participantIds || isAdmin());
       allow create: if isAuthenticated() && (request.auth.uid in request.resource.data.participantIds);
       allow update: if isAuthenticated() && (request.auth.uid in resource.data.participantIds) && (request.auth.uid in request.resource.data.participantIds);
-      allow delete: if false;
+      allow delete: if isAdmin();
 
-      // Messages: readable/writable only by the chat participants
+      // Messages subcollection
       match /messages/{messageId} {
-        allow read: if isAuthenticated() && (request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds);
-        allow create: if isAuthenticated() && (request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds) && request.resource.data.senderId == request.auth.uid;
-        allow update, delete: if false;
+        allow read: if isAuthenticated() && (request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds || isAdmin());
+        allow create: if isAuthenticated() 
+          && (request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds) 
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0;
+        allow update, delete: if isAdmin();
       }
     }
 
-    // Transactions: readable and writeable by the involved buyer/seller only if the status remains pending
+    // ==========================================
+    // TRANSACTIONS COLLECTION RULES
+    // ==========================================
     match /transactions/{txId} {
-      allow read: if isAuthenticated() && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId);
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId || isAdmin());
       allow create: if isAuthenticated() 
-        && (request.auth.uid == request.resource.data.buyerId || request.auth.uid == request.resource.data.sellerId)
-        && request.resource.data.status == 'pending';
+        && (request.auth.uid == request.resource.data.buyerId || request.auth.uid == request.resource.data.sellerId || isAdmin())
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0
+        && request.resource.data.status in ['pending', 'success', 'failed'];
+      
       allow update: if isAuthenticated() 
-        && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId)
-        && request.resource.data.status == 'pending'
-        && resource.data.status == 'pending';
-      allow delete: if false;
+        && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId || isAdmin())
+        && request.resource.data.amount == resource.data.amount // Prevent editing amount
+        && request.resource.data.status in ['pending', 'success', 'failed'];
+
+      allow delete: if isAdmin();
     }
 
-    // Orders: readable by involved buyer/seller, created by buyer, updated by buyer/seller
+    // ==========================================
+    // ORDERS COLLECTION RULES
+    // ==========================================
     match /orders/{orderId} {
-      allow read: if isAuthenticated() && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId);
-      allow create: if isAuthenticated() 
-        && request.auth.uid == request.resource.data.buyerId
-        && request.resource.data.status == 'pending';
-      allow update: if isAuthenticated() 
-        && (
-          // Buyer can only update status to cancelled, or rate the order (updating isRated to true)
-          (request.auth.uid == resource.data.buyerId 
-            && (
-              (request.resource.data.status == 'cancelled' && resource.data.status == 'pending')
-              || (request.resource.data.isRated == true && resource.data.isRated != true && request.resource.data.status == resource.data.status)
-            )
-          )
-          ||
-          // Seller can transition the status sequentially, but cannot change isRated
-          (request.auth.uid == resource.data.sellerId 
-            && request.resource.data.isRated == resource.data.isRated
-            && (
-              (request.resource.data.status == 'confirmed' && resource.data.status == 'pending')
-              || (request.resource.data.status == 'shipped' && resource.data.status == 'confirmed')
-              || (request.resource.data.status == 'delivered' && resource.data.status == 'shipped')
-              || (request.resource.data.status == 'cancelled' && (resource.data.status == 'pending' || resource.data.status == 'confirmed'))
-            )
-          )
-        );
-      allow delete: if false;
-    }
-
-    // Reviews: public read, created by verified buyer of completed order, immutable
-    match /reviews/{reviewId} {
-      allow read: if isAuthenticated();
+      // Only buyers, sellers involved in the order, or admins can view it
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId || isAdmin());
+      
+      // Buyers can create orders in 'pending' status
       allow create: if isAuthenticated()
         && request.auth.uid == request.resource.data.buyerId
+        && request.resource.data.status == 'pending'
+        && request.resource.data.quantity is number
+        && request.resource.data.quantity > 0
+        && request.resource.data.price is number
+        && request.resource.data.price > 0
+        && request.resource.data.sellerId is string
+        && request.resource.data.sellerId.size() > 0;
+
+      // Status state-machine transitions and rating updates
+      allow update: if isAuthenticated() && (
+        isAdmin() ||
+        // Buyer updates
+        (request.auth.uid == resource.data.buyerId 
+          && (
+            // Buyer can cancel a pending/confirmed order
+            (request.resource.data.status == 'cancelled' && (resource.data.status == 'pending' || resource.data.status == 'confirmed'))
+            || 
+            // Buyer can complete a delivered order
+            (request.resource.data.status == 'completed' && resource.data.status == 'delivered')
+            ||
+            // Buyer can rate the order (transition isRated from false to true)
+            (request.resource.data.isRated == true && resource.data.isRated != true && request.resource.data.status == resource.data.status)
+          )
+        )
+        ||
+        // Seller updates
+        (request.auth.uid == resource.data.sellerId 
+          && request.resource.data.isRated == resource.data.isRated // Seller cannot rate
+          && (
+            // Sequential state transitions
+            (request.resource.data.status == 'confirmed' && resource.data.status == 'pending')
+            || (request.resource.data.status == 'preparing' && resource.data.status == 'confirmed')
+            || (request.resource.data.status == 'shipped' && resource.data.status == 'preparing')
+            || (request.resource.data.status == 'delivered' && resource.data.status == 'shipped')
+            || (request.resource.data.status == 'completed' && resource.data.status == 'delivered')
+            || (request.resource.data.status == 'cancelled' && (resource.data.status == 'pending' || resource.data.status == 'confirmed' || resource.data.status == 'preparing'))
+          )
+        )
+      );
+
+      allow delete: if isAdmin();
+    }
+
+    // ==========================================
+    // REVIEWS COLLECTION RULES
+    // ==========================================
+    match /reviews/{reviewId} {
+      // Anyone can read reviews
+      allow read: if true;
+      
+      // Verified buyer of a delivered/completed order can write a review (once)
+      allow create: if isAuthenticated()
+        && request.auth.uid == request.resource.data.buyerId
+        && request.resource.data.rating is number
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.comment is string
         && get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.buyerId == request.auth.uid
-        && get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.status == 'delivered'
-        && get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.isRated != true;
-      allow update, delete: if false;
+        && (
+          get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.status == 'delivered' 
+          || get(/databases/$(database)/documents/orders/$(request.resource.data.orderId)).data.status == 'completed'
+        );
+      
+      // Buyers can update/delete their own reviews
+      allow update: if isAuthenticated() && (request.auth.uid == resource.data.buyerId || isAdmin())
+        && request.resource.data.buyerId == resource.data.buyerId
+        && request.resource.data.rating is number
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5;
+
+      allow delete: if isAuthenticated() && (request.auth.uid == resource.data.buyerId || isAdmin());
+    }
+
+    // ==========================================
+    // REPORTS COLLECTION RULES
+    // ==========================================
+    match /reports/{reportId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated()
+        && request.resource.data.listingId is string
+        && request.resource.data.reason is string;
+      allow update, delete: if isAdmin();
     }
   }
 }
