@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/firestore_service.dart';
 import '../../utils/order_state_machine.dart';
 import '../../services/error_service.dart';
-import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class OrderDetailView extends ConsumerStatefulWidget {
   const OrderDetailView({super.key, required this.orderId});
@@ -131,7 +130,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -199,9 +198,9 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: _getStatusColor(_order!['status']).withOpacity(0.1),
+                                  color: _getStatusColor(_order!['status']).withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: _getStatusColor(_order!['status']).withOpacity(0.3)),
+                                  border: Border.all(color: _getStatusColor(_order!['status']).withValues(alpha: 0.3)),
                                 ),
                                 child: Text(
                                   _order!['status'].toString().toUpperCase(),

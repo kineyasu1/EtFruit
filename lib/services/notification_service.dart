@@ -64,7 +64,7 @@ class NotificationService {
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         debugPrint('FCM Foreground message received: ${message.notification?.title}');
         final context = NavigationService.navigatorKey.currentContext;
-        if (context != null && message.notification != null) {
+        if (context != null && context.mounted && message.notification != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(

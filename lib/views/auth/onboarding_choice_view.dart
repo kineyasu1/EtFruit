@@ -34,7 +34,7 @@ class OnboardingChoiceView extends ConsumerWidget {
                 Icon(
                   Icons.agriculture_rounded,
                   size: 96,
-                  color: Colors.white.withOpacity(0.95),
+                  color: Colors.white.withValues(alpha: 0.95),
                 ),
                 const SizedBox(height: 16),
                 Text(

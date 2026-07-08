@@ -348,7 +348,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.6),
+                                color: Colors.black.withValues(alpha: 0.6),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -613,7 +613,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 10,
                     offset: const Offset(0, -4),
                   ),
@@ -721,7 +721,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                 'sellerId': _listing!['sellerId'],
                                 'sellerName': _listing!['sellerName'] ?? 'Seller',
                               });
-                              if (!mounted) return;
+                              if (!context.mounted) return;
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('${_listing!['title']} added to cart!'),

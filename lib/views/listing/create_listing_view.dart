@@ -44,8 +44,8 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
   List<String> _zones = [];
   List<String> _woredas = [];
 
-  List<String> _photoUrls = []; // Stores unsplash URLs or base64 mock
-  List<File> _localPhotos = [];
+  final List<String> _photoUrls = []; // Stores unsplash URLs or base64 mock
+  final List<File> _localPhotos = [];
   final ImagePicker _picker = ImagePicker();
 
   bool _enableTelegram = false;
@@ -304,6 +304,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
       };
 
       await FirestoreService().saveListing(listingData);
+      if (!mounted) return;
 
       setState(() {
         _isLoading = false;
@@ -319,6 +320,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
         Navigator.pop(context);
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
         _errorMessage = ErrorService.getReadableError(context, e);
@@ -417,7 +419,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                         const SizedBox(height: 16),
                         // Category Select
                         DropdownButtonFormField<TaxonomyCategory>(
-                          value: _selectedCategory,
+                          initialValue: _selectedCategory,
                           decoration: InputDecoration(
                             labelText: l10n.productCategory,
                             prefixIcon: const Icon(Icons.category_outlined),
@@ -439,7 +441,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                           const SizedBox(height: 16),
                           // Product Select
                           DropdownButtonFormField<TaxonomyProduct>(
-                            value: _selectedProduct,
+                            initialValue: _selectedProduct,
                             decoration: InputDecoration(
                               labelText: l10n.productName,
                               prefixIcon: const Icon(Icons.grass_rounded),
@@ -511,10 +513,12 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                                   ),
                                 ),
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty)
+                                  if (value == null || value.trim().isEmpty) {
                                     return 'Enter quantity';
-                                  if (double.tryParse(value) == null)
+                                  }
+                                  if (double.tryParse(value) == null) {
                                     return 'Enter valid number';
+                                  }
                                   return null;
                                 },
                               ),
@@ -523,7 +527,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                             // Unit
                             Expanded(
                               child: DropdownButtonFormField<String>(
-                                value: _selectedUnit,
+                                initialValue: _selectedUnit,
                                 decoration: InputDecoration(
                                   labelText: l10n.unit,
                                   border: OutlineInputBorder(
@@ -563,10 +567,12 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                                   ),
                                 ),
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty)
+                                  if (value == null || value.trim().isEmpty) {
                                     return 'Enter price';
-                                  if (double.tryParse(value) == null)
+                                  }
+                                  if (double.tryParse(value) == null) {
                                     return 'Enter valid number';
+                                  }
                                   return null;
                                 },
                               ),
@@ -796,7 +802,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
-                          value: _selectedRegion,
+                          initialValue: _selectedRegion,
                           decoration: InputDecoration(
                             labelText: l10n.region,
                             border: OutlineInputBorder(
@@ -812,7 +818,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
-                          value: _selectedZone,
+                          initialValue: _selectedZone,
                           decoration: InputDecoration(
                             labelText: l10n.zone,
                             border: OutlineInputBorder(
@@ -828,7 +834,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
                         ),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
-                          value: _selectedWoreda,
+                          initialValue: _selectedWoreda,
                           decoration: InputDecoration(
                             labelText: l10n.woreda,
                             border: OutlineInputBorder(

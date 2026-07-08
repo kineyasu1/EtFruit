@@ -167,7 +167,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           seedColor: const Color(0xFF1B5E20),
           primary: const Color(0xFF1B5E20),
           secondary: const Color(0xFFFBC02D),
-          background: const Color(0xFFF9FBF7),
+          surface: const Color(0xFFF9FBF7),
         ),
         scaffoldBackgroundColor: const Color(0xFFF9FBF7),
         cardTheme: const CardThemeData(color: Colors.white, elevation: 2),

@@ -564,7 +564,7 @@ class FirestoreService {
     required String buyerId,
     required String sellerId,
   }) async {
-    final chatId = '${listingId}_${buyerId}_${sellerId}';
+    final chatId = '${listingId}_${buyerId}_$sellerId';
     final chatDoc = {
       'id': chatId,
       'listingId': listingId,

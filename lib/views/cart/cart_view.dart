@@ -327,7 +327,7 @@ class _BuyerOrdersSubViewState extends ConsumerState<BuyerOrdersSubView> {
                       'createdAt': DateTime.now().toIso8601String(),
                     });
 
-                    if (mounted) {
+                    if (context.mounted) {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Thank you! Your feedback has been submitted.')),
@@ -421,7 +421,7 @@ class _BuyerOrdersSubViewState extends ConsumerState<BuyerOrdersSubView> {
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: _getStatusColor(status).withOpacity(0.1),
+                                color: _getStatusColor(status).withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -452,9 +452,9 @@ class _BuyerOrdersSubViewState extends ConsumerState<BuyerOrdersSubView> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: _getStatusColor(status).withOpacity(0.1),
+                                color: _getStatusColor(status).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: _getStatusColor(status).withOpacity(0.3)),
+                                border: Border.all(color: _getStatusColor(status).withValues(alpha: 0.3)),
                               ),
                               child: Text(
                                 status.toUpperCase(),

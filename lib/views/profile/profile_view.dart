@@ -107,8 +107,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedRegion == null ||
         _selectedZone == null ||
-        _selectedWoreda == null)
+        _selectedWoreda == null) {
       return;
+    }
 
     setState(() {
       _isUpdating = true;
@@ -158,18 +159,18 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
     // Show confirmation dialog
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(l10n.deleteListing),
           content: Text(l10n.deleteConfirm),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(dialogContext),
               child: Text(l10n.cancel),
             ),
             TextButton(
               onPressed: () async {
-                Navigator.pop(context);
+                Navigator.pop(dialogContext);
                 await FirestoreService().updateListingStatus(id, 'deleted');
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -286,7 +287,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                 ),
                                 const SizedBox(height: 12),
                                 DropdownButtonFormField<String>(
-                                  value: _selectedRegion,
+                                  initialValue: _selectedRegion,
                                   decoration: InputDecoration(
                                     labelText: l10n.region,
                                     border: OutlineInputBorder(
@@ -303,7 +304,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                 ),
                                 const SizedBox(height: 12),
                                 DropdownButtonFormField<String>(
-                                  value: _selectedZone,
+                                  initialValue: _selectedZone,
                                   decoration: InputDecoration(
                                     labelText: l10n.zone,
                                     border: OutlineInputBorder(
@@ -320,7 +321,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                                 ),
                                 const SizedBox(height: 12),
                                 DropdownButtonFormField<String>(
-                                  value: _selectedWoreda,
+                                  initialValue: _selectedWoreda,
                                   decoration: InputDecoration(
                                     labelText: l10n.woreda,
                                     border: OutlineInputBorder(

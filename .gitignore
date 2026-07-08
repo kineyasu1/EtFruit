@@ -49,3 +49,6 @@ app.*.map.json
 *.jks
 *.keystore
 **/android/app/google-services.json
+
+# Node dependencies
+**/node_modules/

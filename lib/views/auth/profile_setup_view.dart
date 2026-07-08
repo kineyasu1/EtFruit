@@ -210,7 +210,7 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
                       const SizedBox(height: 16),
                       // Region Dropdown
                       DropdownButtonFormField<String>(
-                        value: _selectedRegion,
+                        initialValue: _selectedRegion,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.map_outlined),
                           labelText: l10n.region,
@@ -228,7 +228,7 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
                       const SizedBox(height: 16),
                       // Zone Dropdown
                       DropdownButtonFormField<String>(
-                        value: _selectedZone,
+                        initialValue: _selectedZone,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.location_city_outlined),
                           labelText: l10n.zone,
@@ -246,7 +246,7 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
                       const SizedBox(height: 16),
                       // Woreda Dropdown
                       DropdownButtonFormField<String>(
-                        value: _selectedWoreda,
+                        initialValue: _selectedWoreda,
                         decoration: InputDecoration(
                           prefixIcon: const Icon(Icons.pin_drop_outlined),
                           labelText: l10n.woreda,
