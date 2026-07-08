@@ -123,12 +123,12 @@ service cloud.firestore {
         && (request.auth.uid == request.resource.data.buyerId || request.auth.uid == request.resource.data.sellerId || isAdmin())
         && request.resource.data.amount is number
         && request.resource.data.amount > 0
-        && request.resource.data.status in ['pending', 'success', 'failed'];
+        && request.resource.data.status == 'pending';
       
       allow update: if isAuthenticated() 
         && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId || isAdmin())
         && request.resource.data.amount == resource.data.amount // Prevent editing amount
-        && request.resource.data.status in ['pending', 'success', 'failed'];
+        && request.resource.data.status in ['pending', 'failed'];
 
       allow delete: if isAdmin();
     }

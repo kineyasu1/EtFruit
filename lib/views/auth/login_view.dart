@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
@@ -16,23 +17,133 @@ class _LoginViewState extends ConsumerState<LoginView> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _codeController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   bool _isSignUp = false;
   bool _isLoading = false;
   bool _obscurePassword = true;
   String? _errorMessage;
+  bool _otpSent = false;
+  int _resendCountdown = 0;
+  Timer? _resendTimer;
 
   @override
   void dispose() {
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _codeController.dispose();
+    _resendTimer?.cancel();
     super.dispose();
+  }
+
+  void _startResendCountdown() {
+    setState(() {
+      _resendCountdown = 60;
+    });
+    _resendTimer?.cancel();
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_resendCountdown == 0) {
+        timer.cancel();
+      } else {
+        setState(() {
+          _resendCountdown--;
+        });
+      }
+    });
+  }
+
+  void _sendOtp() async {
+    final phone = _phoneController.text.trim();
+    String formattedPhone = phone;
+    if (phone.startsWith('0')) {
+      formattedPhone = '+251${phone.substring(1)}';
+    } else if (!phone.startsWith('+')) {
+      formattedPhone = '+251$phone';
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await ref.read(authProvider.notifier).sendOtp(
+        phoneNumber: formattedPhone,
+        onCodeSent: (verificationId) {
+          setState(() {
+            _isLoading = false;
+            _otpSent = true;
+          });
+          _startResendCountdown();
+        },
+        onFailed: (error) {
+          setState(() {
+            _isLoading = false;
+            _errorMessage = error;
+          });
+        },
+      );
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = ErrorService.getReadableError(context, e);
+      });
+    }
+  }
+
+  void _verifyOtp() async {
+    final code = _codeController.text.trim();
+    if (code.length < 6) {
+      setState(() {
+        _errorMessage = 'Please enter a valid 6-digit code';
+      });
+      return;
+    }
+
+    final phone = _phoneController.text.trim();
+    String formattedPhone = phone;
+    if (phone.startsWith('0')) {
+      formattedPhone = '+251${phone.substring(1)}';
+    } else if (!phone.startsWith('+')) {
+      formattedPhone = '+251$phone';
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final success = await ref.read(authProvider.notifier).verifyOtp(code, formattedPhone);
+      setState(() {
+        _isLoading = false;
+      });
+      if (!success) {
+        setState(() {
+          _errorMessage = 'Invalid verification code. Please try again.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = ErrorService.getReadableError(context, e);
+      });
+    }
   }
 
   void _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (AuthService.isFirebaseAvailable) {
+      if (!_otpSent) {
+        _sendOtp();
+      } else {
+        _verifyOtp();
+      }
+      return;
+    }
 
     final phone = _phoneController.text.trim();
     final password = _passwordController.text.trim();
@@ -154,45 +265,62 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _isSignUp = false;
-                                      _errorMessage = null;
-                                    });
-                                  },
-                                  child: Text(
-                                    'Log In',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: !_isSignUp ? Colors.green[900] : Colors.grey,
+                            if (AuthService.isFirebaseAvailable) ...[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(
+                                  'Phone Authentication',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.green[900],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              const Divider(),
+                              const SizedBox(height: 16),
+                            ] else ...[
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _isSignUp = false;
+                                        _errorMessage = null;
+                                      });
+                                    },
+                                    child: Text(
+                                      'Log In',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: !_isSignUp ? Colors.green[900] : Colors.grey,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _isSignUp = true;
-                                      _errorMessage = null;
-                                    });
-                                  },
-                                  child: Text(
-                                    'Sign Up',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: _isSignUp ? Colors.green[900] : Colors.grey,
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _isSignUp = true;
+                                        _errorMessage = null;
+                                      });
+                                    },
+                                    child: Text(
+                                      'Sign Up',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: _isSignUp ? Colors.green[900] : Colors.grey,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const Divider(),
-                            const SizedBox(height: 16),
+                                ],
+                              ),
+                              const Divider(),
+                              const SizedBox(height: 16),
+                            ],
 
                             if (_errorMessage != null)
                               Container(
@@ -230,79 +358,140 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             ),
                             const SizedBox(height: 16),
 
-                            TextFormField(
-                              controller: _passwordController,
-                              obscureText: _obscurePassword,
-                              decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.lock_rounded, color: Colors.green),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                                    color: Colors.grey,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscurePassword = !_obscurePassword;
-                                    });
-                                  },
-                                ),
-                                labelText: 'Password',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return 'Please enter password';
-                                }
-                                if (value.trim().length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 4),
-
-                            if (!_isSignUp) ...[
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: TextButton(
-                                  onPressed: _showForgotPasswordBottomSheet,
-                                  child: const Text(
-                                    'Forgot Password?',
-                                    style: TextStyle(
-                                      color: Color(0xFF1B5E20),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                            ] else
-                              const SizedBox(height: 12),
-
-                            if (_isSignUp) ...[
+                            if (AuthService.isFirebaseAvailable && _otpSent) ...[
                               TextFormField(
-                                controller: _confirmPasswordController,
-                                obscureText: _obscurePassword,
+                                controller: _codeController,
+                                keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
-                                  prefixIcon: const Icon(Icons.lock_outline_rounded, color: Colors.green),
-                                  labelText: 'Confirm Password',
+                                  prefixIcon: const Icon(Icons.pin_rounded, color: Colors.green),
+                                  labelText: 'Verification Code',
+                                  hintText: '123456',
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Please confirm password';
+                                    return 'Please enter verification code';
                                   }
-                                  if (value.trim() != _passwordController.text.trim()) {
-                                    return 'Passwords do not match';
+                                  if (value.trim().length != 6) {
+                                    return 'Enter a 6-digit code';
                                   }
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 12),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _otpSent = false;
+                                        _errorMessage = null;
+                                        _codeController.clear();
+                                      });
+                                    },
+                                    child: const Text(
+                                      'Change Phone Number',
+                                      style: TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: _resendCountdown > 0 ? null : _sendOtp,
+                                    child: Text(
+                                      _resendCountdown > 0 ? 'Resend in ${_resendCountdown}s' : 'Resend Code',
+                                      style: TextStyle(
+                                        color: _resendCountdown > 0 ? Colors.grey : Colors.green,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                            ],
+
+                            if (!AuthService.isFirebaseAvailable) ...[
+                              TextFormField(
+                                controller: _passwordController,
+                                obscureText: _obscurePassword,
+                                decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.lock_rounded, color: Colors.green),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                      color: Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscurePassword = !_obscurePassword;
+                                      });
+                                    },
+                                  ),
+                                  labelText: 'Password',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Please enter password';
+                                  }
+                                  if (value.trim().length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 4),
+
+                              if (!_isSignUp) ...[
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: _showForgotPasswordBottomSheet,
+                                    child: const Text(
+                                      'Forgot Password?',
+                                      style: TextStyle(
+                                        color: Color(0xFF1B5E20),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                              ] else
+                                const SizedBox(height: 12),
+
+                              if (_isSignUp) ...[
+                                TextFormField(
+                                  controller: _confirmPasswordController,
+                                  obscureText: _obscurePassword,
+                                  decoration: InputDecoration(
+                                    prefixIcon: const Icon(Icons.lock_outline_rounded, color: Colors.green),
+                                    labelText: 'Confirm Password',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.trim().isEmpty) {
+                                      return 'Please confirm password';
+                                    }
+                                    if (value.trim() != _passwordController.text.trim()) {
+                                      return 'Passwords do not match';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 24),
+                              ],
                             ],
 
                             ElevatedButton(
@@ -326,7 +515,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                       ),
                                     )
                                   : Text(
-                                      _isSignUp ? 'Sign Up' : 'Log In',
+                                      AuthService.isFirebaseAvailable
+                                          ? (_otpSent ? 'Verify & Login' : 'Send Code')
+                                          : (_isSignUp ? 'Sign Up' : 'Log In'),
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,

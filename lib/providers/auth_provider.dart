@@ -37,6 +37,18 @@ class AuthNotifier extends StateNotifier<UserModel?> {
     if (profile != null) {
       state = profile;
       NotificationService().updateFcmToken();
+    } else {
+      // Fallback for new signups: set state with real Firebase UID and phone number
+      state = UserModel(
+        id: uid,
+        name: '',
+        phoneNumber: _authService.currentPhoneNumber ?? '',
+        region: '',
+        zone: '',
+        woreda: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
     }
   }
 
@@ -50,6 +62,18 @@ class AuthNotifier extends StateNotifier<UserModel?> {
       onCodeSent: onCodeSent,
       onFailed: onFailed,
     );
+  }
+
+  Future<bool> verifyOtp(String smsCode, String phoneNumber) async {
+    final success = await _authService.verifyOtp(smsCode);
+    if (success) {
+      final uid = _authService.currentUid;
+      if (uid != null) {
+        await _loadProfile(uid);
+        return true;
+      }
+    }
+    return false;
   }
 
   Future<bool> verifyOtpAndSetupProfile({

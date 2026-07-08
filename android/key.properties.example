@@ -1,0 +1,8 @@
+# Example template for android/key.properties
+# Copy this file to android/key.properties and replace the placeholders with your actual keystore credentials.
+# Make sure key.properties is gitignored!
+
+storePassword=YOUR_KEYSTORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=YOUR_KEY_ALIAS
+storeFile=app/my-release-key.jks
