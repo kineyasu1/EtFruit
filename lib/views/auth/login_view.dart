@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_service.dart';
+import '../../services/error_service.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class LoginView extends ConsumerStatefulWidget {
@@ -80,7 +81,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = e.toString();
+        _errorMessage = ErrorService.getReadableError(context, e);
       });
     }
   }

@@ -8,6 +8,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../services/location_data.dart';
 import '../../services/taxonomy_data.dart';
+import '../../services/error_service.dart';
 import '../../services/firestore_service.dart';
 import '../../services/auth_service.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
@@ -320,7 +321,7 @@ class _CreateListingViewState extends ConsumerState<CreateListingView> {
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = e.toString();
+        _errorMessage = ErrorService.getReadableError(context, e);
       });
     }
   }

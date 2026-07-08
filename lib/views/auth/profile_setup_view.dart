@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/location_data.dart';
+import '../../services/error_service.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class ProfileSetupView extends ConsumerStatefulWidget {
@@ -104,7 +105,7 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = e.toString();
+        _errorMessage = ErrorService.getReadableError(context, e);
       });
     }
   }

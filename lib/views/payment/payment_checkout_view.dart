@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/payment_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/error_service.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class PaymentCheckoutView extends ConsumerStatefulWidget {
@@ -118,7 +119,7 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = e.toString();
+        _errorMessage = ErrorService.getReadableError(context, e);
       });
     }
   }

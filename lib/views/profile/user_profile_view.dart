@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/firestore_service.dart';
 import '../../models/user_model.dart';
+import '../../services/error_service.dart';
 
 class UserProfileView extends ConsumerStatefulWidget {
   const UserProfileView({super.key, required this.userId});
@@ -47,7 +48,7 @@ class _UserProfileViewState extends ConsumerState<UserProfileView> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = e.toString();
+        _errorMessage = ErrorService.getReadableError(context, e);
         _isLoading = false;
       });
     }
