@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/location_data.dart';
-import 'onboarding_choice_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class ProfileSetupView extends ConsumerStatefulWidget {
@@ -102,13 +101,6 @@ class _ProfileSetupViewState extends ConsumerState<ProfileSetupView> {
       setState(() {
         _isLoading = false;
       });
-
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const OnboardingChoiceView()),
-        );
-      }
     } catch (e) {
       setState(() {
         _isLoading = false;

@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_service.dart';
-import 'profile_setup_view.dart';
-import 'onboarding_choice_view.dart';
-import '../home/home_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class LoginView extends ConsumerStatefulWidget {
@@ -72,29 +69,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
       });
 
       if (success) {
-        if (!mounted) return;
-        final user = ref.read(authProvider)!;
-
-        if (user.name.isEmpty || user.region.isEmpty) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProfileSetupView(phoneNumber: formattedPhone),
-            ),
-          );
-        } else if (user.role.isEmpty) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const OnboardingChoiceView(),
-            ),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeView()),
-          );
-        }
+        // AppRootNavigator will automatically handle switching views based on auth state
       } else {
         setState(() {
           _errorMessage = _isSignUp
