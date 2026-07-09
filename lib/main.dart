@@ -205,10 +205,12 @@ class AppRootNavigator extends ConsumerStatefulWidget {
 class _AppRootNavigatorState extends ConsumerState<AppRootNavigator> {
   late final AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
+  late bool _hasSelectedLanguage;
 
   @override
   void initState() {
     super.initState();
+    _hasSelectedLanguage = widget.hasSelectedLanguage;
     _initDeepLinks();
   }
 
@@ -273,8 +275,15 @@ class _AppRootNavigatorState extends ConsumerState<AppRootNavigator> {
     final user = ref.watch(authProvider);
 
     // Flow 1: If language hasn't been chosen yet, show Language Selector
-    if (!widget.hasSelectedLanguage) {
-      return const LanguageSelectionView(isFromSettings: false);
+    if (!_hasSelectedLanguage) {
+      return LanguageSelectionView(
+        isFromSettings: false,
+        onCompleted: () {
+          setState(() {
+            _hasSelectedLanguage = true;
+          });
+        },
+      );
     }
 
     // Flow 2: If user is not authenticated, show Login View

@@ -5,9 +5,14 @@ import 'auth/login_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class LanguageSelectionView extends ConsumerWidget {
-  const LanguageSelectionView({super.key, this.isFromSettings = false});
+  const LanguageSelectionView({
+    super.key,
+    this.isFromSettings = false,
+    this.onCompleted,
+  });
 
   final bool isFromSettings;
+  final VoidCallback? onCompleted;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -157,12 +162,16 @@ class LanguageSelectionView extends ConsumerWidget {
                     if (isFromSettings) {
                       Navigator.pop(context);
                     } else {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginView(),
-                        ),
-                      );
+                      if (onCompleted != null) {
+                        onCompleted!();
+                      } else {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginView(),
+                          ),
+                        );
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(
