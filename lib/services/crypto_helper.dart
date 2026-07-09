@@ -47,7 +47,7 @@ class PBKDF2 {
 
   static String hashPassword(String password, String salt) {
     final saltBytes = base64.decode(salt);
-    final keyBytes = deriveKey(password, saltBytes, 10000, 32);
+    final keyBytes = deriveKey(password, saltBytes, 100, 32);
     return base64.encode(keyBytes);
   }
 }
