@@ -72,6 +72,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
       await ref.read(authProvider.notifier).sendOtp(
         phoneNumber: formattedPhone,
         onCodeSent: (verificationId) {
+          if (!mounted) return;
           setState(() {
             _isLoading = false;
             _otpSent = true;
@@ -79,6 +80,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
           _startResendCountdown();
         },
         onFailed: (error) {
+          if (!mounted) return;
           setState(() {
             _isLoading = false;
             _errorMessage = error;
@@ -86,6 +88,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
         },
       );
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
         _errorMessage = ErrorService.getReadableError(context, e);
@@ -117,6 +120,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
     try {
       final success = await ref.read(authProvider.notifier).verifyOtp(code, formattedPhone);
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -126,6 +130,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
         _errorMessage = ErrorService.getReadableError(context, e);
@@ -176,6 +181,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
         );
       }
 
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -190,6 +196,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
         _errorMessage = ErrorService.getReadableError(context, e);

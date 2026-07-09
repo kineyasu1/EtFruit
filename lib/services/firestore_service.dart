@@ -11,7 +11,14 @@ class FirestoreService {
   factory FirestoreService() => _instance;
   FirestoreService._internal() {
     _seedMockCategories();
-    _loadLocalData();
+    ensureLoaded();
+  }
+
+  Future<void>? _loadFuture;
+
+  Future<void> ensureLoaded() {
+    _loadFuture ??= _loadLocalData();
+    return _loadFuture!;
   }
 
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
@@ -280,13 +287,13 @@ class FirestoreService {
       }
       return null;
     } else {
-      await _loadLocalData();
+      await ensureLoaded();
       return _mockUsers[uid];
     }
   }
 
   Future<UserModel?> getMockUserByPhoneNumber(String phoneNumber) async {
-    await _loadLocalData();
+    await ensureLoaded();
     for (var user in _mockUsers.values) {
       if (user.phoneNumber == phoneNumber) {
         return user;
@@ -459,7 +466,7 @@ class FirestoreService {
         hasMore: hasMore,
       );
     } else {
-      await _loadLocalData();
+      await ensureLoaded();
       var filtered = _mockListings.values.where((item) => item['status'] == 'active').toList();
       if (categoryId != null && categoryId.isNotEmpty) {
         filtered = filtered.where((item) => item['categoryId'] == categoryId).toList();
@@ -736,7 +743,7 @@ class FirestoreService {
           .get();
       return snapshot.docs.map((doc) => doc.data()).toList();
     } else {
-      await _loadLocalData();
+      await ensureLoaded();
       return _mockCart;
     }
   }
@@ -823,7 +830,7 @@ class FirestoreService {
       }
       return list;
     } else {
-      await _loadLocalData();
+      await ensureLoaded();
       return _mockOrders;
     }
   }
@@ -833,7 +840,7 @@ class FirestoreService {
       final doc = await FirebaseFirestore.instance.collection('orders').doc(orderId).get();
       return doc.data();
     } else {
-      await _loadLocalData();
+      await ensureLoaded();
       final idx = _mockOrders.indexWhere((element) => element['id'] == orderId);
       return idx >= 0 ? _mockOrders[idx] : null;
     }
@@ -858,7 +865,7 @@ class FirestoreService {
         'updatedAt': FieldValue.serverTimestamp(),
       });
     } else {
-      await _loadLocalData();
+      await ensureLoaded();
       final idx = _mockOrders.indexWhere((element) => element['id'] == orderId);
       if (idx >= 0) {
         _mockOrders[idx]['status'] = newStatus;
@@ -880,7 +887,7 @@ class FirestoreService {
 
       await batch.commit();
     } else {
-      await _loadLocalData();
+      await ensureLoaded();
       _mockReviews.add(review);
       
       final idx = _mockOrders.indexWhere((element) => element['id'] == review['orderId']);
@@ -900,7 +907,7 @@ class FirestoreService {
           .get();
       return snapshot.docs.map((doc) => doc.data()).toList();
     } else {
-      await _loadLocalData();
+      await ensureLoaded();
       return _mockReviews.where((element) => element['sellerId'] == sellerId).toList();
     }
   }
