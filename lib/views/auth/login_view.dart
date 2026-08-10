@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/language_provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/error_service.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
@@ -21,6 +22,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
   final _formKey = GlobalKey<FormState>();
 
   bool _isSignUp = false;
+  String _selectedRole = 'buyer';
   bool _isLoading = false;
   bool _obscurePassword = true;
   String? _errorMessage;
@@ -173,6 +175,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
         success = await authNotifier.signUpWithPassword(
           phoneNumber: formattedPhone,
           password: password,
+          role: _selectedRole,
         );
       } else {
         success = await authNotifier.signInWithPassword(
@@ -227,6 +230,27 @@ class _LoginViewState extends ConsumerState<LoginView> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: true,
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.translate_rounded, color: Colors.white),
+            onSelected: (String code) {
+              ref.read(languageProvider.notifier).setLocale(code);
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(value: 'en', child: Text('English')),
+              const PopupMenuItem<String>(value: 'am', child: Text('አማርኛ (Amharic)')),
+              const PopupMenuItem<String>(value: 'om', child: Text('Afaan Oromo')),
+              const PopupMenuItem<String>(value: 'so', child: Text('Soomaali (Somali)')),
+              const PopupMenuItem<String>(value: 'ti', child: Text('ትግርኛ (Tigrinya)')),
+            ],
+          ),
+        ],
+      ),
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -496,6 +520,72 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                     }
                                     return null;
                                   },
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'Register as:',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1B5E20),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: OutlinedButton.icon(
+                                        onPressed: () {
+                                          setState(() {
+                                            _selectedRole = 'buyer';
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.shopping_bag_rounded,
+                                          color: _selectedRole == 'buyer' ? Colors.white : const Color(0xFF1B5E20),
+                                        ),
+                                        label: Text(
+                                          'Buyer',
+                                          style: TextStyle(
+                                            color: _selectedRole == 'buyer' ? Colors.white : const Color(0xFF1B5E20),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        style: OutlinedButton.styleFrom(
+                                          backgroundColor: _selectedRole == 'buyer' ? const Color(0xFF1B5E20) : Colors.transparent,
+                                          side: const BorderSide(color: Color(0xFF1B5E20)),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: OutlinedButton.icon(
+                                        onPressed: () {
+                                          setState(() {
+                                            _selectedRole = 'seller';
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.store_rounded,
+                                          color: _selectedRole == 'seller' ? Colors.white : const Color(0xFF1B5E20),
+                                        ),
+                                        label: Text(
+                                          'Seller',
+                                          style: TextStyle(
+                                            color: _selectedRole == 'seller' ? Colors.white : const Color(0xFF1B5E20),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        style: OutlinedButton.styleFrom(
+                                          backgroundColor: _selectedRole == 'seller' ? const Color(0xFF1B5E20) : Colors.transparent,
+                                          side: const BorderSide(color: Color(0xFF1B5E20)),
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 24),
                               ],

@@ -13,7 +13,6 @@ import 'providers/auth_provider.dart';
 import 'services/auth_service.dart';
 import 'services/notification_service.dart';
 import 'views/language_selection_view.dart';
-import 'views/auth/login_view.dart';
 import 'views/auth/profile_setup_view.dart';
 import 'views/auth/onboarding_choice_view.dart';
 import 'views/home/home_view.dart';
@@ -286,19 +285,19 @@ class _AppRootNavigatorState extends ConsumerState<AppRootNavigator> {
       );
     }
 
-    // Flow 2: If user is not authenticated, show Login View
+    // Flow 2: If user is not authenticated, show HomeView (which will render BuyerHomeView in guest mode)
     if (user == null) {
-      return const LoginView();
+      return const HomeView();
     }
 
-    // Flow 3: If authenticated but profile details are blank, show Profile Setup
-    if (user.name.isEmpty || user.region.isEmpty) {
-      return ProfileSetupView(phoneNumber: user.phoneNumber);
-    }
-
-    // Flow 3.5: If profile is complete but role is not chosen, show Onboarding Choice
+    // Flow 3: If profile is complete but role is not chosen, show Onboarding Choice
     if (user.role.isEmpty) {
       return const OnboardingChoiceView();
+    }
+
+    // Flow 3.5: If user is a seller but profile details are blank, show Profile Setup
+    if (user.role == 'seller' && (user.name.isEmpty || user.region.isEmpty)) {
+      return ProfileSetupView(phoneNumber: user.phoneNumber);
     }
 
     // Flow 4: Profile & Role are complete, route to Home

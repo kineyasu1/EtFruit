@@ -14,6 +14,7 @@ import '../chat/chat_list_view.dart';
 import '../profile/profile_view.dart';
 import 'seller_dashboard_subview.dart';
 import '../cart/cart_view.dart';
+import '../auth/login_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 // -----------------------------------------------------------------------------
@@ -29,9 +30,7 @@ class HomeView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider);
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return BuyerHomeView(initialTab: initialTab);
     }
 
     if (user.role == 'seller') {
@@ -187,12 +186,97 @@ class _BuyerHomeViewState extends ConsumerState<BuyerHomeView> {
     ];
   }
 
+  Widget _buildGuestPlaceholder(BuildContext context) {
+    String title = '';
+    String description = '';
+    IconData icon = Icons.lock_outline_rounded;
+
+    if (_currentIndex == 1) {
+      title = 'Your Cart';
+      description = 'Sign up or log in to add agricultural products to your cart and make purchases.';
+      icon = Icons.shopping_cart_outlined;
+    } else if (_currentIndex == 2) {
+      title = 'Your Orders';
+      description = 'Sign up or log in to track your orders, view receipts, and monitor delivery.';
+      icon = Icons.receipt_long_outlined;
+    } else if (_currentIndex == 3) {
+      title = 'Your Chats';
+      description = 'Sign up or log in to chat with buyers and sellers in real time.';
+      icon = Icons.chat_bubble_outline_rounded;
+    } else if (_currentIndex == 4) {
+      title = 'My Account';
+      description = 'Sign up or log in to manage your profile and view settings.';
+      icon = Icons.person_outline_rounded;
+    }
+
+    return Scaffold(
+      body: Container(
+        color: const Color(0xFFF4F6F2),
+        padding: const EdgeInsets.all(32),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 80, color: const Color(0xFF1B5E20)),
+              const SizedBox(height: 24),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1B5E20),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                description,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[700],
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginView()),
+                  );
+                },
+                icon: const Icon(Icons.login_rounded, color: Colors.white),
+                label: const Text(
+                  'Log In / Sign Up',
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1B5E20),
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 4,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final user = ref.watch(authProvider);
+
+    final Widget bodyWidget = (user == null && _currentIndex != 0)
+        ? _buildGuestPlaceholder(context)
+        : IndexedStack(index: _currentIndex, children: _pages);
 
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _pages),
+      body: bodyWidget,
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) => setState(() => _currentIndex = index),
@@ -332,7 +416,7 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> with Auto
     _loadInitialPage();
   }
 
-  Widget _buildListingCard(BuildContext context, Map<String, dynamic> item, String photoUrl, UserModel user, AppLocalizations l10n) {
+  Widget _buildListingCard(BuildContext context, Map<String, dynamic> item, String photoUrl, UserModel? user, AppLocalizations l10n) {
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -449,30 +533,34 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> with Auto
                           ),
                         ),
                       ),
-                      if (user.role == 'buyer')
+                      if (user == null || user.role == 'buyer')
                         IconButton(
                           icon: const Icon(Icons.add_shopping_cart_rounded,
                               color: Color(0xFF1B5E20), size: 18),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                           onPressed: () async {
-                            await FirestoreService().addToCart({
-                              'listingId': item['id'],
-                              'title': item['title'],
-                              'price': double.tryParse(item['price'].toString()) ?? 0.0,
-                              'unit': item['unit'],
-                              'quantity': 1.0,
-                              'photoUrl': photoUrl,
-                              'sellerId': item['sellerId'],
-                              'sellerName': item['sellerName'],
-                            });
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('${item['title']} added to cart!'),
-                                backgroundColor: const Color(0xFF1B5E20),
-                              ),
-                            );
+                            if (user == null) {
+                              _showAuthRequiredDialog(context);
+                            } else {
+                              await FirestoreService().addToCart({
+                                'listingId': item['id'],
+                                'title': item['title'],
+                                'price': double.tryParse(item['price'].toString()) ?? 0.0,
+                                'unit': item['unit'],
+                                'quantity': 1.0,
+                                'photoUrl': photoUrl,
+                                'sellerId': item['sellerId'],
+                                'sellerName': item['sellerName'],
+                              });
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('${item['title']} added to cart!'),
+                                  backgroundColor: const Color(0xFF1B5E20),
+                                ),
+                              );
+                            }
                           },
                         ),
                     ],
@@ -508,12 +596,53 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> with Auto
     );
   }
 
+  void _showAuthRequiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Row(
+          children: [
+            Icon(Icons.account_circle_rounded, color: Color(0xFF1B5E20), size: 30),
+            SizedBox(width: 8),
+            Text('Account Required', style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: const Text(
+          'Please sign up or log in to buy items, message sellers, or proceed to checkout.',
+          style: TextStyle(fontSize: 15),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1B5E20),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginView()),
+              );
+            },
+            child: const Text('Log In / Register', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final l10n = AppLocalizations.of(context);
     final activeLang = ref.watch(languageProvider).languageCode;
-    final user = ref.watch(authProvider)!;
+    final user = ref.watch(authProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -537,6 +666,19 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> with Auto
         backgroundColor: const Color(0xFF1B5E20),
         elevation: 0,
         actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.translate_rounded, color: Colors.white),
+            onSelected: (String code) {
+              ref.read(languageProvider.notifier).setLocale(code);
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(value: 'en', child: Text('English')),
+              const PopupMenuItem<String>(value: 'am', child: Text('አማርኛ (Amharic)')),
+              const PopupMenuItem<String>(value: 'om', child: Text('Afaan Oromo')),
+              const PopupMenuItem<String>(value: 'so', child: Text('Soomaali (Somali)')),
+              const PopupMenuItem<String>(value: 'ti', child: Text('ትግርኛ (Tigrinya)')),
+            ],
+          ),
           IconButton(
             icon: Icon(
               _isFilterOpen ? Icons.filter_alt_off_rounded : Icons.filter_alt_rounded,

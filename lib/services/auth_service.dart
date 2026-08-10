@@ -191,7 +191,7 @@ class AuthService {
     return true;
   }
 
-  Future<bool> mockRegisterWithPassword(String phoneNumber, String password) async {
+  Future<bool> mockRegisterWithPassword(String phoneNumber, String password, [String role = 'buyer']) async {
     await Future.delayed(const Duration(milliseconds: 500));
     final uid = 'mock_user_${phoneNumber.replaceAll('+', '').replaceAll(' ', '')}';
     final existingUser = await FirestoreService().getMockUserByPhoneNumber(phoneNumber);
@@ -215,7 +215,7 @@ class AuthService {
       woreda: '',
       passwordHash: passwordHash,
       salt: salt,
-      role: '',
+      role: role,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );

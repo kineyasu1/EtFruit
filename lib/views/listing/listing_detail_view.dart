@@ -8,6 +8,7 @@ import '../../services/firestore_service.dart';
 import '../../models/user_model.dart';
 import '../chat/chat_detail_view.dart';
 import '../payment/payment_checkout_view.dart';
+import '../auth/login_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -135,9 +136,54 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
     }
   }
 
+  void _showAuthRequiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Row(
+          children: [
+            Icon(Icons.account_circle_rounded, color: Color(0xFF1B5E20), size: 30),
+            SizedBox(width: 8),
+            Text('Account Required', style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: const Text(
+          'Please sign up or log in to buy items, message sellers, or proceed to checkout.',
+          style: TextStyle(fontSize: 15),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1B5E20),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginView()),
+              );
+            },
+            child: const Text('Log In / Register', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _startInAppChat() async {
     final currentUser = ref.read(authProvider);
-    if (currentUser == null || _listing == null) return;
+    if (currentUser == null) {
+      _showAuthRequiredDialog(context);
+      return;
+    }
+    if (_listing == null) return;
 
     if (currentUser.id == _listing!['sellerId']) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -173,6 +219,11 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
   }
 
   void _paySellerDirect() {
+    final currentUser = ref.read(authProvider);
+    if (currentUser == null) {
+      _showAuthRequiredDialog(context);
+      return;
+    }
     if (_listing == null || _sellerProfile == null) return;
     Navigator.push(
       context,
@@ -705,11 +756,16 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                       if (_listing!['inAppChatEnabled'] ?? true)
                         const SizedBox(width: 12),
                       
-                      // Add to Cart Button (Only for Buyers)
-                      if (ref.read(authProvider)?.role == 'buyer') ...[
+                      // Add to Cart Button (For Buyers and Guest Users)
+                      if (ref.read(authProvider) == null || ref.read(authProvider)?.role == 'buyer') ...[
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () async {
+                              final currentUser = ref.read(authProvider);
+                              if (currentUser == null) {
+                                _showAuthRequiredDialog(context);
+                                return;
+                              }
                               final photoUrls = (_listing!['photoUrls'] as List?)?.map((e) => e.toString()).toList() ?? [];
                               await FirestoreService().addToCart({
                                 'listingId': widget.listingId,

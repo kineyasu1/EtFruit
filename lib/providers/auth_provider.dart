@@ -135,8 +135,9 @@ class AuthNotifier extends StateNotifier<UserModel?> {
   Future<bool> signUpWithPassword({
     required String phoneNumber,
     required String password,
+    String role = 'buyer',
   }) async {
-    final success = await _authService.mockRegisterWithPassword(phoneNumber, password);
+    final success = await _authService.mockRegisterWithPassword(phoneNumber, password, role);
     if (success) {
       final uid = _authService.currentUid;
       if (uid != null) {
