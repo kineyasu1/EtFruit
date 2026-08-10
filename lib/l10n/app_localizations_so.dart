@@ -326,4 +326,33 @@ class AppLocalizationsSo extends AppLocalizations {
 
   @override
   String get orders => 'Dalabyada';
+
+  @override
+  String get guestCartDesc =>
+      'Fadlan isdiiwangleeli ama soo gal si aad ugu darto dalagyada dambiishaada oo aad u iibsato.';
+
+  @override
+  String get guestOrdersDesc =>
+      'Fadlan isdiiwangleeli ama soo gal si aad u hordogto dalabyadaada, u aragto rasiidhada, ugana warhayso gaarsiinta.';
+
+  @override
+  String get guestChatsDesc =>
+      'Fadlan isdiiwangleeli ama soo gal si aad ula sheekaysato iibsadayaasha iyo iibiyayaasha.';
+
+  @override
+  String get guestProfileDesc =>
+      'Fadlan isdiiwangleeli ama soo gal si aad u maamusho macluumaadkaaga una aragto heerar.';
+
+  @override
+  String get loginOrSignUp => 'Soo gal / Isdiiwangeli';
+
+  @override
+  String get accountRequired => 'Koonto ayaa loo baahan yahay';
+
+  @override
+  String get authRequiredDesc =>
+      'Fadlan isdiiwangeli ama soo gal si aad u iibsato alaab, ula xiriirto iibiyayaasha, ama u bixiso lacagta.';
+
+  @override
+  String get loginOrRegister => 'Soo gal / Isdiiwangeli';
 }

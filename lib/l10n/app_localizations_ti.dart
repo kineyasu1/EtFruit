@@ -321,4 +321,31 @@ class AppLocalizationsTi extends AppLocalizations {
 
   @override
   String get orders => 'ትእዛዛት';
+
+  @override
+  String get guestCartDesc =>
+      'ፍርያት ሕርሻ ናብ ቅርጫትኩም ንምእታው ክትዕድጉን በጃኹም እተዉ ወይ ተመዝገቡ።';
+
+  @override
+  String get guestOrdersDesc =>
+      'ትእዛዛትኩም ንምክትታል፣ ደረሰኝ ንምርኣይን ምክትታልን በጃኹም እተዉ ወይ ተመዝገቡ።';
+
+  @override
+  String get guestChatsDesc => 'ምስ ዓደግትን መሸጥትን ብቀጥታ ንምዝርራብ በጃኹም እተዉ ወይ ተመዝገቡ።';
+
+  @override
+  String get guestProfileDesc => 'ፕሮፋይልኩም ንምምሕዳርን ንምርኣይን በጃኹም እተዉ ወይ ተመዝገቡ።';
+
+  @override
+  String get loginOrSignUp => 'እተዉ / ተመዝገቡ';
+
+  @override
+  String get accountRequired => 'ሕሳብ የድሊ';
+
+  @override
+  String get authRequiredDesc =>
+      'እቑሑት ንምዕዳግ፣ ንመሸጥቲ መልእኽቲ ንምልኣኽ ወይ ንምኽፋል በጃኹም እተዉ ወይ ተመዝገቡ።';
+
+  @override
+  String get loginOrRegister => 'እተዉ / ተመዝገቡ';
 }

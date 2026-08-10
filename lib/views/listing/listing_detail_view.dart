@@ -137,25 +137,26 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
   }
 
   void _showAuthRequiredDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.account_circle_rounded, color: Color(0xFF1B5E20), size: 30),
-            SizedBox(width: 8),
-            Text('Account Required', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Icon(Icons.account_circle_rounded, color: Color(0xFF1B5E20), size: 30),
+            const SizedBox(width: 8),
+            Text(l10n.accountRequired, style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
-        content: const Text(
-          'Please sign up or log in to buy items, message sellers, or proceed to checkout.',
-          style: TextStyle(fontSize: 15),
+        content: Text(
+          l10n.authRequiredDesc,
+          style: const TextStyle(fontSize: 15),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -170,7 +171,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                 MaterialPageRoute(builder: (context) => const LoginView()),
               );
             },
-            child: const Text('Log In / Register', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(l10n.loginOrRegister, style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),

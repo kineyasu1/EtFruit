@@ -323,4 +323,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orders => 'Orders';
+
+  @override
+  String get guestCartDesc =>
+      'Sign up or log in to add agricultural products to your cart and make purchases.';
+
+  @override
+  String get guestOrdersDesc =>
+      'Sign up or log in to track your orders, view receipts, and monitor delivery.';
+
+  @override
+  String get guestChatsDesc =>
+      'Sign up or log in to chat with buyers and sellers in real time.';
+
+  @override
+  String get guestProfileDesc =>
+      'Sign up or log in to manage your profile and view settings.';
+
+  @override
+  String get loginOrSignUp => 'Log In / Sign Up';
+
+  @override
+  String get accountRequired => 'Account Required';
+
+  @override
+  String get authRequiredDesc =>
+      'Please sign up or log in to buy items, message sellers, or proceed to checkout.';
+
+  @override
+  String get loginOrRegister => 'Log In / Register';
 }

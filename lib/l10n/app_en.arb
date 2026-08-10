@@ -125,5 +125,13 @@
   "reportSuccess": "Report submitted. Thank you for keeping our marketplace safe.",
   "browse": "Browse",
   "cart": "Cart",
-  "orders": "Orders"
+  "orders": "Orders",
+  "guestCartDesc": "Sign up or log in to add agricultural products to your cart and make purchases.",
+  "guestOrdersDesc": "Sign up or log in to track your orders, view receipts, and monitor delivery.",
+  "guestChatsDesc": "Sign up or log in to chat with buyers and sellers in real time.",
+  "guestProfileDesc": "Sign up or log in to manage your profile and view settings.",
+  "loginOrSignUp": "Log In / Sign Up",
+  "accountRequired": "Account Required",
+  "authRequiredDesc": "Please sign up or log in to buy items, message sellers, or proceed to checkout.",
+  "loginOrRegister": "Log In / Register"
 }

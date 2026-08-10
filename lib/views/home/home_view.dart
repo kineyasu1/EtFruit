@@ -194,19 +194,19 @@ class _BuyerHomeViewState extends ConsumerState<BuyerHomeView> {
     final l10n = AppLocalizations.of(context);
     if (_currentIndex == 1) {
       title = l10n.cart;
-      description = 'Sign up or log in to add agricultural products to your cart and make purchases.';
+      description = l10n.guestCartDesc;
       icon = Icons.shopping_cart_outlined;
     } else if (_currentIndex == 2) {
       title = l10n.orders;
-      description = 'Sign up or log in to track your orders, view receipts, and monitor delivery.';
+      description = l10n.guestOrdersDesc;
       icon = Icons.receipt_long_outlined;
     } else if (_currentIndex == 3) {
       title = l10n.chats;
-      description = 'Sign up or log in to chat with buyers and sellers in real time.';
+      description = l10n.guestChatsDesc;
       icon = Icons.chat_bubble_outline_rounded;
     } else if (_currentIndex == 4) {
       title = l10n.myAccount;
-      description = 'Sign up or log in to manage your profile and view settings.';
+      description = l10n.guestProfileDesc;
       icon = Icons.person_outline_rounded;
     }
 
@@ -247,9 +247,9 @@ class _BuyerHomeViewState extends ConsumerState<BuyerHomeView> {
                   );
                 },
                 icon: const Icon(Icons.login_rounded, color: Colors.white),
-                label: const Text(
-                  'Log In / Sign Up',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                label: Text(
+                  l10n.loginOrSignUp,
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1B5E20),
@@ -598,25 +598,26 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> with Auto
   }
 
   void _showAuthRequiredDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.account_circle_rounded, color: Color(0xFF1B5E20), size: 30),
-            SizedBox(width: 8),
-            Text('Account Required', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Icon(Icons.account_circle_rounded, color: Color(0xFF1B5E20), size: 30),
+            const SizedBox(width: 8),
+            Text(l10n.accountRequired, style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
-        content: const Text(
-          'Please sign up or log in to buy items, message sellers, or proceed to checkout.',
-          style: TextStyle(fontSize: 15),
+        content: Text(
+          l10n.authRequiredDesc,
+          style: const TextStyle(fontSize: 15),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+            child: Text(l10n.cancel, style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -631,7 +632,7 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> with Auto
                 MaterialPageRoute(builder: (context) => const LoginView()),
               );
             },
-            child: const Text('Log In / Register', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(l10n.loginOrRegister, style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),

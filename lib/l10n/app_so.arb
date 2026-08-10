@@ -111,5 +111,13 @@
   "reportSuccess": "Warbixintaada waa la gudbiyey. Waad ku mahadsan tahay ilaalinta nabadgelyada suuqayaga.",
   "browse": "Raadi",
   "cart": "Dambiisha",
-  "orders": "Dalabyada"
+  "orders": "Dalabyada",
+  "guestCartDesc": "Fadlan isdiiwangleeli ama soo gal si aad ugu darto dalagyada dambiishaada oo aad u iibsato.",
+  "guestOrdersDesc": "Fadlan isdiiwangleeli ama soo gal si aad u hordogto dalabyadaada, u aragto rasiidhada, ugana warhayso gaarsiinta.",
+  "guestChatsDesc": "Fadlan isdiiwangleeli ama soo gal si aad ula sheekaysato iibsadayaasha iyo iibiyayaasha.",
+  "guestProfileDesc": "Fadlan isdiiwangleeli ama soo gal si aad u maamusho macluumaadkaaga una aragto heerar.",
+  "loginOrSignUp": "Soo gal / Isdiiwangeli",
+  "accountRequired": "Koonto ayaa loo baahan yahay",
+  "authRequiredDesc": "Fadlan isdiiwangeli ama soo gal si aad u iibsato alaab, ula xiriirto iibiyayaasha, ama u bixiso lacagta.",
+  "loginOrRegister": "Soo gal / Isdiiwangeli"
 }

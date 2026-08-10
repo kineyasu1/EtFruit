@@ -326,4 +326,33 @@ class AppLocalizationsOm extends AppLocalizations {
 
   @override
   String get orders => 'Ajajawwan';
+
+  @override
+  String get guestCartDesc =>
+      'Oomishaalee qonnaa gara kaartii keessanitti dabaluuf fi bitachuuf maaloo galmaa\'aa ykn seenaa.';
+
+  @override
+  String get guestOrdersDesc =>
+      'Ajajawwan keessan hordofuuf, nagahee arguu fi geejjiba hordofuuf maaloo galmaa\'aa ykn seenaa.';
+
+  @override
+  String get guestChatsDesc =>
+      'Bittoota fi gurgurtoota waliin yeroo dhugaa keessatti haasa\'uuf maaloo galmaa\'aa ykn seenaa.';
+
+  @override
+  String get guestProfileDesc =>
+      'Profaayilii keessan qindeessuu fi saafartuu ilaaluuf maaloo galmaa\'aa ykn seenaa.';
+
+  @override
+  String get loginOrSignUp => 'Seenaa / Galmaa\'aa';
+
+  @override
+  String get accountRequired => 'Herregi Barbaachisaa dha';
+
+  @override
+  String get authRequiredDesc =>
+      'Maaloo oomisha bituuf, gurgurtoota quunnamuuf ykn kaffaltii raawwachuuf seenaa ykn galmaa\'aa.';
+
+  @override
+  String get loginOrRegister => 'Seenaa / Galmaa\'aa';
 }

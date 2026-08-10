@@ -111,5 +111,13 @@
   "reportSuccess": "Gabaasni keessan ergameera. Gabaa keenya nagaa gochuu keessaniif galatoomaa.",
   "browse": "Barbaadi",
   "cart": "Kaartii",
-  "orders": "Ajajawwan"
+  "orders": "Ajajawwan",
+  "guestCartDesc": "Oomishaalee qonnaa gara kaartii keessanitti dabaluuf fi bitachuuf maaloo galmaa'aa ykn seenaa.",
+  "guestOrdersDesc": "Ajajawwan keessan hordofuuf, nagahee arguu fi geejjiba hordofuuf maaloo galmaa'aa ykn seenaa.",
+  "guestChatsDesc": "Bittoota fi gurgurtoota waliin yeroo dhugaa keessatti haasa'uuf maaloo galmaa'aa ykn seenaa.",
+  "guestProfileDesc": "Profaayilii keessan qindeessuu fi saafartuu ilaaluuf maaloo galmaa'aa ykn seenaa.",
+  "loginOrSignUp": "Seenaa / Galmaa'aa",
+  "accountRequired": "Herregi Barbaachisaa dha",
+  "authRequiredDesc": "Maaloo oomisha bituuf, gurgurtoota quunnamuuf ykn kaffaltii raawwachuuf seenaa ykn galmaa'aa.",
+  "loginOrRegister": "Seenaa / Galmaa'aa"
 }

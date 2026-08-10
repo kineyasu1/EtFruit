@@ -721,6 +721,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Orders'**
   String get orders;
+
+  /// No description provided for @guestCartDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up or log in to add agricultural products to your cart and make purchases.'**
+  String get guestCartDesc;
+
+  /// No description provided for @guestOrdersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up or log in to track your orders, view receipts, and monitor delivery.'**
+  String get guestOrdersDesc;
+
+  /// No description provided for @guestChatsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up or log in to chat with buyers and sellers in real time.'**
+  String get guestChatsDesc;
+
+  /// No description provided for @guestProfileDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up or log in to manage your profile and view settings.'**
+  String get guestProfileDesc;
+
+  /// No description provided for @loginOrSignUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Log In / Sign Up'**
+  String get loginOrSignUp;
+
+  /// No description provided for @accountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Required'**
+  String get accountRequired;
+
+  /// No description provided for @authRequiredDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign up or log in to buy items, message sellers, or proceed to checkout.'**
+  String get authRequiredDesc;
+
+  /// No description provided for @loginOrRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Log In / Register'**
+  String get loginOrRegister;
 }
 
 class _AppLocalizationsDelegate

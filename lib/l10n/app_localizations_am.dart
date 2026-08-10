@@ -321,4 +321,33 @@ class AppLocalizationsAm extends AppLocalizations {
 
   @override
   String get orders => 'ትዕዛዞች';
+
+  @override
+  String get guestCartDesc =>
+      'ግብርና ምርቶችን ወደ ጋሪዎ ለመጨመር እና ለመግዛት እባክዎ ይግቡ ወይም ይመዝገቡ።';
+
+  @override
+  String get guestOrdersDesc =>
+      'ትዕዛዞችዎን ለመከታተል፣ ደረሰኞችን ለማየት እና አቅርቦትን ለመከታተል እባክዎ ይግቡ ወይም ይመዝገቡ።';
+
+  @override
+  String get guestChatsDesc =>
+      'ከገዢዎች እና ሻጮች ጋር በቅጽበት ለመወያየት እባክዎ ይግቡ ወይም ይመዝገቡ።';
+
+  @override
+  String get guestProfileDesc =>
+      'ማንነትዎን ለማስተዳደር እና መቼቶችን ለማየት እባክዎ ይግቡ ወይም ይመዝገቡ።';
+
+  @override
+  String get loginOrSignUp => 'ይግቡ / ይመዝገቡ';
+
+  @override
+  String get accountRequired => 'መለያ ያስፈልጋል';
+
+  @override
+  String get authRequiredDesc =>
+      'እባክዎ እቃዎችን ለመግዛት፣ ሻጮችን መልእክት ለመላክ ወይም ለመክፈል ይግቡ ወይም ይመዝገቡ።';
+
+  @override
+  String get loginOrRegister => 'ይግቡ / ይመዝገቡ';
 }
