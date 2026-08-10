@@ -5,6 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../services/payment_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/error_service.dart';
+import '../../utils/unit_helper.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 
 class PaymentCheckoutView extends ConsumerStatefulWidget {
@@ -220,15 +221,57 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
                       style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                     const SizedBox(height: 20),
+                    if (widget.unit != null) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            l10n.quantity,
+                            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                          ),
+                          Text(
+                            '${widget.quantity.toStringAsFixed(widget.quantity % 1 == 0 ? 0 : 1)} ${UnitHelper.getLocalizedUnit(context, widget.unit)}',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            l10n.price,
+                            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                          ),
+                          Text(
+                            '${widget.price.toStringAsFixed(0)} ETB / ${UnitHelper.getLocalizedUnit(context, widget.unit)}',
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                    ],
                     const Divider(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _amountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      readOnly: true,
+                      enabled: false,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Color(0xFF1B5E20),
+                      ),
                       decoration: InputDecoration(
                         labelText: l10n.amountToPay,
                         prefixText: 'ETB ',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        suffixIcon: const Icon(Icons.lock_outline_rounded, color: Colors.grey),
+                        filled: true,
+                        fillColor: const Color(0xFFE8F5E9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                   ],
