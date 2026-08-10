@@ -140,5 +140,9 @@
   "salesByCategory": "ሽያጭ በዘርፍ (የተሸጡ መጠኖች)",
   "noSalesData": "እስካሁን ምንም የሽያጭ መረጃ አልተመዘገበም።",
   "incomingOrders": "የሚመጡ የሽያጭ ትዕዛዞች",
-  "buyerLabel": "ገዢ፡ {name}"
+  "buyerLabel": "ገዢ፡ {name}",
+  "adjustQuantity": "የመግዣ መጠን ይምረጡ",
+  "totalAmount": "ጠቅላላ ዋጋ:",
+  "postedOn": "የተለጠፈበት ቀን:",
+  "addToCart": "ወደ ጋሪ ጨምር"
 }

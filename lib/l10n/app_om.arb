@@ -140,5 +140,9 @@
   "salesByCategory": "Gurgurtaa Ramaddiidhaan",
   "noSalesData": "Odeeffannoon gurgurtaa ammaaf hin jiru.",
   "incomingOrders": "Ajajawwan Gurgurtaa Dhufan",
-  "buyerLabel": "Bitaa: {name}"
+  "buyerLabel": "Bitaa: {name}",
+  "adjustQuantity": "Hamma Bituu Sirreessaa",
+  "totalAmount": "Gattii Waliigalaa:",
+  "postedOn": "Guyyaa Maxxanfame:",
+  "addToCart": "Gara Kaartii Dabali"
 }

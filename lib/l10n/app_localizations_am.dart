@@ -417,4 +417,16 @@ class AppLocalizationsAm extends AppLocalizations {
   String buyerLabel(String name) {
     return 'ገዢ፡ $name';
   }
+
+  @override
+  String get adjustQuantity => 'የመግዣ መጠን ይምረጡ';
+
+  @override
+  String get totalAmount => 'ጠቅላላ ዋጋ:';
+
+  @override
+  String get postedOn => 'የተለጠፈበት ቀን:';
+
+  @override
+  String get addToCart => 'ወደ ጋሪ ጨምር';
 }

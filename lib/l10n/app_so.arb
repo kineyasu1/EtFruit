@@ -140,5 +140,9 @@
   "salesByCategory": "Iibka oo Qaybsoan",
   "noSalesData": "Waqti xaadirkan ma jiraan wax data ah.",
   "incomingOrders": "Dalabyada Iibka ee Soo Socda",
-  "buyerLabel": "Iibsade: {name}"
+  "buyerLabel": "Iibsade: {name}",
+  "adjustQuantity": "Haga Iibsiga Beddel",
+  "totalAmount": "Wadarta Guud:",
+  "postedOn": "Taariikhda la Soo Dhigay:",
+  "addToCart": "Ku dar Dambiisha"
 }

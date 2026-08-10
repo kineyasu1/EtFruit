@@ -162,6 +162,10 @@
   "noSalesData": "No sales data recorded yet.",
   "incomingOrders": "Incoming Sales Orders",
   "buyerLabel": "Buyer: {name}",
+  "adjustQuantity": "Adjust Quantity",
+  "totalAmount": "Total Amount:",
+  "postedOn": "Posted:",
+  "addToCart": "Add to Cart",
   "@buyerLabel": {
     "placeholders": {
       "name": {

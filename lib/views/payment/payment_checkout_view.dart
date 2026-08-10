@@ -13,6 +13,8 @@ class PaymentCheckoutView extends ConsumerStatefulWidget {
     required this.listingId,
     required this.listingTitle,
     required this.price,
+    this.quantity = 1.0,
+    this.unit,
     required this.sellerId,
     required this.sellerName,
     this.onSuccessCallback,
@@ -21,6 +23,8 @@ class PaymentCheckoutView extends ConsumerStatefulWidget {
   final String listingId;
   final String listingTitle;
   final double price;
+  final double quantity;
+  final String? unit;
   final String sellerId;
   final String sellerName;
   final VoidCallback? onSuccessCallback;
@@ -40,7 +44,7 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
   void initState() {
     super.initState();
     if (widget.price > 0) {
-      _amountController.text = widget.price.toStringAsFixed(0);
+      _amountController.text = (widget.price * widget.quantity).toStringAsFixed(0);
     }
   }
 

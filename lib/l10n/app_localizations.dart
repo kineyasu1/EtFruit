@@ -895,6 +895,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Buyer: {name}'**
   String buyerLabel(String name);
+
+  /// No description provided for @adjustQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust Quantity'**
+  String get adjustQuantity;
+
+  /// No description provided for @totalAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Amount:'**
+  String get totalAmount;
+
+  /// No description provided for @postedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted:'**
+  String get postedOn;
+
+  /// No description provided for @addToCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Cart'**
+  String get addToCart;
 }
 
 class _AppLocalizationsDelegate

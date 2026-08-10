@@ -140,5 +140,9 @@
   "salesByCategory": "መሸጣ ብዓይነት",
   "noSalesData": "ክሳብ ሕጂ ዝተመዝገበ ናይ መሸጣ ሓበሬታ የለን።",
   "incomingOrders": "ዝመፁ ናይ መሸጣ ትእዛዛት",
-  "buyerLabel": "ዓዳጊ፡ {name}"
+  "buyerLabel": "ዓዳጊ፡ {name}",
+  "adjustQuantity": "መጠን ዕደጋ ኣስተኻኽል",
+  "totalAmount": "ጠቕላላ ዋጋ:",
+  "postedOn": "ዝተለጥፈሉ መዓልቲ:",
+  "addToCart": "ናብ ቅርጫት ወስኽ"
 }

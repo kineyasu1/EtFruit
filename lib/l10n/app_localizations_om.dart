@@ -424,4 +424,16 @@ class AppLocalizationsOm extends AppLocalizations {
   String buyerLabel(String name) {
     return 'Bitaa: $name';
   }
+
+  @override
+  String get adjustQuantity => 'Hamma Bituu Sirreessaa';
+
+  @override
+  String get totalAmount => 'Gattii Waliigalaa:';
+
+  @override
+  String get postedOn => 'Guyyaa Maxxanfame:';
+
+  @override
+  String get addToCart => 'Gara Kaartii Dabali';
 }

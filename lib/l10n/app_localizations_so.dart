@@ -422,4 +422,16 @@ class AppLocalizationsSo extends AppLocalizations {
   String buyerLabel(String name) {
     return 'Iibsade: $name';
   }
+
+  @override
+  String get adjustQuantity => 'Haga Iibsiga Beddel';
+
+  @override
+  String get totalAmount => 'Wadarta Guud:';
+
+  @override
+  String get postedOn => 'Taariikhda la Soo Dhigay:';
+
+  @override
+  String get addToCart => 'Ku dar Dambiisha';
 }

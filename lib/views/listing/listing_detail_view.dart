@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
-import '../../models/user_model.dart';
+import '../../utils/unit_helper.dart';
 import '../chat/chat_detail_view.dart';
 import '../payment/payment_checkout_view.dart';
-import '../auth/login_view.dart';
 import 'package:agrimarketmob/l10n/app_localizations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../auth/login_view.dart';
 
 class ListingDetailView extends ConsumerStatefulWidget {
   const ListingDetailView({super.key, required this.listingId});
@@ -226,17 +227,214 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
       return;
     }
     if (_listing == null || _sellerProfile == null) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PaymentCheckoutView(
-          listingId: _listing!['id'],
-          listingTitle: _listing!['title'],
-          price: _listing!['price'],
-          sellerId: _listing!['sellerId'],
-          sellerName: _sellerProfile!.name,
-        ),
+    _showQuantityAdjustmentBottomSheet(context);
+  }
+
+  void _showQuantityAdjustmentBottomSheet(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final unitPrice = double.tryParse(_listing!['price'].toString()) ?? 0.0;
+    final unitRaw = _listing!['unit'] ?? 'quintal';
+    final localizedUnit = UnitHelper.getLocalizedUnit(context, unitRaw);
+    final maxAvailable = double.tryParse(_listing!['quantity'].toString()) ?? 1000.0;
+
+    double selectedQty = 1.0;
+    final qtyController = TextEditingController(text: '1');
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final currentTotal = unitPrice * selectedQty;
+
+            void updateQty(double newQty) {
+              if (newQty < 1) newQty = 1;
+              if (newQty > maxAvailable) newQty = maxAvailable;
+              setModalState(() {
+                selectedQty = newQty;
+                qtyController.text = selectedQty.toStringAsFixed(selectedQty % 1 == 0 ? 0 : 1);
+              });
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.adjustQuantity,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1B5E20),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close_rounded),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.inventory_2_outlined, color: Color(0xFF1B5E20)),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _listing!['title'] ?? '',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${unitPrice.toStringAsFixed(0)} ETB / $localizedUnit',
+                                style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton.filledTonal(
+                        onPressed: () => updateQty(selectedQty - 1),
+                        icon: const Icon(Icons.remove_rounded),
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.grey[200],
+                          iconSize: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      SizedBox(
+                        width: 100,
+                        child: TextField(
+                          controller: qtyController,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onChanged: (val) {
+                            final parsed = double.tryParse(val);
+                            if (parsed != null && parsed > 0) {
+                              setModalState(() {
+                                selectedQty = parsed;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        localizedUnit,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1B5E20)),
+                      ),
+                      const SizedBox(width: 16),
+                      IconButton.filledTonal(
+                        onPressed: () => updateQty(selectedQty + 1),
+                        icon: const Icon(Icons.add_rounded),
+                        style: IconButton.styleFrom(
+                          backgroundColor: const Color(0xFF1B5E20),
+                          foregroundColor: Colors.white,
+                          iconSize: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l10n.totalAmount,
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '${currentTotal.toStringAsFixed(0)} ETB',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1B5E20),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PaymentCheckoutView(
+                            listingId: _listing!['id'],
+                            listingTitle: _listing!['title'],
+                            price: unitPrice,
+                            quantity: selectedQty,
+                            unit: unitRaw,
+                            sellerId: _listing!['sellerId'],
+                            sellerName: _sellerProfile!.name,
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFBC02D),
+                      foregroundColor: const Color(0xFF1B5E20),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 4,
+                    ),
+                    child: Text(
+                      '${l10n.paySeller} (${currentTotal.toStringAsFixed(0)} ETB)',
+                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -463,7 +661,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              '${_listing!['price']} ETB / ${_listing!['unit']}',
+                              '${_listing!['price']} ETB / ${UnitHelper.getLocalizedUnit(context, _listing!['unit'])}',
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -481,7 +679,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  '${l10n.quantity}: ${_listing!['quantity']} ${_listing!['unit']}',
+                                  '${l10n.quantity}: ${_listing!['quantity']} ${UnitHelper.getLocalizedUnit(context, _listing!['unit'])}',
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ],
@@ -511,7 +709,7 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Posted: $dateString',
+                                  '${l10n.postedOn} $dateString',
                                   style: const TextStyle(fontSize: 15),
                                 ),
                               ],
@@ -790,9 +988,9 @@ class _ListingDetailViewState extends ConsumerState<ListingDetailView> {
                               Icons.add_shopping_cart_rounded,
                               color: Colors.white,
                             ),
-                            label: const Text(
-                              'Add to Cart',
-                              style: TextStyle(
+                            label: Text(
+                              l10n.addToCart,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),

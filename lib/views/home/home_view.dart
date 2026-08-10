@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/language_provider.dart';
 import '../../services/firestore_service.dart';
+import '../../utils/unit_helper.dart';
 import '../../services/location_data.dart';
 import '../../models/user_model.dart';
 import '../listing/create_listing_view.dart';
@@ -524,7 +525,7 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> with Auto
                     children: [
                       Expanded(
                         child: Text(
-                          '${item['price']} ETB / ${item['unit']}',
+                          '${item['price']} ETB / ${UnitHelper.getLocalizedUnit(context, item['unit'])}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(

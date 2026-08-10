@@ -419,4 +419,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String buyerLabel(String name) {
     return 'Buyer: $name';
   }
+
+  @override
+  String get adjustQuantity => 'Adjust Quantity';
+
+  @override
+  String get totalAmount => 'Total Amount:';
+
+  @override
+  String get postedOn => 'Posted:';
+
+  @override
+  String get addToCart => 'Add to Cart';
 }

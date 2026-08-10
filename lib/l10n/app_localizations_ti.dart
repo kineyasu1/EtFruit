@@ -415,4 +415,16 @@ class AppLocalizationsTi extends AppLocalizations {
   String buyerLabel(String name) {
     return 'ዓዳጊ፡ $name';
   }
+
+  @override
+  String get adjustQuantity => 'መጠን ዕደጋ ኣስተኻኽል';
+
+  @override
+  String get totalAmount => 'ጠቕላላ ዋጋ:';
+
+  @override
+  String get postedOn => 'ዝተለጥፈሉ መዓልቲ:';
+
+  @override
+  String get addToCart => 'ናብ ቅርጫት ወስኽ';
 }
