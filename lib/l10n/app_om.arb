@@ -108,5 +108,8 @@
   "abusiveContent": "Qabiyyee dogoggoraa / arrabsoo",
   "incorrectPrice": "Gatii fi Ibsa dogoggoraa",
   "other": "Biroo",
-  "reportSuccess": "Gabaasni keessan ergameera. Gabaa keenya nagaa gochuu keessaniif galatoomaa."
+  "reportSuccess": "Gabaasni keessan ergameera. Gabaa keenya nagaa gochuu keessaniif galatoomaa.",
+  "browse": "Barbaadi",
+  "cart": "Kaartii",
+  "orders": "Ajajawwan"
 }

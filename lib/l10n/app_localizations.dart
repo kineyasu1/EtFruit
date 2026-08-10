@@ -703,6 +703,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Report submitted. Thank you for keeping our marketplace safe.'**
   String get reportSuccess;
+
+  /// No description provided for @browse.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse'**
+  String get browse;
+
+  /// No description provided for @cart.
+  ///
+  /// In en, this message translates to:
+  /// **'Cart'**
+  String get cart;
+
+  /// No description provided for @orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get orders;
 }
 
 class _AppLocalizationsDelegate

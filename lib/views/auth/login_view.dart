@@ -241,11 +241,11 @@ class _LoginViewState extends ConsumerState<LoginView> {
               ref.read(languageProvider.notifier).setLocale(code);
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(value: 'en', child: Text('English')),
               const PopupMenuItem<String>(value: 'am', child: Text('አማርኛ (Amharic)')),
               const PopupMenuItem<String>(value: 'om', child: Text('Afaan Oromo')),
               const PopupMenuItem<String>(value: 'so', child: Text('Soomaali (Somali)')),
               const PopupMenuItem<String>(value: 'ti', child: Text('ትግርኛ (Tigrinya)')),
+              const PopupMenuItem<String>(value: 'en', child: Text('English')),
             ],
           ),
         ],

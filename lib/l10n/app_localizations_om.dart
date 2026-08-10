@@ -317,4 +317,13 @@ class AppLocalizationsOm extends AppLocalizations {
   @override
   String get reportSuccess =>
       'Gabaasni keessan ergameera. Gabaa keenya nagaa gochuu keessaniif galatoomaa.';
+
+  @override
+  String get browse => 'Barbaadi';
+
+  @override
+  String get cart => 'Kaartii';
+
+  @override
+  String get orders => 'Ajajawwan';
 }

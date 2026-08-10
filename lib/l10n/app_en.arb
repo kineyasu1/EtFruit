@@ -122,5 +122,8 @@
   "abusiveContent": "Abusive or Inappropriate Content",
   "incorrectPrice": "Incorrect Price or Details",
   "other": "Other",
-  "reportSuccess": "Report submitted. Thank you for keeping our marketplace safe."
+  "reportSuccess": "Report submitted. Thank you for keeping our marketplace safe.",
+  "browse": "Browse",
+  "cart": "Cart",
+  "orders": "Orders"
 }

@@ -314,4 +314,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get reportSuccess =>
       'Report submitted. Thank you for keeping our marketplace safe.';
+
+  @override
+  String get browse => 'Browse';
+
+  @override
+  String get cart => 'Cart';
+
+  @override
+  String get orders => 'Orders';
 }

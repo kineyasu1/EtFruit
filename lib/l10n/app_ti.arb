@@ -108,5 +108,8 @@
   "abusiveContent": "ዘይግቡእ ትሕዝቶ",
   "incorrectPrice": "ጌጋ ዋጋ ወይ ዝርዝር",
   "other": "ካልእ",
-  "reportSuccess": "ሪፖርትኩም በጺሑና ኣሎ። ንድሕንነት ዕዳጋና ብምሕላውኩም ነመስግን።"
+  "reportSuccess": "ሪፖርትኩም በጺሑና ኣሎ። ንድሕንነት ዕዳጋና ብምሕላውኩም ነመስግን።",
+  "browse": "ድለ",
+  "cart": "ቅርጫት",
+  "orders": "ትእዛዛት"
 }

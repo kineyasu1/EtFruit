@@ -312,4 +312,13 @@ class AppLocalizationsAm extends AppLocalizations {
 
   @override
   String get reportSuccess => 'ሪፖርትዎ ደርሶናል። ገበያችንን ደህንነቱ የተጠበቀ ስላደረጉ እናመሰግናለን።';
+
+  @override
+  String get browse => 'ያስሱ';
+
+  @override
+  String get cart => 'ጋሪ';
+
+  @override
+  String get orders => 'ትዕዛዞች';
 }

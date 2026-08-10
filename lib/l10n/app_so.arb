@@ -108,5 +108,8 @@
   "abusiveContent": "Waxyaabo meel ka dhac ah",
   "incorrectPrice": "Qiimo ama faahfaahin khaldan",
   "other": "Kale",
-  "reportSuccess": "Warbixintaada waa la gudbiyey. Waad ku mahadsan tahay ilaalinta nabadgelyada suuqayaga."
+  "reportSuccess": "Warbixintaada waa la gudbiyey. Waad ku mahadsan tahay ilaalinta nabadgelyada suuqayaga.",
+  "browse": "Raadi",
+  "cart": "Dambiisha",
+  "orders": "Dalabyada"
 }

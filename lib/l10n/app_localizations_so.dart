@@ -317,4 +317,13 @@ class AppLocalizationsSo extends AppLocalizations {
   @override
   String get reportSuccess =>
       'Warbixintaada waa la gudbiyey. Waad ku mahadsan tahay ilaalinta nabadgelyada suuqayaga.';
+
+  @override
+  String get browse => 'Raadi';
+
+  @override
+  String get cart => 'Dambiisha';
+
+  @override
+  String get orders => 'Dalabyada';
 }

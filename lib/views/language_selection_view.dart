@@ -20,11 +20,11 @@ class LanguageSelectionView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
 
     final languages = [
-      {'code': 'en', 'name': 'English', 'nativeName': 'English'},
       {'code': 'am', 'name': 'Amharic', 'nativeName': 'አማርኛ'},
       {'code': 'om', 'name': 'Oromo', 'nativeName': 'Afaan Oromo'},
       {'code': 'so', 'name': 'Somali', 'nativeName': 'Soomaali'},
       {'code': 'ti', 'name': 'Tigrinya', 'nativeName': 'ትግርኛ'},
+      {'code': 'en', 'name': 'English', 'nativeName': 'English'},
     ];
 
     return Scaffold(

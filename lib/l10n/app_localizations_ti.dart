@@ -312,4 +312,13 @@ class AppLocalizationsTi extends AppLocalizations {
 
   @override
   String get reportSuccess => 'ሪፖርትኩም በጺሑና ኣሎ። ንድሕንነት ዕዳጋና ብምሕላውኩም ነመስግን።';
+
+  @override
+  String get browse => 'ድለ';
+
+  @override
+  String get cart => 'ቅርጫት';
+
+  @override
+  String get orders => 'ትእዛዛት';
 }

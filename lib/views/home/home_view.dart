@@ -191,20 +191,21 @@ class _BuyerHomeViewState extends ConsumerState<BuyerHomeView> {
     String description = '';
     IconData icon = Icons.lock_outline_rounded;
 
+    final l10n = AppLocalizations.of(context);
     if (_currentIndex == 1) {
-      title = 'Your Cart';
+      title = l10n.cart;
       description = 'Sign up or log in to add agricultural products to your cart and make purchases.';
       icon = Icons.shopping_cart_outlined;
     } else if (_currentIndex == 2) {
-      title = 'Your Orders';
+      title = l10n.orders;
       description = 'Sign up or log in to track your orders, view receipts, and monitor delivery.';
       icon = Icons.receipt_long_outlined;
     } else if (_currentIndex == 3) {
-      title = 'Your Chats';
+      title = l10n.chats;
       description = 'Sign up or log in to chat with buyers and sellers in real time.';
       icon = Icons.chat_bubble_outline_rounded;
     } else if (_currentIndex == 4) {
-      title = 'My Account';
+      title = l10n.myAccount;
       description = 'Sign up or log in to manage your profile and view settings.';
       icon = Icons.person_outline_rounded;
     }
@@ -281,17 +282,17 @@ class _BuyerHomeViewState extends ConsumerState<BuyerHomeView> {
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) => setState(() => _currentIndex = index),
         destinations: [
-          const NavigationDestination(
-            icon: Icon(Icons.grid_view_rounded),
-            label: 'Browse',
+          NavigationDestination(
+            icon: const Icon(Icons.grid_view_rounded),
+            label: l10n.browse,
           ),
-          const NavigationDestination(
-            icon: Icon(Icons.shopping_cart_rounded),
-            label: 'Cart',
+          NavigationDestination(
+            icon: const Icon(Icons.shopping_cart_rounded),
+            label: l10n.cart,
           ),
-          const NavigationDestination(
-            icon: Icon(Icons.receipt_long_rounded),
-            label: 'Orders',
+          NavigationDestination(
+            icon: const Icon(Icons.receipt_long_rounded),
+            label: l10n.orders,
           ),
           NavigationDestination(
             icon: const Icon(Icons.chat_bubble_rounded),
@@ -672,11 +673,11 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> with Auto
               ref.read(languageProvider.notifier).setLocale(code);
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(value: 'en', child: Text('English')),
               const PopupMenuItem<String>(value: 'am', child: Text('አማርኛ (Amharic)')),
               const PopupMenuItem<String>(value: 'om', child: Text('Afaan Oromo')),
               const PopupMenuItem<String>(value: 'so', child: Text('Soomaali (Somali)')),
               const PopupMenuItem<String>(value: 'ti', child: Text('ትግርኛ (Tigrinya)')),
+              const PopupMenuItem<String>(value: 'en', child: Text('English')),
             ],
           ),
           IconButton(
