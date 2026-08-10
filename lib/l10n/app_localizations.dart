@@ -835,6 +835,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password must be at least 6 characters'**
   String get passwordTooShort;
+
+  /// No description provided for @sellerDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller Dashboard'**
+  String get sellerDashboard;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back, {name}!'**
+  String welcomeBack(String name);
+
+  /// No description provided for @salesOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Here is your product sales analysis overview:'**
+  String get salesOverview;
+
+  /// No description provided for @totalRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Revenue'**
+  String get totalRevenue;
+
+  /// No description provided for @activeProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Products'**
+  String get activeProducts;
+
+  /// No description provided for @soldItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold Items'**
+  String get soldItems;
+
+  /// No description provided for @salesByCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales by Category (Sold units)'**
+  String get salesByCategory;
+
+  /// No description provided for @noSalesData.
+  ///
+  /// In en, this message translates to:
+  /// **'No sales data recorded yet.'**
+  String get noSalesData;
+
+  /// No description provided for @incomingOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming Sales Orders'**
+  String get incomingOrders;
+
+  /// No description provided for @buyerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyer: {name}'**
+  String buyerLabel(String name);
 }
 
 class _AppLocalizationsDelegate

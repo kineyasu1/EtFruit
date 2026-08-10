@@ -130,5 +130,15 @@
   "forgotPassword": "የይለፍ ቃል ረስተዋል?",
   "enterPassword": "የይለፍ ቃል ያስገቡ",
   "passwordsDoNotMatch": "የይለፍ ቃላት አይመሳሰሉም",
-  "passwordTooShort": "የይለፍ ቃል ቢያንስ 6 አሃዝ መሆን አለበት"
+  "passwordTooShort": "የይለፍ ቃል ቢያንስ 6 አሃዝ መሆን አለበት",
+  "sellerDashboard": "የሻጭ ዳሽቦርድ",
+  "welcomeBack": "እንኳን ደህና መጡ፣ {name}!",
+  "salesOverview": "የምርት ሽያጭ ትንተና አጠቃላይ እይታ ይኸውና፡",
+  "totalRevenue": "ጠቅላላ ገቢ",
+  "activeProducts": "ንቁ ምርቶች",
+  "soldItems": "የተሸጡ ምርቶች",
+  "salesByCategory": "ሽያጭ በዘርፍ (የተሸጡ መጠኖች)",
+  "noSalesData": "እስካሁን ምንም የሽያጭ መረጃ አልተመዘገበም።",
+  "incomingOrders": "የሚመጡ የሽያጭ ትዕዛዞች",
+  "buyerLabel": "ገዢ፡ {name}"
 }

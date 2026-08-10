@@ -381,4 +381,38 @@ class AppLocalizationsTi extends AppLocalizations {
 
   @override
   String get passwordTooShort => 'መሕለፊ ቃል ብወሑዱ 6 ኣሃዝ ክኸውን አለዎ';
+
+  @override
+  String get sellerDashboard => 'ታብሎ ሸያጢ';
+
+  @override
+  String welcomeBack(String name) {
+    return 'እንቋዕ ብደሓን መጻእኹም፣ $name!';
+  }
+
+  @override
+  String get salesOverview => 'ናይ ፍርያት መሸጣ ትንተና ሓፈሻዊ ርእዮ እንሆ፡';
+
+  @override
+  String get totalRevenue => 'ጠቕላላ ኣታዊ';
+
+  @override
+  String get activeProducts => 'ንጡፋት ፍርያት';
+
+  @override
+  String get soldItems => 'ዝተሸጡ ፍርያት';
+
+  @override
+  String get salesByCategory => 'መሸጣ ብዓይነት';
+
+  @override
+  String get noSalesData => 'ክሳብ ሕጂ ዝተመዝገበ ናይ መሸጣ ሓበሬታ የለን።';
+
+  @override
+  String get incomingOrders => 'ዝመፁ ናይ መሸጣ ትእዛዛት';
+
+  @override
+  String buyerLabel(String name) {
+    return 'ዓዳጊ፡ $name';
+  }
 }

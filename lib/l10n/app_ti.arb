@@ -130,5 +130,15 @@
   "forgotPassword": "መሕለፊ ቃል ረሲዕኩም?",
   "enterPassword": "መሕለፊ ቃል የእትዉ",
   "passwordsDoNotMatch": "መሕለፊ ቃላት አይተመሳሰሉን",
-  "passwordTooShort": "መሕለፊ ቃል ብወሑዱ 6 ኣሃዝ ክኸውን አለዎ"
+  "passwordTooShort": "መሕለፊ ቃል ብወሑዱ 6 ኣሃዝ ክኸውን አለዎ",
+  "sellerDashboard": "ታብሎ ሸያጢ",
+  "welcomeBack": "እንቋዕ ብደሓን መጻእኹም፣ {name}!",
+  "salesOverview": "ናይ ፍርያት መሸጣ ትንተና ሓፈሻዊ ርእዮ እንሆ፡",
+  "totalRevenue": "ጠቕላላ ኣታዊ",
+  "activeProducts": "ንጡፋት ፍርያት",
+  "soldItems": "ዝተሸጡ ፍርያት",
+  "salesByCategory": "መሸጣ ብዓይነት",
+  "noSalesData": "ክሳብ ሕጂ ዝተመዝገበ ናይ መሸጣ ሓበሬታ የለን።",
+  "incomingOrders": "ዝመፁ ናይ መሸጣ ትእዛዛት",
+  "buyerLabel": "ዓዳጊ፡ {name}"
 }

@@ -194,8 +194,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
       } else {
         setState(() {
           _errorMessage = _isSignUp
-              ? 'Registration failed. User may already exist.'
-              : 'Invalid phone number or password.';
+              ? ErrorService.getReadableError(context, 'user-already-exists')
+              : ErrorService.getReadableError(context, 'wrong-password');
         });
       }
     } catch (e) {

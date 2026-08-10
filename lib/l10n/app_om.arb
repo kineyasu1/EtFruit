@@ -130,5 +130,15 @@
   "forgotPassword": "Jecha darbiisaa dagattee?",
   "enterPassword": "Jecha darbiisaa galchaa",
   "passwordsDoNotMatch": "Jechoonni darbiisaa wal hin siman",
-  "passwordTooShort": "Jecha darbiisaa yoo xiqqate digitii 6 ta'uu qaba"
+  "passwordTooShort": "Jecha darbiisaa yoo xiqqate digitii 6 ta'uu qaba",
+  "sellerDashboard": "Gabaasa Gurguraa",
+  "welcomeBack": "Baga nagaan deebitan, {name}!",
+  "salesOverview": "Ibsa waliigalaa xiinxala gurgurtaa oomisha keessanii:",
+  "totalRevenue": "Galii Waliigalaa",
+  "activeProducts": "Oomishaalee Hojii Irra Jiran",
+  "soldItems": "Oomishaalee Gurguraman",
+  "salesByCategory": "Gurgurtaa Ramaddiidhaan",
+  "noSalesData": "Odeeffannoon gurgurtaa ammaaf hin jiru.",
+  "incomingOrders": "Ajajawwan Gurgurtaa Dhufan",
+  "buyerLabel": "Bitaa: {name}"
 }

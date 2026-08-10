@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:agrimarketmob/l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/firestore_service.dart';
 
@@ -56,12 +57,13 @@ class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView>
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Seller Dashboard',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          l10n.sellerDashboard,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: const Color(0xFF1B5E20),
         elevation: 0,
@@ -115,7 +117,7 @@ class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Welcome back, ${user.name}!',
+                            l10n.welcomeBack(user.name.isEmpty ? 'Seller' : user.name),
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -123,9 +125,9 @@ class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView>
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
-                            'Here is your product sales analysis overview:',
-                            style: TextStyle(color: Colors.white70, fontSize: 13),
+                          Text(
+                            l10n.salesOverview,
+                            style: const TextStyle(color: Colors.white70, fontSize: 13),
                           ),
                         ],
                       ),
@@ -136,7 +138,7 @@ class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView>
                     children: [
                       Expanded(
                         child: _buildStatCard(
-                          title: 'Total Revenue',
+                          title: l10n.totalRevenue,
                           value: '${totalSales.toStringAsFixed(0)} ETB',
                           icon: Icons.monetization_on_rounded,
                           color: const Color(0xFF1B5E20),
@@ -149,7 +151,7 @@ class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView>
                     children: [
                       Expanded(
                         child: _buildStatCard(
-                          title: 'Active Products',
+                          title: l10n.activeProducts,
                           value: '${activeListings.length}',
                           icon: Icons.grass_rounded,
                           color: Colors.blue[800]!,
@@ -158,7 +160,7 @@ class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView>
                       const SizedBox(width: 16),
                       Expanded(
                         child: _buildStatCard(
-                          title: 'Sold Items',
+                          title: l10n.soldItems,
                           value: '${soldListings.length}',
                           icon: Icons.check_circle_rounded,
                           color: const Color(0xFFE65100),
@@ -176,7 +178,7 @@ class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Sales by Category (Sold units)',
+                            l10n.salesByCategory,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -185,12 +187,12 @@ class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView>
                           ),
                           const SizedBox(height: 16),
                           if (categorySales.isEmpty)
-                            const Center(
+                            Center(
                               child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 20),
+                                padding: const EdgeInsets.symmetric(vertical: 20),
                                 child: Text(
-                                  'No sales data recorded yet.',
-                                  style: TextStyle(color: Colors.grey),
+                                  l10n.noSalesData,
+                                  style: const TextStyle(color: Colors.grey),
                                 ),
                               ),
                             )
@@ -260,7 +262,7 @@ class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView>
                         children: [
                           const SizedBox(height: 24),
                           Text(
-                            'Incoming Sales Orders',
+                            l10n.incomingOrders,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -293,7 +295,7 @@ class _SellerDashboardSubViewState extends ConsumerState<SellerDashboardSubView>
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Buyer: ${order['buyerName'] ?? 'Buyer'}',
+                                      l10n.buyerLabel(order['buyerName'] ?? 'Buyer'),
                                       style: TextStyle(color: Colors.grey[600], fontSize: 12),
                                     ),
                                     const SizedBox(height: 4),

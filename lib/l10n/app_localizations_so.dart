@@ -388,4 +388,38 @@ class AppLocalizationsSo extends AppLocalizations {
 
   @override
   String get passwordTooShort => 'Furuhu waa inuu ugu yaraan yahay 6 god';
+
+  @override
+  String get sellerDashboard => 'Bogga Iibiyaha';
+
+  @override
+  String welcomeBack(String name) {
+    return 'Kusoo dhawaow markale, $name!';
+  }
+
+  @override
+  String get salesOverview => 'Halkan waa warbixinta guud ee iibka alaabtaada:';
+
+  @override
+  String get totalRevenue => 'Dakhliga Guud';
+
+  @override
+  String get activeProducts => 'Alaabta Shaqaynaysa';
+
+  @override
+  String get soldItems => 'Alaabta La Iibiyey';
+
+  @override
+  String get salesByCategory => 'Iibka oo Qaybsoan';
+
+  @override
+  String get noSalesData => 'Waqti xaadirkan ma jiraan wax data ah.';
+
+  @override
+  String get incomingOrders => 'Dalabyada Iibka ee Soo Socda';
+
+  @override
+  String buyerLabel(String name) {
+    return 'Iibsade: $name';
+  }
 }

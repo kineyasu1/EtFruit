@@ -383,4 +383,38 @@ class AppLocalizationsAm extends AppLocalizations {
 
   @override
   String get passwordTooShort => 'የይለፍ ቃል ቢያንስ 6 አሃዝ መሆን አለበት';
+
+  @override
+  String get sellerDashboard => 'የሻጭ ዳሽቦርድ';
+
+  @override
+  String welcomeBack(String name) {
+    return 'እንኳን ደህና መጡ፣ $name!';
+  }
+
+  @override
+  String get salesOverview => 'የምርት ሽያጭ ትንተና አጠቃላይ እይታ ይኸውና፡';
+
+  @override
+  String get totalRevenue => 'ጠቅላላ ገቢ';
+
+  @override
+  String get activeProducts => 'ንቁ ምርቶች';
+
+  @override
+  String get soldItems => 'የተሸጡ ምርቶች';
+
+  @override
+  String get salesByCategory => 'ሽያጭ በዘርፍ (የተሸጡ መጠኖች)';
+
+  @override
+  String get noSalesData => 'እስካሁን ምንም የሽያጭ መረጃ አልተመዘገበም።';
+
+  @override
+  String get incomingOrders => 'የሚመጡ የሽያጭ ትዕዛዞች';
+
+  @override
+  String buyerLabel(String name) {
+    return 'ገዢ፡ $name';
+  }
 }

@@ -385,4 +385,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordTooShort => 'Password must be at least 6 characters';
+
+  @override
+  String get sellerDashboard => 'Seller Dashboard';
+
+  @override
+  String welcomeBack(String name) {
+    return 'Welcome back, $name!';
+  }
+
+  @override
+  String get salesOverview => 'Here is your product sales analysis overview:';
+
+  @override
+  String get totalRevenue => 'Total Revenue';
+
+  @override
+  String get activeProducts => 'Active Products';
+
+  @override
+  String get soldItems => 'Sold Items';
+
+  @override
+  String get salesByCategory => 'Sales by Category (Sold units)';
+
+  @override
+  String get noSalesData => 'No sales data recorded yet.';
+
+  @override
+  String get incomingOrders => 'Incoming Sales Orders';
+
+  @override
+  String buyerLabel(String name) {
+    return 'Buyer: $name';
+  }
 }

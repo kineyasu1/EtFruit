@@ -130,5 +130,15 @@
   "forgotPassword": "Ma haroowday Furuhu?",
   "enterPassword": "Geli furaha",
   "passwordsDoNotMatch": "Fureyaalku way is waafaqi waayeen",
-  "passwordTooShort": "Furuhu waa inuu ugu yaraan yahay 6 god"
+  "passwordTooShort": "Furuhu waa inuu ugu yaraan yahay 6 god",
+  "sellerDashboard": "Bogga Iibiyaha",
+  "welcomeBack": "Kusoo dhawaow markale, {name}!",
+  "salesOverview": "Halkan waa warbixinta guud ee iibka alaabtaada:",
+  "totalRevenue": "Dakhliga Guud",
+  "activeProducts": "Alaabta Shaqaynaysa",
+  "soldItems": "Alaabta La Iibiyey",
+  "salesByCategory": "Iibka oo Qaybsoan",
+  "noSalesData": "Waqti xaadirkan ma jiraan wax data ah.",
+  "incomingOrders": "Dalabyada Iibka ee Soo Socda",
+  "buyerLabel": "Iibsade: {name}"
 }

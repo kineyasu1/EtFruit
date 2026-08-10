@@ -144,5 +144,29 @@
   "forgotPassword": "Forgot Password?",
   "enterPassword": "Enter password",
   "passwordsDoNotMatch": "Passwords do not match",
-  "passwordTooShort": "Password must be at least 6 characters"
+  "passwordTooShort": "Password must be at least 6 characters",
+  "sellerDashboard": "Seller Dashboard",
+  "welcomeBack": "Welcome back, {name}!",
+  "@welcomeBack": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "salesOverview": "Here is your product sales analysis overview:",
+  "totalRevenue": "Total Revenue",
+  "activeProducts": "Active Products",
+  "soldItems": "Sold Items",
+  "salesByCategory": "Sales by Category (Sold units)",
+  "noSalesData": "No sales data recorded yet.",
+  "incomingOrders": "Incoming Sales Orders",
+  "buyerLabel": "Buyer: {name}",
+  "@buyerLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

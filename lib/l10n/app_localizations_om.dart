@@ -389,4 +389,39 @@ class AppLocalizationsOm extends AppLocalizations {
   @override
   String get passwordTooShort =>
       'Jecha darbiisaa yoo xiqqate digitii 6 ta\'uu qaba';
+
+  @override
+  String get sellerDashboard => 'Gabaasa Gurguraa';
+
+  @override
+  String welcomeBack(String name) {
+    return 'Baga nagaan deebitan, $name!';
+  }
+
+  @override
+  String get salesOverview =>
+      'Ibsa waliigalaa xiinxala gurgurtaa oomisha keessanii:';
+
+  @override
+  String get totalRevenue => 'Galii Waliigalaa';
+
+  @override
+  String get activeProducts => 'Oomishaalee Hojii Irra Jiran';
+
+  @override
+  String get soldItems => 'Oomishaalee Gurguraman';
+
+  @override
+  String get salesByCategory => 'Gurgurtaa Ramaddiidhaan';
+
+  @override
+  String get noSalesData => 'Odeeffannoon gurgurtaa ammaaf hin jiru.';
+
+  @override
+  String get incomingOrders => 'Ajajawwan Gurgurtaa Dhufan';
+
+  @override
+  String buyerLabel(String name) {
+    return 'Bitaa: $name';
+  }
 }

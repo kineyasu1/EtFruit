@@ -152,7 +152,7 @@ class AuthService {
   // Mock Password Register & Login (Hashed with Salted PBKDF2)
   // -------------------------------------------------------------
   Future<bool> mockSignInWithPassword(String phoneNumber, String password) async {
-    await Future.delayed(const Duration(milliseconds: 500));
+
     final mockUser = await FirestoreService().getMockUserByPhoneNumber(phoneNumber);
     if (mockUser != null) {
       // Option A: Real migration-on-login for legacy plaintext passwords
@@ -192,7 +192,7 @@ class AuthService {
   }
 
   Future<bool> mockRegisterWithPassword(String phoneNumber, String password, [String role = 'buyer']) async {
-    await Future.delayed(const Duration(milliseconds: 500));
+
     final uid = 'mock_user_${phoneNumber.replaceAll('+', '').replaceAll(' ', '')}';
     final existingUser = await FirestoreService().getMockUserByPhoneNumber(phoneNumber);
     if (existingUser != null) {
