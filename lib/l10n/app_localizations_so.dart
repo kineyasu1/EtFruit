@@ -434,4 +434,61 @@ class AppLocalizationsSo extends AppLocalizations {
 
   @override
   String get addToCart => 'Ku dar Dambiisha';
+
+  @override
+  String get checkoutGateway => 'Wadada Kaffaltaa';
+
+  @override
+  String get secureSandbox => 'WADADA KAFFALTAA OO AAD U AMMAAN AH';
+
+  @override
+  String payingTo(String name) {
+    return 'Bixinta: $name';
+  }
+
+  @override
+  String viaMethod(String method) {
+    return 'Pooqa $method';
+  }
+
+  @override
+  String returnToApp(String appName) {
+    return 'Ugu dib noqo $appName';
+  }
+
+  @override
+  String get myShoppingCart => 'Dambiisha Iibsiga';
+
+  @override
+  String get cartEmpty => 'Dambiishaadu waa madhan tahay';
+
+  @override
+  String get totalAmountLabel => 'Wadarta Guud:';
+
+  @override
+  String get proceedToCheckout => 'Ugu gudub Kaffaltaa';
+
+  @override
+  String get orderCancelledMsg => 'Dalabkan waa la tirtiray.';
+
+  @override
+  String get pending => 'Dabalka yar';
+
+  @override
+  String get confirmed => 'Waa la xaqiijiyey';
+
+  @override
+  String get preparing => 'Waa la diyaarinayaa';
+
+  @override
+  String get shipped => 'Waa la diray';
+
+  @override
+  String get delivered => 'Waa la gaarsiiyey';
+
+  @override
+  String get cancelled => 'Waa la tirtiray';
+
+  @override
+  String get selectRoleHeader => 'Dooro kaalintaada si aad u bilaabato';
 }

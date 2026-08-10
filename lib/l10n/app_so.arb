@@ -144,5 +144,22 @@
   "adjustQuantity": "Haga Iibsiga Beddel",
   "totalAmount": "Wadarta Guud:",
   "postedOn": "Taariikhda la Soo Dhigay:",
-  "addToCart": "Ku dar Dambiisha"
+  "addToCart": "Ku dar Dambiisha",
+  "checkoutGateway": "Wadada Kaffaltaa",
+  "secureSandbox": "WADADA KAFFALTAA OO AAD U AMMAAN AH",
+  "payingTo": "Bixinta: {name}",
+  "viaMethod": "Pooqa {method}",
+  "returnToApp": "Ugu dib noqo {appName}",
+  "myShoppingCart": "Dambiisha Iibsiga",
+  "cartEmpty": "Dambiishaadu waa madhan tahay",
+  "totalAmountLabel": "Wadarta Guud:",
+  "proceedToCheckout": "Ugu gudub Kaffaltaa",
+  "orderCancelledMsg": "Dalabkan waa la tirtiray.",
+  "pending": "Dabalka yar",
+  "confirmed": "Waa la xaqiijiyey",
+  "preparing": "Waa la diyaarinayaa",
+  "shipped": "Waa la diray",
+  "delivered": "Waa la gaarsiiyey",
+  "cancelled": "Waa la tirtiray",
+  "selectRoleHeader": "Dooro kaalintaada si aad u bilaabato"
 }

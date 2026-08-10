@@ -166,6 +166,44 @@
   "totalAmount": "Total Amount:",
   "postedOn": "Posted:",
   "addToCart": "Add to Cart",
+  "checkoutGateway": "Checkout Gateway",
+  "secureSandbox": "SECURE PAYMENT GATEWAY",
+  "payingTo": "Paying: {name}",
+  "@payingTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "viaMethod": "Via {method}",
+  "@viaMethod": {
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "returnToApp": "Return to {appName}",
+  "@returnToApp": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "myShoppingCart": "My Shopping Cart",
+  "cartEmpty": "Your cart is empty",
+  "totalAmountLabel": "Total Amount:",
+  "proceedToCheckout": "Proceed to Checkout",
+  "orderCancelledMsg": "This order has been cancelled.",
+  "pending": "Pending",
+  "confirmed": "Confirmed",
+  "preparing": "Preparing",
+  "shipped": "Shipped",
+  "delivered": "Delivered",
+  "cancelled": "Cancelled",
+  "selectRoleHeader": "Choose your role to get started",
   "@buyerLabel": {
     "placeholders": {
       "name": {

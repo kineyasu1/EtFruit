@@ -144,5 +144,22 @@
   "adjustQuantity": "Hamma Bituu Sirreessaa",
   "totalAmount": "Gattii Waliigalaa:",
   "postedOn": "Guyyaa Maxxanfame:",
-  "addToCart": "Gara Kaartii Dabali"
+  "addToCart": "Gara Kaartii Dabali",
+  "checkoutGateway": "Kaffaltii Gateway",
+  "secureSandbox": "GATEWAY KAFFALTII MIRAANAA",
+  "payingTo": "Kan kaffalamu: {name}",
+  "viaMethod": "Karaa {method}",
+  "returnToApp": "Gara {appName} deebi'aa",
+  "myShoppingCart": "Guuboo Bitata Koo",
+  "cartEmpty": "Guuboon keessan duudaadha",
+  "totalAmountLabel": "Gattii Waliigalaa:",
+  "proceedToCheckout": "Kaffaltii raawwachuuf itti fufaa",
+  "orderCancelledMsg": "Ajajni kun haqameera.",
+  "pending": "Eeggannoo irra",
+  "confirmed": "Mirkanaa'eera",
+  "preparing": "Qophii irra",
+  "shipped": "Ergameera",
+  "delivered": "Gahaadha",
+  "cancelled": "Haqameera",
+  "selectRoleHeader": "Jalqaabuuf gahee keessan filadhaa"
 }

@@ -144,5 +144,22 @@
   "adjustQuantity": "የመግዣ መጠን ይምረጡ",
   "totalAmount": "ጠቅላላ ዋጋ:",
   "postedOn": "የተለጠፈበት ቀን:",
-  "addToCart": "ወደ ጋሪ ጨምር"
+  "addToCart": "ወደ ጋሪ ጨምር",
+  "checkoutGateway": "የክፍያ በር",
+  "secureSandbox": "ደህንነቱ የተጠበቀ የክፍያ በር",
+  "payingTo": "ለ{name} በመክፈል ላይ",
+  "viaMethod": "በ{method} በኩል",
+  "returnToApp": "ወደ {appName} ተመለስ",
+  "myShoppingCart": "የእኔ ግዢ ጋሪ",
+  "cartEmpty": "ጋሪዎ ባዶ ነው",
+  "totalAmountLabel": "ጠቅላላ ዋጋ:",
+  "proceedToCheckout": "ለመክፈል ይቀጥሉ",
+  "orderCancelledMsg": "ይህ ትዕዛዝ ተሰርዟል።",
+  "pending": "በመጠባበቅ ላይ",
+  "confirmed": "ተረጋግጧል",
+  "preparing": "በዝግጅት ላይ",
+  "shipped": "ተላኳል",
+  "delivered": "ደርሷል",
+  "cancelled": "ተሰርዟል",
+  "selectRoleHeader": "ለመጀመር ሚናዎን ይምረጡ"
 }

@@ -436,4 +436,61 @@ class AppLocalizationsOm extends AppLocalizations {
 
   @override
   String get addToCart => 'Gara Kaartii Dabali';
+
+  @override
+  String get checkoutGateway => 'Kaffaltii Gateway';
+
+  @override
+  String get secureSandbox => 'GATEWAY KAFFALTII MIRAANAA';
+
+  @override
+  String payingTo(String name) {
+    return 'Kan kaffalamu: $name';
+  }
+
+  @override
+  String viaMethod(String method) {
+    return 'Karaa $method';
+  }
+
+  @override
+  String returnToApp(String appName) {
+    return 'Gara $appName deebi\'aa';
+  }
+
+  @override
+  String get myShoppingCart => 'Guuboo Bitata Koo';
+
+  @override
+  String get cartEmpty => 'Guuboon keessan duudaadha';
+
+  @override
+  String get totalAmountLabel => 'Gattii Waliigalaa:';
+
+  @override
+  String get proceedToCheckout => 'Kaffaltii raawwachuuf itti fufaa';
+
+  @override
+  String get orderCancelledMsg => 'Ajajni kun haqameera.';
+
+  @override
+  String get pending => 'Eeggannoo irra';
+
+  @override
+  String get confirmed => 'Mirkanaa\'eera';
+
+  @override
+  String get preparing => 'Qophii irra';
+
+  @override
+  String get shipped => 'Ergameera';
+
+  @override
+  String get delivered => 'Gahaadha';
+
+  @override
+  String get cancelled => 'Haqameera';
+
+  @override
+  String get selectRoleHeader => 'Jalqaabuuf gahee keessan filadhaa';
 }

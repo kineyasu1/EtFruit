@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:agrimarketmob/l10n/app_localizations.dart';
 import '../../services/firestore_service.dart';
 import '../../utils/order_state_machine.dart';
 import '../../services/error_service.dart';
@@ -96,7 +97,8 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
     );
   }
 
-  Widget _buildTracker(String status) {
+  Widget _buildTracker(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context);
     int currentStepIndex = 0;
     if (status == 'confirmed') currentStepIndex = 1;
     if (status == 'preparing') currentStepIndex = 2;
@@ -110,13 +112,13 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.red[200]!),
         ),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.cancel_rounded, color: Colors.red),
-            SizedBox(width: 8),
+            const Icon(Icons.cancel_rounded, color: Colors.red),
+            const SizedBox(width: 8),
             Text(
-              'This order has been cancelled.',
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              l10n.orderCancelledMsg,
+              style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -139,15 +141,15 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildStep('Pending', currentStepIndex > 0, currentStepIndex == 0),
+          _buildStep(l10n.pending, currentStepIndex > 0, currentStepIndex == 0),
           _buildLine(currentStepIndex > 0),
-          _buildStep('Confirmed', currentStepIndex > 1, currentStepIndex == 1),
+          _buildStep(l10n.confirmed, currentStepIndex > 1, currentStepIndex == 1),
           _buildLine(currentStepIndex > 1),
-          _buildStep('Preparing', currentStepIndex > 2, currentStepIndex == 2),
+          _buildStep(l10n.preparing, currentStepIndex > 2, currentStepIndex == 2),
           _buildLine(currentStepIndex > 2),
-          _buildStep('Shipped', currentStepIndex > 3, currentStepIndex == 3),
+          _buildStep(l10n.shipped, currentStepIndex > 3, currentStepIndex == 3),
           _buildLine(currentStepIndex > 3),
-          _buildStep('Delivered', currentStepIndex >= 4, currentStepIndex == 4),
+          _buildStep(l10n.delivered, currentStepIndex >= 4, currentStepIndex == 4),
         ],
       ),
     );
@@ -216,7 +218,7 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                           const SizedBox(height: 16),
 
                           // Status Steps tracker
-                          _buildTracker(_order!['status']),
+                          _buildTracker(context, _order!['status']),
                           const SizedBox(height: 24),
 
                           // Items List

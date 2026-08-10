@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:agrimarketmob/l10n/app_localizations.dart';
 import '../../services/firestore_service.dart';
 import '../../providers/auth_provider.dart';
+import '../../utils/unit_helper.dart';
 import '../payment/payment_checkout_view.dart';
 
 class CartView extends ConsumerStatefulWidget {
@@ -50,11 +52,13 @@ class _CartViewState extends ConsumerState<CartView> {
       total += (price * qty);
     }
 
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'My Shopping Cart',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Text(
+          l10n.myShoppingCart,
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: const Color(0xFF1B5E20),
         elevation: 0,
@@ -67,7 +71,7 @@ class _CartViewState extends ConsumerState<CartView> {
                   Icon(Icons.shopping_basket_outlined, size: 80, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
-                    'Your cart is empty',
+                    l10n.cartEmpty,
                     style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -111,12 +115,12 @@ class _CartViewState extends ConsumerState<CartView> {
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      '${price.toStringAsFixed(0)} ETB / ${item['unit']}',
+                                      '${price.toStringAsFixed(0)} ETB / ${UnitHelper.getLocalizedUnit(context, item['unit'])}',
                                       style: TextStyle(color: Colors.grey[600], fontSize: 13),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      'Quantity: ${qty.toStringAsFixed(0)}',
+                                      '${l10n.quantity}: ${qty.toStringAsFixed(0)}',
                                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                                     ),
                                   ],
@@ -145,7 +149,7 @@ class _CartViewState extends ConsumerState<CartView> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total Amount:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text(l10n.totalAmountLabel, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           Text(
                             '${total.toStringAsFixed(0)} ETB',
                             style: const TextStyle(

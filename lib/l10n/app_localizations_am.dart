@@ -429,4 +429,61 @@ class AppLocalizationsAm extends AppLocalizations {
 
   @override
   String get addToCart => 'ወደ ጋሪ ጨምር';
+
+  @override
+  String get checkoutGateway => 'የክፍያ በር';
+
+  @override
+  String get secureSandbox => 'ደህንነቱ የተጠበቀ የክፍያ በር';
+
+  @override
+  String payingTo(String name) {
+    return 'ለ$name በመክፈል ላይ';
+  }
+
+  @override
+  String viaMethod(String method) {
+    return 'በ$method በኩል';
+  }
+
+  @override
+  String returnToApp(String appName) {
+    return 'ወደ $appName ተመለስ';
+  }
+
+  @override
+  String get myShoppingCart => 'የእኔ ግዢ ጋሪ';
+
+  @override
+  String get cartEmpty => 'ጋሪዎ ባዶ ነው';
+
+  @override
+  String get totalAmountLabel => 'ጠቅላላ ዋጋ:';
+
+  @override
+  String get proceedToCheckout => 'ለመክፈል ይቀጥሉ';
+
+  @override
+  String get orderCancelledMsg => 'ይህ ትዕዛዝ ተሰርዟል።';
+
+  @override
+  String get pending => 'በመጠባበቅ ላይ';
+
+  @override
+  String get confirmed => 'ተረጋግጧል';
+
+  @override
+  String get preparing => 'በዝግጅት ላይ';
+
+  @override
+  String get shipped => 'ተላኳል';
+
+  @override
+  String get delivered => 'ደርሷል';
+
+  @override
+  String get cancelled => 'ተሰርዟል';
+
+  @override
+  String get selectRoleHeader => 'ለመጀመር ሚናዎን ይምረጡ';
 }

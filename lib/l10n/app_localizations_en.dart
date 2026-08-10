@@ -431,4 +431,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addToCart => 'Add to Cart';
+
+  @override
+  String get checkoutGateway => 'Checkout Gateway';
+
+  @override
+  String get secureSandbox => 'SECURE PAYMENT GATEWAY';
+
+  @override
+  String payingTo(String name) {
+    return 'Paying: $name';
+  }
+
+  @override
+  String viaMethod(String method) {
+    return 'Via $method';
+  }
+
+  @override
+  String returnToApp(String appName) {
+    return 'Return to $appName';
+  }
+
+  @override
+  String get myShoppingCart => 'My Shopping Cart';
+
+  @override
+  String get cartEmpty => 'Your cart is empty';
+
+  @override
+  String get totalAmountLabel => 'Total Amount:';
+
+  @override
+  String get proceedToCheckout => 'Proceed to Checkout';
+
+  @override
+  String get orderCancelledMsg => 'This order has been cancelled.';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get confirmed => 'Confirmed';
+
+  @override
+  String get preparing => 'Preparing';
+
+  @override
+  String get shipped => 'Shipped';
+
+  @override
+  String get delivered => 'Delivered';
+
+  @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get selectRoleHeader => 'Choose your role to get started';
 }

@@ -919,6 +919,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add to Cart'**
   String get addToCart;
+
+  /// No description provided for @checkoutGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout Gateway'**
+  String get checkoutGateway;
+
+  /// No description provided for @secureSandbox.
+  ///
+  /// In en, this message translates to:
+  /// **'SECURE PAYMENT GATEWAY'**
+  String get secureSandbox;
+
+  /// No description provided for @payingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Paying: {name}'**
+  String payingTo(String name);
+
+  /// No description provided for @viaMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Via {method}'**
+  String viaMethod(String method);
+
+  /// No description provided for @returnToApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to {appName}'**
+  String returnToApp(String appName);
+
+  /// No description provided for @myShoppingCart.
+  ///
+  /// In en, this message translates to:
+  /// **'My Shopping Cart'**
+  String get myShoppingCart;
+
+  /// No description provided for @cartEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cart is empty'**
+  String get cartEmpty;
+
+  /// No description provided for @totalAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Amount:'**
+  String get totalAmountLabel;
+
+  /// No description provided for @proceedToCheckout.
+  ///
+  /// In en, this message translates to:
+  /// **'Proceed to Checkout'**
+  String get proceedToCheckout;
+
+  /// No description provided for @orderCancelledMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'This order has been cancelled.'**
+  String get orderCancelledMsg;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get confirmed;
+
+  /// No description provided for @preparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing'**
+  String get preparing;
+
+  /// No description provided for @shipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipped'**
+  String get shipped;
+
+  /// No description provided for @delivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get delivered;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
+
+  /// No description provided for @selectRoleHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your role to get started'**
+  String get selectRoleHeader;
 }
 
 class _AppLocalizationsDelegate

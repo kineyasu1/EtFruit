@@ -144,5 +144,22 @@
   "adjustQuantity": "መጠን ዕደጋ ኣስተኻኽል",
   "totalAmount": "ጠቕላላ ዋጋ:",
   "postedOn": "ዝተለጥፈሉ መዓልቲ:",
-  "addToCart": "ናብ ቅርጫት ወስኽ"
+  "addToCart": "ናብ ቅርጫት ወስኽ",
+  "checkoutGateway": "ናይ ክፍሊት መእተዊ",
+  "secureSandbox": "ድሕንነቱ ዝተሓለወ ናይ ክፍሊት መእተዊ",
+  "payingTo": "ን{name} ኣብ ምኽፋል",
+  "viaMethod": "ብ{method} ኣቢሉ",
+  "returnToApp": "ናብ {appName} ተመለስ",
+  "myShoppingCart": "ናተይ ቅርጫት ዕደጋ",
+  "cartEmpty": "ቅርጫትኩም ባዶ እዩ",
+  "totalAmountLabel": "ጠቕላላ ዋጋ:",
+  "proceedToCheckout": "ንይምኽፋል ቀጽሉ",
+  "orderCancelledMsg": "እዚ ትእዛዝ ተሰሪዙ እዩ።",
+  "pending": "ኣብ ምጽባይ",
+  "confirmed": "ተረጋጊጹ",
+  "preparing": "ኣብ ምድላው",
+  "shipped": "ተላኢኹ",
+  "delivered": "በጺሑ",
+  "cancelled": "ተሰሪዙ",
+  "selectRoleHeader": "ንምጅማር ሓላፍነትኩም ምረጹ"
 }

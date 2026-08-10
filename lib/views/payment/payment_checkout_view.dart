@@ -404,12 +404,14 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FB),
       appBar: AppBar(
-        title: const Text(
-          'Chapa Checkout Gateway',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l10n.checkoutGateway,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         automaticallyImplyLeading: false,
@@ -434,9 +436,9 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const Text(
-                'SECURE SANDBOX GATEWAY',
-                style: TextStyle(
+              Text(
+                l10n.secureSandbox,
+                style: const TextStyle(
                   fontSize: 10,
                   letterSpacing: 1.5,
                   color: Colors.grey,
@@ -455,7 +457,7 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
                   child: Column(
                     children: [
                       Text(
-                        'Paying: ${widget.sellerName}',
+                        l10n.payingTo(widget.sellerName),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -463,7 +465,7 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Via ${widget.paymentMethod}',
+                        l10n.viaMethod(widget.paymentMethod),
                         style: TextStyle(color: Colors.grey[600], fontSize: 13),
                       ),
                       const SizedBox(height: 20),
@@ -515,10 +517,10 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
                   size: 64,
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Payment Authorized!',
+                Text(
+                  l10n.paymentSuccessful,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
@@ -526,9 +528,9 @@ class _ChapaSandboxSimulatorViewState extends State<ChapaSandboxSimulatorView> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                   ),
-                  child: const Text(
-                    'Return to Agriገበያ',
-                    style: TextStyle(color: Colors.white),
+                  child: Text(
+                    l10n.returnToApp('Agriገበያ'),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ] else if (_simStatus == 'cancelled') ...[

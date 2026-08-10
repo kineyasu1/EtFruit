@@ -427,4 +427,61 @@ class AppLocalizationsTi extends AppLocalizations {
 
   @override
   String get addToCart => 'ናብ ቅርጫት ወስኽ';
+
+  @override
+  String get checkoutGateway => 'ናይ ክፍሊት መእተዊ';
+
+  @override
+  String get secureSandbox => 'ድሕንነቱ ዝተሓለወ ናይ ክፍሊት መእተዊ';
+
+  @override
+  String payingTo(String name) {
+    return 'ን$name ኣብ ምኽፋል';
+  }
+
+  @override
+  String viaMethod(String method) {
+    return 'ብ$method ኣቢሉ';
+  }
+
+  @override
+  String returnToApp(String appName) {
+    return 'ናብ $appName ተመለስ';
+  }
+
+  @override
+  String get myShoppingCart => 'ናተይ ቅርጫት ዕደጋ';
+
+  @override
+  String get cartEmpty => 'ቅርጫትኩም ባዶ እዩ';
+
+  @override
+  String get totalAmountLabel => 'ጠቕላላ ዋጋ:';
+
+  @override
+  String get proceedToCheckout => 'ንይምኽፋል ቀጽሉ';
+
+  @override
+  String get orderCancelledMsg => 'እዚ ትእዛዝ ተሰሪዙ እዩ።';
+
+  @override
+  String get pending => 'ኣብ ምጽባይ';
+
+  @override
+  String get confirmed => 'ተረጋጊጹ';
+
+  @override
+  String get preparing => 'ኣብ ምድላው';
+
+  @override
+  String get shipped => 'ተላኢኹ';
+
+  @override
+  String get delivered => 'በጺሑ';
+
+  @override
+  String get cancelled => 'ተሰሪዙ';
+
+  @override
+  String get selectRoleHeader => 'ንምጅማር ሓላፍነትኩም ምረጹ';
 }
