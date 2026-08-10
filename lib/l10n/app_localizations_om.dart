@@ -355,4 +355,38 @@ class AppLocalizationsOm extends AppLocalizations {
 
   @override
   String get loginOrRegister => 'Seenaa / Galmaa\'aa';
+
+  @override
+  String get login => 'Seenaa';
+
+  @override
+  String get signUp => 'Galmaa\'aa';
+
+  @override
+  String get password => 'Jecha Darbiisaa';
+
+  @override
+  String get confirmPassword => 'Jecha Darbiisaa Mirkaneessi';
+
+  @override
+  String get registerAs => 'Akka kanaan galmaa\'aa:';
+
+  @override
+  String get buyer => 'Bitaa';
+
+  @override
+  String get seller => 'Gurguraa';
+
+  @override
+  String get forgotPassword => 'Jecha darbiisaa dagattee?';
+
+  @override
+  String get enterPassword => 'Jecha darbiisaa galchaa';
+
+  @override
+  String get passwordsDoNotMatch => 'Jechoonni darbiisaa wal hin siman';
+
+  @override
+  String get passwordTooShort =>
+      'Jecha darbiisaa yoo xiqqate digitii 6 ta\'uu qaba';
 }

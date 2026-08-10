@@ -119,5 +119,16 @@
   "loginOrSignUp": "Soo gal / Isdiiwangeli",
   "accountRequired": "Koonto ayaa loo baahan yahay",
   "authRequiredDesc": "Fadlan isdiiwangeli ama soo gal si aad u iibsato alaab, ula xiriirto iibiyayaasha, ama u bixiso lacagta.",
-  "loginOrRegister": "Soo gal / Isdiiwangeli"
+  "loginOrRegister": "Soo gal / Isdiiwangeli",
+  "login": "Soo Gal",
+  "signUp": "Isdiiwangeli",
+  "password": "Fure (Password)",
+  "confirmPassword": "Xaqiiji Furaha",
+  "registerAs": "Ugu dhiwangeel:",
+  "buyer": "Iibsade",
+  "seller": "Iibiye",
+  "forgotPassword": "Ma haroowday Furuhu?",
+  "enterPassword": "Geli furaha",
+  "passwordsDoNotMatch": "Fureyaalku way is waafaqi waayeen",
+  "passwordTooShort": "Furuhu waa inuu ugu yaraan yahay 6 god"
 }

@@ -236,6 +236,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
         automaticallyImplyLeading: true,
         actions: [
           PopupMenuButton<String>(
+            tooltip: l10n.language,
             icon: const Icon(Icons.translate_rounded, color: Colors.white),
             onSelected: (String code) {
               ref.read(languageProvider.notifier).setLocale(code);
@@ -323,7 +324,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                       });
                                     },
                                     child: Text(
-                                      'Log In',
+                                      l10n.login,
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -339,7 +340,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                       });
                                     },
                                     child: Text(
-                                      'Sign Up',
+                                      l10n.signUp,
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -465,17 +466,17 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                       });
                                     },
                                   ),
-                                  labelText: 'Password',
+                                  labelText: l10n.password,
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Please enter password';
+                                    return l10n.enterPassword;
                                   }
                                   if (value.trim().length < 6) {
-                                    return 'Password must be at least 6 characters';
+                                    return l10n.passwordTooShort;
                                   }
                                   return null;
                                 },
@@ -487,9 +488,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                   alignment: Alignment.centerRight,
                                   child: TextButton(
                                     onPressed: _showForgotPasswordBottomSheet,
-                                    child: const Text(
-                                      'Forgot Password?',
-                                      style: TextStyle(
+                                    child: Text(
+                                      l10n.forgotPassword,
+                                      style: const TextStyle(
                                         color: Color(0xFF1B5E20),
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -506,25 +507,25 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                   obscureText: _obscurePassword,
                                   decoration: InputDecoration(
                                     prefixIcon: const Icon(Icons.lock_outline_rounded, color: Colors.green),
-                                    labelText: 'Confirm Password',
+                                    labelText: l10n.confirmPassword,
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                   ),
                                   validator: (value) {
                                     if (value == null || value.trim().isEmpty) {
-                                      return 'Please confirm password';
+                                      return l10n.confirmPassword;
                                     }
                                     if (value.trim() != _passwordController.text.trim()) {
-                                      return 'Passwords do not match';
+                                      return l10n.passwordsDoNotMatch;
                                     }
                                     return null;
                                   },
                                 ),
                                 const SizedBox(height: 16),
-                                const Text(
-                                  'Register as:',
-                                  style: TextStyle(
+                                Text(
+                                  l10n.registerAs,
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Color(0xFF1B5E20),
                                   ),
@@ -544,7 +545,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                           color: _selectedRole == 'buyer' ? Colors.white : const Color(0xFF1B5E20),
                                         ),
                                         label: Text(
-                                          'Buyer',
+                                          l10n.buyer,
                                           style: TextStyle(
                                             color: _selectedRole == 'buyer' ? Colors.white : const Color(0xFF1B5E20),
                                             fontWeight: FontWeight.bold,
@@ -571,7 +572,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                           color: _selectedRole == 'seller' ? Colors.white : const Color(0xFF1B5E20),
                                         ),
                                         label: Text(
-                                          'Seller',
+                                          l10n.seller,
                                           style: TextStyle(
                                             color: _selectedRole == 'seller' ? Colors.white : const Color(0xFF1B5E20),
                                             fontWeight: FontWeight.bold,
@@ -613,8 +614,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                     )
                                   : Text(
                                       AuthService.isFirebaseAvailable
-                                          ? (_otpSent ? 'Verify & Login' : 'Send Code')
-                                          : (_isSignUp ? 'Sign Up' : 'Log In'),
+                                          ? (_otpSent ? l10n.verify : l10n.sendOtp)
+                                          : (_isSignUp ? l10n.signUp : l10n.login),
                                       style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,

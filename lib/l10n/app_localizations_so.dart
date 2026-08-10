@@ -355,4 +355,37 @@ class AppLocalizationsSo extends AppLocalizations {
 
   @override
   String get loginOrRegister => 'Soo gal / Isdiiwangeli';
+
+  @override
+  String get login => 'Soo Gal';
+
+  @override
+  String get signUp => 'Isdiiwangeli';
+
+  @override
+  String get password => 'Fure (Password)';
+
+  @override
+  String get confirmPassword => 'Xaqiiji Furaha';
+
+  @override
+  String get registerAs => 'Ugu dhiwangeel:';
+
+  @override
+  String get buyer => 'Iibsade';
+
+  @override
+  String get seller => 'Iibiye';
+
+  @override
+  String get forgotPassword => 'Ma haroowday Furuhu?';
+
+  @override
+  String get enterPassword => 'Geli furaha';
+
+  @override
+  String get passwordsDoNotMatch => 'Fureyaalku way is waafaqi waayeen';
+
+  @override
+  String get passwordTooShort => 'Furuhu waa inuu ugu yaraan yahay 6 god';
 }

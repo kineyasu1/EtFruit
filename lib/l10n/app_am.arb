@@ -119,5 +119,16 @@
   "loginOrSignUp": "ይግቡ / ይመዝገቡ",
   "accountRequired": "መለያ ያስፈልጋል",
   "authRequiredDesc": "እባክዎ እቃዎችን ለመግዛት፣ ሻጮችን መልእክት ለመላክ ወይም ለመክፈል ይግቡ ወይም ይመዝገቡ።",
-  "loginOrRegister": "ይግቡ / ይመዝገቡ"
+  "loginOrRegister": "ይግቡ / ይመዝገቡ",
+  "login": "ይግቡ",
+  "signUp": "ይመዝገቡ",
+  "password": "የይለፍ ቃል",
+  "confirmPassword": "የይለፍ ቃል ያረጋግጡ",
+  "registerAs": "ይመዝገቡ እንደ:",
+  "buyer": "ገዢ",
+  "seller": "ሻጭ",
+  "forgotPassword": "የይለፍ ቃል ረስተዋል?",
+  "enterPassword": "የይለፍ ቃል ያስገቡ",
+  "passwordsDoNotMatch": "የይለፍ ቃላት አይመሳሰሉም",
+  "passwordTooShort": "የይለፍ ቃል ቢያንስ 6 አሃዝ መሆን አለበት"
 }

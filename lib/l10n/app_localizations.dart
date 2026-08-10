@@ -769,6 +769,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Log In / Register'**
   String get loginOrRegister;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Log In'**
+  String get login;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUp;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @registerAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Register as:'**
+  String get registerAs;
+
+  /// No description provided for @buyer.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyer'**
+  String get buyer;
+
+  /// No description provided for @seller.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller'**
+  String get seller;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPassword;
+
+  /// No description provided for @enterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter password'**
+  String get enterPassword;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordTooShort;
 }
 
 class _AppLocalizationsDelegate

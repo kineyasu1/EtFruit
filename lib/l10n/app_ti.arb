@@ -119,5 +119,16 @@
   "loginOrSignUp": "እተዉ / ተመዝገቡ",
   "accountRequired": "ሕሳብ የድሊ",
   "authRequiredDesc": "እቑሑት ንምዕዳግ፣ ንመሸጥቲ መልእኽቲ ንምልኣኽ ወይ ንምኽፋል በጃኹም እተዉ ወይ ተመዝገቡ።",
-  "loginOrRegister": "እተዉ / ተመዝገቡ"
+  "loginOrRegister": "እተዉ / ተመዝገቡ",
+  "login": "እተዉ",
+  "signUp": "ተመዝገቡ",
+  "password": "መሕለፊ ቃል",
+  "confirmPassword": "መሕለፊ ቃል ኣረጋግጽ",
+  "registerAs": "ከምዚ ተመዝገቡ:",
+  "buyer": "ዓዳጊ",
+  "seller": "ሸያጢ",
+  "forgotPassword": "መሕለፊ ቃል ረሲዕኩም?",
+  "enterPassword": "መሕለፊ ቃል የእትዉ",
+  "passwordsDoNotMatch": "መሕለፊ ቃላት አይተመሳሰሉን",
+  "passwordTooShort": "መሕለፊ ቃል ብወሑዱ 6 ኣሃዝ ክኸውን አለዎ"
 }

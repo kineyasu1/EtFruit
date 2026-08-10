@@ -669,6 +669,7 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> with Auto
         elevation: 0,
         actions: [
           PopupMenuButton<String>(
+            tooltip: l10n.language,
             icon: const Icon(Icons.translate_rounded, color: Colors.white),
             onSelected: (String code) {
               ref.read(languageProvider.notifier).setLocale(code);

@@ -350,4 +350,37 @@ class AppLocalizationsAm extends AppLocalizations {
 
   @override
   String get loginOrRegister => 'ይግቡ / ይመዝገቡ';
+
+  @override
+  String get login => 'ይግቡ';
+
+  @override
+  String get signUp => 'ይመዝገቡ';
+
+  @override
+  String get password => 'የይለፍ ቃል';
+
+  @override
+  String get confirmPassword => 'የይለፍ ቃል ያረጋግጡ';
+
+  @override
+  String get registerAs => 'ይመዝገቡ እንደ:';
+
+  @override
+  String get buyer => 'ገዢ';
+
+  @override
+  String get seller => 'ሻጭ';
+
+  @override
+  String get forgotPassword => 'የይለፍ ቃል ረስተዋል?';
+
+  @override
+  String get enterPassword => 'የይለፍ ቃል ያስገቡ';
+
+  @override
+  String get passwordsDoNotMatch => 'የይለፍ ቃላት አይመሳሰሉም';
+
+  @override
+  String get passwordTooShort => 'የይለፍ ቃል ቢያንስ 6 አሃዝ መሆን አለበት';
 }

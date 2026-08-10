@@ -348,4 +348,37 @@ class AppLocalizationsTi extends AppLocalizations {
 
   @override
   String get loginOrRegister => 'እተዉ / ተመዝገቡ';
+
+  @override
+  String get login => 'እተዉ';
+
+  @override
+  String get signUp => 'ተመዝገቡ';
+
+  @override
+  String get password => 'መሕለፊ ቃል';
+
+  @override
+  String get confirmPassword => 'መሕለፊ ቃል ኣረጋግጽ';
+
+  @override
+  String get registerAs => 'ከምዚ ተመዝገቡ:';
+
+  @override
+  String get buyer => 'ዓዳጊ';
+
+  @override
+  String get seller => 'ሸያጢ';
+
+  @override
+  String get forgotPassword => 'መሕለፊ ቃል ረሲዕኩም?';
+
+  @override
+  String get enterPassword => 'መሕለፊ ቃል የእትዉ';
+
+  @override
+  String get passwordsDoNotMatch => 'መሕለፊ ቃላት አይተመሳሰሉን';
+
+  @override
+  String get passwordTooShort => 'መሕለፊ ቃል ብወሑዱ 6 ኣሃዝ ክኸውን አለዎ';
 }

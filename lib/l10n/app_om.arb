@@ -119,5 +119,16 @@
   "loginOrSignUp": "Seenaa / Galmaa'aa",
   "accountRequired": "Herregi Barbaachisaa dha",
   "authRequiredDesc": "Maaloo oomisha bituuf, gurgurtoota quunnamuuf ykn kaffaltii raawwachuuf seenaa ykn galmaa'aa.",
-  "loginOrRegister": "Seenaa / Galmaa'aa"
+  "loginOrRegister": "Seenaa / Galmaa'aa",
+  "login": "Seenaa",
+  "signUp": "Galmaa'aa",
+  "password": "Jecha Darbiisaa",
+  "confirmPassword": "Jecha Darbiisaa Mirkaneessi",
+  "registerAs": "Akka kanaan galmaa'aa:",
+  "buyer": "Bitaa",
+  "seller": "Gurguraa",
+  "forgotPassword": "Jecha darbiisaa dagattee?",
+  "enterPassword": "Jecha darbiisaa galchaa",
+  "passwordsDoNotMatch": "Jechoonni darbiisaa wal hin siman",
+  "passwordTooShort": "Jecha darbiisaa yoo xiqqate digitii 6 ta'uu qaba"
 }

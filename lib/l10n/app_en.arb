@@ -133,5 +133,16 @@
   "loginOrSignUp": "Log In / Sign Up",
   "accountRequired": "Account Required",
   "authRequiredDesc": "Please sign up or log in to buy items, message sellers, or proceed to checkout.",
-  "loginOrRegister": "Log In / Register"
+  "loginOrRegister": "Log In / Register",
+  "login": "Log In",
+  "signUp": "Sign Up",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "registerAs": "Register as:",
+  "buyer": "Buyer",
+  "seller": "Seller",
+  "forgotPassword": "Forgot Password?",
+  "enterPassword": "Enter password",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "passwordTooShort": "Password must be at least 6 characters"
 }

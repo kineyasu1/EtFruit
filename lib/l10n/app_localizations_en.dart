@@ -352,4 +352,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginOrRegister => 'Log In / Register';
+
+  @override
+  String get login => 'Log In';
+
+  @override
+  String get signUp => 'Sign Up';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get registerAs => 'Register as:';
+
+  @override
+  String get buyer => 'Buyer';
+
+  @override
+  String get seller => 'Seller';
+
+  @override
+  String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get enterPassword => 'Enter password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 6 characters';
 }
