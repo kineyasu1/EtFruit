@@ -15,7 +15,7 @@ if (file("google-services.json").exists()) {
 
 android {
     namespace = "com.farmlink.agrimarketmob"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     val keystorePropertiesFile = rootProject.file("key.properties")
@@ -36,7 +36,7 @@ android {
     defaultConfig {
         applicationId = "com.farmlink.agrimarketmob"
         minSdk = 21
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
