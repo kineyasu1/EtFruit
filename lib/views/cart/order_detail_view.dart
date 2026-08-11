@@ -299,6 +299,66 @@ class _OrderDetailViewState extends ConsumerState<OrderDetailView> {
                             title: Text(_order!['sellerName'] ?? 'Seller'),
                             subtitle: Text('ID: ${_order!['sellerId']}'),
                           ),
+                          const SizedBox(height: 24),
+
+                          // Delivery Confirmation & Payout Action Button
+                          if (_order!['status'].toString().toLowerCase() != 'delivered' &&
+                              _order!['status'].toString().toLowerCase() != 'completed' &&
+                              _order!['status'].toString().toLowerCase() != 'cancelled') ...[
+                            ElevatedButton.icon(
+                              onPressed: () async {
+                                setState(() => _isLoading = true);
+                                await PaymentService().confirmDelivery(widget.orderId);
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Delivery confirmed! Seller payout is now ready.'),
+                                      backgroundColor: Color(0xFF1B5E20),
+                                    ),
+                                  );
+                                }
+                                await _loadOrderDetails();
+                              },
+                              icon: const Icon(Icons.verified_rounded),
+                              label: const Text(
+                                'Confirm Delivery',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF1B5E20),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ] else ...[
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.green[50],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.green[200]!),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.check_circle_rounded, color: Color(0xFF1B5E20)),
+                                  const SizedBox(width: 12),
+                                  const Expanded(
+                                    child: Text(
+                                      'Delivery Confirmed!\nSeller amount calculated and queued for batch payout.',
+                                      style: TextStyle(
+                                        color: Color(0xFF1B5E20),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),

@@ -30,6 +30,7 @@ class FirestoreService {
   final Map<String, Map<String, dynamic>> _mockChats = {};
   final Map<String, List<Map<String, dynamic>>> _mockMessages = {};
   final Map<String, Map<String, dynamic>> _mockTransactions = {};
+  final Map<String, Map<String, dynamic>> _mockPayouts = {};
 
   // Shopping Cart & Orders local storage caches
   final List<Map<String, dynamic>> _mockCart = [];
@@ -727,6 +728,64 @@ class FirestoreService {
         (_) => _mockTransactions[txId],
       );
     }
+  }
+
+  // -------------------------------------------------------------
+  // Seller Payouts
+  // -------------------------------------------------------------
+  Future<void> createPayoutRecord(Map<String, dynamic> payoutDoc) async {
+    final id = payoutDoc['id'] ?? 'payout_${payoutDoc['orderId']}';
+    if (AuthService.isFirebaseAvailable) {
+      await _firestore.collection('payouts').doc(id).set(payoutDoc);
+    } else {
+      _mockPayouts[id] = payoutDoc;
+      await _saveLocalData();
+    }
+  }
+
+  Future<void> savePayoutRecord(Map<String, dynamic> payoutDoc) async {
+    final id = payoutDoc['id'] ?? 'payout_${payoutDoc['orderId']}';
+    if (AuthService.isFirebaseAvailable) {
+      await _firestore.collection('payouts').doc(id).set(payoutDoc, SetOptions(merge: true));
+    } else {
+      _mockPayouts[id] = payoutDoc;
+      await _saveLocalData();
+    }
+  }
+
+  Future<Map<String, dynamic>?> getPayoutByOrderId(String orderId) async {
+    final payoutId = 'payout_$orderId';
+    if (AuthService.isFirebaseAvailable) {
+      final doc = await _firestore.collection('payouts').doc(payoutId).get();
+      return doc.data();
+    } else {
+      return _mockPayouts[payoutId];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getPayoutsForSeller(String sellerId) async {
+    if (AuthService.isFirebaseAvailable) {
+      final snapshot = await _firestore
+          .collection('payouts')
+          .where('sellerId', isEqualTo: sellerId)
+          .get();
+      return snapshot.docs.map((doc) => doc.data()).toList();
+    } else {
+      return _mockPayouts.values
+          .where((element) => element['sellerId'] == sellerId)
+          .toList();
+    }
+  }
+
+  Future<void> processBatchPayoutsMock() async {
+    if (AuthService.isFirebaseAvailable) return;
+    for (var key in _mockPayouts.keys) {
+      if (_mockPayouts[key]?['status'] == 'ready_for_payout') {
+        _mockPayouts[key]?['status'] = 'completed';
+        _mockPayouts[key]?['processedAt'] = DateTime.now().toIso8601String();
+      }
+    }
+    await _saveLocalData();
   }
 
   // -------------------------------------------------------------

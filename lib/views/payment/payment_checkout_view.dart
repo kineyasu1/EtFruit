@@ -56,14 +56,7 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
   }
 
   void _initiatePayment() async {
-    final amountText = _amountController.text.trim();
-    if (amountText.isEmpty) return;
-
-    final amount = double.tryParse(amountText);
-    if (amount == null || amount <= 0) {
-      setState(() => _errorMessage = 'Enter a valid amount');
-      return;
-    }
+    final sellerPrice = widget.price > 0 ? (widget.price * widget.quantity) : 100.0;
 
     setState(() {
       _isLoading = true;
@@ -76,7 +69,7 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
       final result = await PaymentService().initializePayment(
         listingId: widget.listingId,
         listingTitle: widget.listingTitle,
-        amount: amount,
+        amount: sellerPrice,
         buyerId: buyer.id,
         sellerId: widget.sellerId,
         paymentMethod: _selectedMethod,
@@ -249,29 +242,71 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                     ],
                     const Divider(),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _amountController,
-                      readOnly: true,
-                      enabled: false,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Color(0xFF1B5E20),
-                      ),
-                      decoration: InputDecoration(
-                        labelText: l10n.amountToPay,
-                        prefixText: 'ETB ',
-                        suffixIcon: const Icon(Icons.lock_outline_rounded, color: Colors.grey),
-                        filled: true,
-                        fillColor: const Color(0xFFE8F5E9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Seller Item Subtotal:',
+                          style: TextStyle(color: Colors.grey[700], fontSize: 14),
                         ),
+                        Text(
+                          '${(widget.price * widget.quantity).toStringAsFixed(2)} ETB',
+                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'App Platform Fee (5%):',
+                              style: TextStyle(color: Colors.grey[700], fontSize: 14),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.info_outline_rounded, size: 16, color: Colors.grey),
+                          ],
+                        ),
+                        Text(
+                          '${((widget.price * widget.quantity) * 0.05).toStringAsFixed(2)} ETB',
+                          style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF1B5E20), fontSize: 14),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5E9),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.green[300]!),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Total Payment Amount:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Color(0xFF1B5E20),
+                            ),
+                          ),
+                          Text(
+                            '${((widget.price * widget.quantity) * 1.05).toStringAsFixed(2)} ETB',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Color(0xFF1B5E20),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

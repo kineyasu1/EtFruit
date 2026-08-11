@@ -9,32 +9,47 @@ class PaymentService {
   factory PaymentService() => _instance;
   PaymentService._internal();
 
-  // Production Firebase Cloud Functions URL (configurable via compile-time --dart-define)
+  // Standard app commission rate (5%)
+  static const double defaultCommissionRate = 0.05;
+
+  // Production Firebase Cloud Functions URL
   static const String _functionsBaseUrl = String.fromEnvironment(
     'CLOUD_FUNCTIONS_URL',
     defaultValue: 'https://us-central1-YOUR_PROJECT_ID.cloudfunctions.net',
   );
 
-  // Initiates a payment session
+  /// 1 & 2: Initiates payment with commission calculation and Chapa link generation.
+  /// Computes: commissionAmount = sellerPrice * commissionRate
+  ///           totalAmount = sellerPrice + commissionAmount
   Future<Map<String, dynamic>> initializePayment({
     required String listingId,
     required String listingTitle,
-    required double amount,
+    required double amount, // Seller price
+    double? commissionRate,
     required String buyerId,
     required String sellerId,
-    required String paymentMethod, // 'Telebirr', 'CBE Birr', 'HelloCash'
+    required String paymentMethod, // 'Telebirr', 'CBE Birr', 'e-Birr'
+    String? email,
   }) async {
-    final txId = 'tx_${DateTime.now().millisecondsSinceEpoch}';
+    final orderId = 'order_${DateTime.now().millisecondsSinceEpoch}';
+    final commRate = commissionRate ?? defaultCommissionRate;
+    final sellerPrice = amount;
+    final commissionAmount = double.parse((sellerPrice * commRate).toStringAsFixed(2));
+    final totalAmount = double.parse((sellerPrice + commissionAmount).toStringAsFixed(2));
 
-    // Create local transaction record in Firestore
+    // 1. Create Transaction record in Firestore
     final txDoc = {
-      'id': txId,
-      'amount': amount,
-      'currency': 'ETB',
+      'id': orderId,
+      'orderId': orderId,
       'buyerId': buyerId,
       'sellerId': sellerId,
       'listingId': listingId,
       'listingTitle': listingTitle,
+      'sellerPrice': sellerPrice,
+      'commissionRate': commRate,
+      'commissionAmount': commissionAmount,
+      'amount': totalAmount,
+      'currency': 'ETB',
       'paymentMethod': paymentMethod,
       'status': 'pending',
       'gatewayReferenceId': '',
@@ -43,18 +58,38 @@ class PaymentService {
       'updatedAt': DateTime.now(),
     };
 
+    // Create Order record in Firestore
+    final orderDoc = {
+      'id': orderId,
+      'buyerId': buyerId,
+      'sellerId': sellerId,
+      'listingId': listingId,
+      'listingTitle': listingTitle,
+      'sellerPrice': sellerPrice,
+      'commissionRate': commRate,
+      'commissionAmount': commissionAmount,
+      'totalAmount': totalAmount,
+      'paymentMethod': paymentMethod,
+      'status': 'Pending Payment',
+      'createdAt': DateTime.now(),
+      'updatedAt': DateTime.now(),
+    };
+
     await FirestoreService().saveTransaction(txDoc);
+    await FirestoreService().createOrder(orderDoc);
 
     if (AuthService.isFirebaseAvailable) {
       try {
-        // Production Call to Cloud Function wrapper
         final response = await http.post(
           Uri.parse('$_functionsBaseUrl/initiatePayment'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({
-            'txId': txId,
-            'amount': amount,
-            'email': 'buyer@farmlink.com', // Chapa requires an email address
+            'orderId': orderId,
+            'txId': orderId,
+            'sellerPrice': sellerPrice,
+            'commissionRate': commRate,
+            'amount': totalAmount,
+            'email': email ?? 'buyer@agrimarket.com',
             'buyerId': buyerId,
             'sellerId': sellerId,
             'listingId': listingId,
@@ -67,13 +102,16 @@ class PaymentService {
           if (data['status'] == 'success') {
             final checkoutUrl = data['data']['checkout_url'];
 
-            // Update transaction record with checkout URL
             txDoc['checkoutUrl'] = checkoutUrl;
             await FirestoreService().saveTransaction(txDoc);
 
             return {
               'success': true,
-              'txId': txId,
+              'txId': orderId,
+              'orderId': orderId,
+              'totalAmount': totalAmount,
+              'sellerPrice': sellerPrice,
+              'commissionAmount': commissionAmount,
               'checkoutUrl': checkoutUrl,
               'isMock': false,
             };
@@ -86,57 +124,109 @@ class PaymentService {
         rethrow;
       }
     } else {
-      // FALLBACK / SANDBOX SIMULATION MODE
-      // Generate a mock checkout URL pointing to a simulator
-      final mockCheckoutUrl = 'https://chapa-sandbox-simulator.web.app/pay/$txId';
+      // SANDBOX / MOCK MODE
+      final mockCheckoutUrl = 'https://chapa-sandbox-simulator.web.app/pay/$orderId';
       txDoc['checkoutUrl'] = mockCheckoutUrl;
       await FirestoreService().saveTransaction(txDoc);
 
       return {
         'success': true,
-        'txId': txId,
+        'txId': orderId,
+        'orderId': orderId,
+        'totalAmount': totalAmount,
+        'sellerPrice': sellerPrice,
+        'commissionAmount': commissionAmount,
         'checkoutUrl': mockCheckoutUrl,
         'isMock': true,
       };
     }
   }
 
-  // Simulates a webhook success trigger for sandbox testing
+  /// 3. Simulates Webhook payment confirmation (for Sandbox/Local Testing)
+  /// - Marks order as "Payment Confirmed"
+  /// - Creates pending seller payout record (status: "pending_delivery")
   Future<void> simulatePaymentSuccess(String txId) async {
     if (AuthService.isFirebaseAvailable) {
-      debugPrint('Simulation blocked: Firebase is live. Webhook must handle updates.');
+      debugPrint('Simulation skipped: Firebase live environment active.');
       return;
     }
+
     final tx = await FirestoreService().getTransaction(txId);
     if (tx != null) {
       tx['status'] = 'completed';
-      tx['gatewayReferenceId'] =
-          'chapa_ref_${DateTime.now().millisecondsSinceEpoch}';
+      tx['gatewayReferenceId'] = 'chapa_ref_${DateTime.now().millisecondsSinceEpoch}';
       tx['updatedAt'] = DateTime.now();
       await FirestoreService().saveTransaction(tx);
 
-      // Send receipt notification message to the in-app chat thread if active
+      // Update Order Status to "Payment Confirmed"
+      await FirestoreService().updateOrderStatus(txId, 'Payment Confirmed');
+
+      // Create Pending Payout record for seller
+      final totalAmount = (tx['amount'] as num?)?.toDouble() ?? 0.0;
+      final sellerPrice = (tx['sellerPrice'] as num?)?.toDouble() ?? totalAmount;
+      final commissionAmount = (tx['commissionAmount'] as num?)?.toDouble() ?? 0.0;
+
+      final payoutDoc = {
+        'id': 'payout_$txId',
+        'orderId': txId,
+        'sellerId': tx['sellerId'],
+        'buyerId': tx['buyerId'],
+        'totalAmount': totalAmount,
+        'sellerPrice': sellerPrice,
+        'commissionAmount': commissionAmount,
+        'sellerAmount': 0.0, // Calculated upon delivery
+        'status': 'pending_delivery',
+        'createdAt': DateTime.now(),
+        'updatedAt': DateTime.now(),
+      };
+      await FirestoreService().createPayoutRecord(payoutDoc);
+
+      // Send receipt to in-app chat thread
       final chatId = '${tx['listingId']}_${tx['buyerId']}_${tx['sellerId']}';
       await FirestoreService().sendMessage(
         chatId: chatId,
         senderId: 'system',
         text:
-            '🔔 PAYMENT CONFIRMED RECEIPT:\nAmount: ${tx['amount']} ETB\nPayment Method: ${tx['paymentMethod']}\nTransaction ID: ${tx['id']}',
+            '🔔 PAYMENT CONFIRMED:\nOrder ID: $txId\nTotal Amount: $totalAmount ETB\nSeller Payout Pending Delivery Confirmation.',
       );
     }
   }
 
-  // Simulates a webhook failure trigger for sandbox testing
-  Future<void> simulatePaymentFailure(String txId) async {
-    if (AuthService.isFirebaseAvailable) {
-      debugPrint('Simulation blocked: Firebase is live. Webhook must handle updates.');
-      return;
+  /// 4. Handles Delivery Confirmation & Calculates Seller Amount
+  /// - Marks Order as "delivered"
+  /// - Calculates seller_amount = total_amount - commission_amount
+  /// - Updates Seller Payout status to "ready_for_payout"
+  Future<void> confirmDelivery(String orderId) async {
+    await FirestoreService().updateOrderStatus(orderId, 'delivered');
+
+    final payout = await FirestoreService().getPayoutByOrderId(orderId);
+    if (payout != null) {
+      final totalAmount = (payout['totalAmount'] as num?)?.toDouble() ?? 0.0;
+      final commissionAmount = (payout['commissionAmount'] as num?)?.toDouble() ?? 0.0;
+      final sellerAmount = double.parse((totalAmount - commissionAmount).toStringAsFixed(2));
+
+      payout['sellerAmount'] = sellerAmount;
+      payout['status'] = 'ready_for_payout';
+      payout['deliveryConfirmedAt'] = DateTime.now();
+      payout['updatedAt'] = DateTime.now();
+
+      await FirestoreService().savePayoutRecord(payout);
     }
+  }
+
+  /// 4b. Runs Batch Payout disbursement for sandbox testing
+  Future<void> processBatchPayoutsMock() async {
+    await FirestoreService().processBatchPayoutsMock();
+  }
+
+  Future<void> simulatePaymentFailure(String txId) async {
+    if (AuthService.isFirebaseAvailable) return;
     final tx = await FirestoreService().getTransaction(txId);
     if (tx != null) {
       tx['status'] = 'failed';
       tx['updatedAt'] = DateTime.now();
       await FirestoreService().saveTransaction(tx);
+      await FirestoreService().updateOrderStatus(txId, 'Payment Failed');
     }
   }
 }
