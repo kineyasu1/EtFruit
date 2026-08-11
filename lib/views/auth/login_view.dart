@@ -126,7 +126,18 @@ class _LoginViewState extends ConsumerState<LoginView> {
       setState(() {
         _isLoading = false;
       });
-      if (!success) {
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Successfully authenticated!'),
+            backgroundColor: Color(0xFF1B5E20),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
+      } else {
         setState(() {
           _errorMessage = 'Invalid verification code. Please try again.';
         });
@@ -190,7 +201,16 @@ class _LoginViewState extends ConsumerState<LoginView> {
       });
 
       if (success) {
-        // AppRootNavigator will automatically handle switching views based on auth state
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_isSignUp ? 'Account created successfully!' : 'Signed in successfully!'),
+            backgroundColor: const Color(0xFF1B5E20),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
       } else {
         setState(() {
           _errorMessage = _isSignUp
@@ -270,10 +290,27 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(
-                      Icons.agriculture_rounded,
-                      size: 80,
-                      color: Colors.white,
+                    Center(
+                      child: Container(
+                        height: 80,
+                        width: 80,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black26,
+                              blurRadius: 10,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/icon/app_icon.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Text(

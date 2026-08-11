@@ -46,11 +46,26 @@ class LanguageSelectionView extends ConsumerWidget {
             children: [
               const SizedBox(height: 60),
               // App Logo or Icon
-              const Center(
-                child: Icon(
-                  Icons.agriculture_rounded,
-                  size: 80,
-                  color: Colors.white,
+              Center(
+                child: Container(
+                  height: 80,
+                  width: 80,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/icon/app_icon.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),

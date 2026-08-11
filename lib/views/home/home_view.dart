@@ -651,10 +651,13 @@ class _BrowseFeedSubViewState extends ConsumerState<BrowseFeedSubView> with Auto
       appBar: AppBar(
         title: Row(
           children: [
-            const Icon(
-              Icons.agriculture_rounded,
-              color: Colors.white,
-              size: 28,
+            ClipOval(
+              child: Image.asset(
+                'assets/icon/app_icon.png',
+                height: 32,
+                width: 32,
+                fit: BoxFit.cover,
+              ),
             ),
             const SizedBox(width: 8),
             Text(
