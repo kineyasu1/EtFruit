@@ -7,5 +7,5 @@ flutter_native_splash:
     icon_background_color: "#1B5E20"
 
   android: true
-  ios: true
+  ios: false
   web: false
