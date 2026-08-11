@@ -21,8 +21,12 @@ android {
 
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties()
-    if (keystorePropertiesFile.exists()) {
+    val isSigningConfigured = keystorePropertiesFile.exists() && run {
         keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+        keystoreProperties.containsKey("storeFile") &&
+        keystoreProperties.containsKey("storePassword") &&
+        keystoreProperties.containsKey("keyAlias") &&
+        keystoreProperties.containsKey("keyPassword")
     }
 
     compileOptions {
@@ -44,22 +48,18 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties.getProperty("keyAlias")
-            keyPassword = keystoreProperties.getProperty("keyPassword")
-            storeFile = keystoreProperties.getProperty("storeFile")?.let { rootProject.file(it) }
-            storePassword = keystoreProperties.getProperty("storePassword")
+        if (isSigningConfigured) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = keystoreProperties.getProperty("storeFile")?.let { rootProject.file(it) }
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
         }
     }
 
     buildTypes {
         release {
-            val isSigningConfigured = keystorePropertiesFile.exists() && 
-                                      keystoreProperties.containsKey("storeFile") &&
-                                      keystoreProperties.containsKey("storePassword") &&
-                                      keystoreProperties.containsKey("keyAlias") &&
-                                      keystoreProperties.containsKey("keyPassword")
-            
             if (isSigningConfigured) {
                 signingConfig = signingConfigs.getByName("release")
             } else {
