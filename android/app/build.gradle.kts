@@ -17,7 +17,7 @@ if (file("google-services.json").exists()) {
 android {
     namespace = "com.farmlink.agrimarketmob"
     compileSdk = 34
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion
 
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties()
