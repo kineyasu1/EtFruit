@@ -15,7 +15,8 @@ if (file("google-services.json").exists()) {
 
 android {
     namespace = "com.farmlink.agrimarketmob"
-    compileSdk = 35
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
 
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties()
@@ -28,10 +29,14 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
     defaultConfig {
         applicationId = "com.farmlink.agrimarketmob"
         minSdk = 21
-        targetSdk = 35
+        targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
@@ -63,12 +68,6 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
         }
-    }
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
     }
 }
 
