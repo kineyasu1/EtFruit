@@ -15,8 +15,7 @@ if (file("google-services.json").exists()) {
 
 android {
     namespace = "com.farmlink.agrimarketmob"
-    compileSdk = flutter.compileSdkVersion
-    // ndkVersion = flutter.ndkVersion
+    compileSdk = 35
 
     val keystorePropertiesFile = rootProject.file("key.properties")
     val keystoreProperties = Properties()
@@ -32,7 +31,7 @@ android {
     defaultConfig {
         applicationId = "com.farmlink.agrimarketmob"
         minSdk = 21
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
@@ -61,9 +60,8 @@ android {
                 signingConfig = signingConfigs.getByName("debug")
                 logger.warn("key.properties not found or incomplete. Falling back to debug signing config.")
             }
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }
