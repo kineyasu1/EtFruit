@@ -91,7 +91,7 @@ class _PaymentCheckoutViewState extends ConsumerState<PaymentCheckoutView> {
               MaterialPageRoute(
                 builder: (context) => ChapaSandboxSimulatorView(
                   txId: txId,
-                  amount: amount,
+                  amount: sellerPrice,
                   paymentMethod: _selectedMethod,
                   sellerName: widget.sellerName,
                   onSuccessCallback: widget.onSuccessCallback,
